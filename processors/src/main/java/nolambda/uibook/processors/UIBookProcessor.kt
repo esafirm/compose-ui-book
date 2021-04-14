@@ -2,6 +2,7 @@ package nolambda.uibook.processors
 
 import com.google.auto.service.AutoService
 import com.sun.source.util.Trees
+import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.annotations.UIBook
 import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
@@ -20,6 +21,10 @@ import javax.lang.model.element.TypeElement
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @AutoService(Processor::class)
 class UIBookProcessor : AbstractProcessor() {
+
+    companion object {
+        private const val OPTION_KAPT_KOTLIN_GENERATED = "kapt.kotlin.generated"
+    }
 
     private val logger by lazy { Logger(processingEnv) }
     private val sourceCodeLocator by lazy { SourceCodeLocator(logger) }
@@ -40,7 +45,7 @@ class UIBookProcessor : AbstractProcessor() {
         )
     }
 
-    fun createKtFile(codeString: String, fileName: String) =
+    private fun createKtFile(codeString: String, fileName: String) =
         PsiManager.getInstance(project)
             .findFile(
                 LightVirtualFile(fileName, KotlinFileType.INSTANCE, codeString)
@@ -55,12 +60,16 @@ class UIBookProcessor : AbstractProcessor() {
         p0: MutableSet<out TypeElement>?,
         env: RoundEnvironment
     ): Boolean {
+
+        val books = mutableListOf<Book>()
+
         env.getElementsAnnotatedWith(UIBook::class.java).forEach { el ->
             if (el.kind != ElementKind.METHOD) {
                 logger.error("Annotation can only be applied to method")
                 return false
             }
 
+            val annotation = el.getAnnotation(UIBook::class.java)
             val functionName = el.simpleName.toString()
             val result = sourceCodeLocator.sourceOf(el, processingEnv)
             val ktFile = createKtFile(result.sourceCode, result.fileName)
@@ -68,15 +77,36 @@ class UIBookProcessor : AbstractProcessor() {
             ktFile.children.forEach {
                 if (it is KtFunction) {
                     if (it.name == functionName) {
-                        logger.note("Found the function")
+                        val function = it.bodyExpression!!.text
+                        books.add(
+                            Book(
+                                meta = BookMetaData(
+                                    name = annotation.name,
+                                    function = function,
+                                    functionName = functionName,
+                                    packageName = ktFile.packageName ?: ""
+                                ),
+                                sourceCode = result,
+                            )
+                        )
                     }
                 }
             }
+        }
 
-            logger.note("Source code: $result")
+        if (books.isNotEmpty()) {
+            generateFiles(books)
         }
 
         return true
+    }
+
+    private fun generateFiles(books: List<Book>) {
+        logger.note("Generating ${books.size} files!")
+
+        val dest = processingEnv.options[OPTION_KAPT_KOTLIN_GENERATED]
+            ?: throw IllegalStateException("Kapt option not exist")
+        UIBookGenerator(dest, books).generate()
     }
 
 }

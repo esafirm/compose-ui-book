@@ -8,7 +8,7 @@ import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.ExecutableElement
 
-internal class SourceCodeLocator(private val logger: Logger) {
+class SourceCodeLocator(private val logger: Logger) {
 
     companion object {
         private const val KAPT_METADATA_EXTENSION = "kapt_metadata"

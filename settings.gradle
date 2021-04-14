@@ -1,3 +1,4 @@
+include ':browser'
 include ':samples'
 include ':processors'
 include ':annotations'
