@@ -1,4 +1,4 @@
-package nolambda.uibook.processors
+package nolambda.uibook.processors.utils
 
 import javax.annotation.processing.ProcessingEnvironment
 import javax.tools.Diagnostic
