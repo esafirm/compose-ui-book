@@ -10,20 +10,23 @@ import io.github.kbiakov.codeview.highlight.ColorTheme
 import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.browser.databinding.ViewFormBinding
 import nolambda.uibook.browser.databinding.ViewInputBinding
+import nolambda.uibook.browser.viewstate.DefaultViewStateProvider
+import nolambda.uibook.browser.viewstate.ViewStateProvider
 
 typealias OnUpdate = (Array<Any>) -> View
 typealias ViewState = Array<Any>
 
 class FormCreator(
     private val context: Context,
-    private val meta: BookMetaData
+    private val meta: BookMetaData,
+    private val viewStateProvider: ViewStateProvider = DefaultViewStateProvider()
 ) {
 
     private val inflater by lazy { LayoutInflater.from(context) }
     private val binding by lazy { ViewFormBinding.inflate(inflater) }
 
     private fun createInputs(onUpdate: OnUpdate): ViewState {
-        val viewState: Array<Any> = Array(meta.parameters.size) {}
+        val viewState: Array<Any> = viewStateProvider.createViewState(meta)
 
         val setViewState = { index: Int, value: Any ->
             viewState[index] = value

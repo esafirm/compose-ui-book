@@ -23,7 +23,7 @@ object TypeMapper {
             return ClassName("kotlin", type.substring(type.lastIndexOf(".") + 1))
         }
         if (javaTypes.any { it.equals(type, ignoreCase = true) }) {
-            return ClassName("kotlin", type)
+            return ClassName("kotlin", type.capitalize())
         }
         return null
     }
