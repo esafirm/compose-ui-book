@@ -17,11 +17,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <FrameLayout
+        <RelativeLayout
             android:id="@+id/container_component"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:foregroundGravity="center"
+            android:gravity="center"
             android:padding="@dimen/spacing16" />
 
     </FrameLayout>

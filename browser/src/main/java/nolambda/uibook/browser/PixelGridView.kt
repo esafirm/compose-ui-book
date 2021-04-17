@@ -14,7 +14,7 @@ class PixelGridView @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     companion object {
-        private const val DEFAULT_ALPHA = 50
+        private const val DEFAULT_ALPHA = 10
     }
 
     //number of row and column 

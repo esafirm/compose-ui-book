@@ -56,7 +56,7 @@ class UIBookGenerator(
     }
 
     private fun createBookFactory(book: BookMetaData): ClassName {
-        val formCreatorClass = ClassName("nolambda.uibook.browser", "FormCreator")
+        val formCreatorClass = ClassName("nolambda.uibook.browser.form", "FormCreator")
         val className = "${book.name}BookFactory"
 
         val functionProperty = PropertySpec.builder("function", String::class)
@@ -134,7 +134,7 @@ class UIBookGenerator(
     }
 
     private fun CodeBlock.Builder.createParametersDeclaration(book: BookMetaData) {
-        addStatement("context.${book.functionName}(")
+        addStatement("${book.functionName}(")
         indent()
         book.parameters.forEachIndexed { index, param ->
             addStatement("it[${index}] as %T,", TypeMapper.mapToClassName(param.type))

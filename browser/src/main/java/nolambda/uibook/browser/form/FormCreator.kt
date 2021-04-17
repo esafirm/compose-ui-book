@@ -1,29 +1,32 @@
-package nolambda.uibook.browser
+package nolambda.uibook.browser.form
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
-import androidx.core.widget.addTextChangedListener
 import com.google.android.material.tabs.TabLayout
 import io.github.kbiakov.codeview.adapters.Options
 import io.github.kbiakov.codeview.highlight.ColorTheme
 import nolambda.uibook.annotations.BookMetaData
+import nolambda.uibook.browser.BookHost
 import nolambda.uibook.browser.databinding.ViewFormBinding
-import nolambda.uibook.browser.databinding.ViewInputBinding
+import nolambda.uibook.browser.show
 import nolambda.uibook.browser.viewstate.DefaultViewStateProvider
 import nolambda.uibook.browser.viewstate.ViewStateProvider
 
-typealias OnUpdate = (Array<Any>) -> View
+typealias OnUpdate = BookHost.(Array<Any>) -> View
 typealias ViewState = Array<Any>
 
 class FormCreator(
     private val context: Context,
     private val meta: BookMetaData,
-    private val viewStateProvider: ViewStateProvider = DefaultViewStateProvider()
+    private val viewStateProvider: ViewStateProvider = DefaultViewStateProvider(),
+    private val inputCreator: InputCreator = DefaultInputCreator()
 ) {
 
     private val inflater by lazy { LayoutInflater.from(context) }
     private val binding by lazy { ViewFormBinding.inflate(inflater) }
+
+    private val bookHost by lazy { BookHost(context, binding.containerComponent) }
 
     private fun createInputs(onUpdate: OnUpdate): ViewState {
         val viewState: Array<Any> = viewStateProvider.createViewState(meta)
@@ -32,21 +35,25 @@ class FormCreator(
             viewState[index] = value
 
             // Invalidate view
-            val child = onUpdate(viewState)
+            val child = onUpdate(bookHost, viewState)
             binding.containerComponent.removeAllViews()
             binding.containerComponent.addView(child)
         }
 
         meta.parameters.forEachIndexed { index, parameter ->
 
-            val input = ViewInputBinding.inflate(inflater, binding.containerInput, false).apply {
-                inpLayout.hint = parameter.name
-                inpEditText.addTextChangedListener {
-                    setViewState(index, it.toString())
-                }
+            val setViewStateForIndex = { value: Any ->
+                setViewState(index, value)
             }
 
-            binding.containerInput.addView(input.root)
+            val input = inputCreator.createInput(
+                inflater = inflater,
+                parent = binding,
+                parameter = parameter,
+                setViewState = setViewStateForIndex
+            )
+
+            binding.containerInput.addView(input)
         }
 
         return viewState
@@ -56,7 +63,7 @@ class FormCreator(
         val viewState = createInputs(onUpdate)
 
         // First render
-        binding.containerComponent.addView(onUpdate(viewState))
+        binding.containerComponent.addView(onUpdate(bookHost, viewState))
 
         val functionCode = meta.function.replace("return ", "")
             .removeSurrounding("{", "}")

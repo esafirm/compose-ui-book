@@ -1,32 +1,37 @@
 package nolambda.uibook.samples
 
-import android.content.Context
 import android.graphics.Color
-import android.text.InputType
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import nolambda.uibook.annotations.UIBook
+import nolambda.uibook.browser.BookHost
+import nolambda.uibook.databinding.ItemTextImageBinding
 
 @UIBook(name = "TextView")
-fun Context.createTextView(text: String): TextView {
+fun BookHost.createTextView(text: String): TextView {
     /**
      * This will draw text
      */
-    return TextView(this).apply {
+    return TextView(context).apply {
         this.text = text
         setTextColor(Color.RED)
     }
 }
 
 @UIBook(name = "Input")
-fun Context.createInput(input: String, hint: String, isNumber: Boolean): View {
-    return EditText(this).apply {
+fun BookHost.createInput(input: String, hint: String): View {
+    return EditText(context).apply {
         setText(input)
         setHint(hint)
-
-        if (isNumber) {
-            inputType = InputType.TYPE_CLASS_NUMBER
-        }
     }
+}
+
+@UIBook(name = "TextWithImage")
+fun BookHost.createTextWithImage(title: String): View {
+    val inflater = LayoutInflater.from(context)
+    val binding = ItemTextImageBinding.inflate(inflater, parent, false)
+    binding.txtTitle.text = title
+    return binding.root
 }
