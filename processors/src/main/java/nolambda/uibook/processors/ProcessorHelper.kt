@@ -3,6 +3,7 @@ package nolambda.uibook.processors
 import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.annotations.FunctionParameter
 import nolambda.uibook.annotations.UIBook
+import nolambda.uibook.processors.utils.Logger
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtFunction
@@ -12,16 +13,27 @@ import javax.lang.model.element.ExecutableElement
 
 class ProcessorHelper(
     private val el: Element,
-    private val psiElement: PsiElement
+    private val psiElement: PsiElement,
+    private val logger: Logger
 ) {
 
-    private val parameters by lazy {
+    private val psiParameters by lazy {
         (psiElement as? KtFunction)?.valueParameters?.map {
             FunctionParameter(
                 name = it.name.orEmpty(),
                 type = it.typeReference?.text.orEmpty()
             )
         }.orEmpty()
+    }
+
+    private val elParameters by lazy {
+        (el as? ExecutableElement)?.parameters?.mapIndexed { index, p ->
+            if (index == 0) {
+                null
+            } else {
+                p.asType().toString()
+            }
+        }?.filterNotNull().orEmpty()
     }
 
     fun createBook(ktFile: KtFile): BookMetaData? {
@@ -32,6 +44,13 @@ class ProcessorHelper(
         val psiMethod = psiElement as KtNamedFunction
 
         val function = psiMethod.bodyExpression!!.text
+
+        val parameters = elParameters.zip(psiParameters) { elParam, psiParam ->
+            FunctionParameter(
+                name = psiParam.name,
+                type = elParam
+            )
+        }
 
         return BookMetaData(
             name = annotation.name,
@@ -48,9 +67,15 @@ class ProcessorHelper(
         if (el.simpleName.toString() != psiElement.name) return false
         if ((el.parameters.size - 1) != psiElement.valueParameters.size) return false
 
-        return parameters.mapIndexed { index, t ->
+        val isParameterTheSame = psiParameters.mapIndexed { index, t ->
             // TODO: more accurate way to check type
-            el.parameters[index + 1].asType().toString().contains(t.type)
+            elParameters[index].contains(t.type, ignoreCase = true)
         }.all { it }
+
+        if (!isParameterTheSame) {
+            logger.error("There's a parameter mistmatch that might be false positive: ${el.simpleName}")
+        }
+
+        return isParameterTheSame
     }
 }

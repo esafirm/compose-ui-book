@@ -11,31 +11,51 @@ import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.browser.databinding.ViewFormBinding
 import nolambda.uibook.browser.databinding.ViewInputBinding
 
+typealias OnUpdate = (Array<Any>) -> View
+typealias ViewState = Array<Any>
+
 class FormCreator(
     private val context: Context,
-    private val bookMetaData: BookMetaData
+    private val meta: BookMetaData
 ) {
 
-    private fun createInflater(): LayoutInflater =
-        LayoutInflater.from(context)
+    private val inflater by lazy { LayoutInflater.from(context) }
+    private val binding by lazy { ViewFormBinding.inflate(inflater) }
 
-    fun create(onUpdate: (String) -> View): View {
-        val inflater = createInflater()
-        val binding = ViewFormBinding.inflate(inflater)
+    private fun createInputs(onUpdate: OnUpdate): ViewState {
+        val viewState: Array<Any> = Array(meta.parameters.size) {}
 
-        val input = ViewInputBinding.inflate(inflater, binding.containerInput, false).apply {
-            inpLayout.hint = "Input 1"
-            inpEditText.addTextChangedListener {
-                val child = onUpdate(it.toString())
-                binding.containerComponent.removeAllViews()
-                binding.containerComponent.addView(child)
-            }
+        val setViewState = { index: Int, value: Any ->
+            viewState[index] = value
+
+            // Invalidate view
+            val child = onUpdate(viewState)
+            binding.containerComponent.removeAllViews()
+            binding.containerComponent.addView(child)
         }
 
-        binding.containerInput.addView(input.root)
-        binding.containerComponent.addView(onUpdate(""))
+        meta.parameters.forEachIndexed { index, parameter ->
 
-        val functionCode = bookMetaData.function.replace("return ", "")
+            val input = ViewInputBinding.inflate(inflater, binding.containerInput, false).apply {
+                inpLayout.hint = parameter.name
+                inpEditText.addTextChangedListener {
+                    setViewState(index, it.toString())
+                }
+            }
+
+            binding.containerInput.addView(input.root)
+        }
+
+        return viewState
+    }
+
+    fun create(onUpdate: OnUpdate): View {
+        val viewState = createInputs(onUpdate)
+
+        // First render
+        binding.containerComponent.addView(onUpdate(viewState))
+
+        val functionCode = meta.function.replace("return ", "")
             .removeSurrounding("{", "}")
             .trimIndent()
 

@@ -18,7 +18,7 @@ class PixelGridView @JvmOverloads constructor(
     }
 
     //number of row and column 
-    var horizontalGridCount = 20
+    private var horizontalGridCount = 20
 
     private val horizontal: Drawable = ColorDrawable(Color.BLACK).apply {
         alpha = DEFAULT_ALPHA

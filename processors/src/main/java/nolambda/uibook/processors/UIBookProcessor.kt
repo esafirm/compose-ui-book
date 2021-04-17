@@ -50,7 +50,7 @@ class UIBookProcessor : AbstractProcessor() {
 
             val ktFile = sourceCodeLocator.sourceOf(el, processingEnv).createKtFile()
             ktFile.children.forEach { psiElement ->
-                val helper = ProcessorHelper(el, psiElement)
+                val helper = ProcessorHelper(el, psiElement, logger)
                 val book = helper.createBook(ktFile)
                 if (book != null) {
                     books.add(book)
