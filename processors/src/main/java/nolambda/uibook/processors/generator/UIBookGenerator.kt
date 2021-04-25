@@ -18,7 +18,7 @@ class UIBookGenerator(
         destDir
     }
 
-    private val contextClass = ClassName("android.content", "Context")
+    private val bookConfigClass = ClassName("nolambda.uibook.factory", "BookConfig")
     private val viewClass = ClassName("android.view", "View")
     private val libraryClass = ClassName(UIBookCons.DEST_PACKAGE, UIBookCons.LIBRARY_CLASS_NAME)
     private val factoryInterface = ClassName(UIBookCons.DEST_PACKAGE, UIBookCons.FACTORY_INTERFACE_NAME)
@@ -104,12 +104,12 @@ class UIBookGenerator(
                     .addProperty(parametersProperty)
                     .addProperty(metaDataProperty)
                     .addFunction(
-                        FunSpec.builder("getView")
+                        FunSpec.builder("getBook")
                             .addModifiers(KModifier.OVERRIDE)
-                            .addParameter("context", contextClass)
+                            .addParameter("config", bookConfigClass)
                             .addCode(buildCodeBlock {
                                 addStatement("// Initiate form creator")
-                                addStatement("return %T(context, meta).create {", formCreatorClass)
+                                addStatement("return %T(config, meta).create {", formCreatorClass)
                                 indent()
                                 createParametersDeclaration(book)
                                 unindent()

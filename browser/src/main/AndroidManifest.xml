@@ -3,7 +3,9 @@
     package="nolambda.uibook.browser">
 
     <application>
-        <activity android:name=".UIBookListActivity">
+        <activity
+            android:name=".UIBookListActivity"
+            android:theme="@style/Theme.UIBook">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.intent.action.MAIN" />
@@ -12,6 +14,7 @@
 
         <activity
             android:name=".UIBookActivity"
+            android:theme="@style/Theme.UIBook.NoActionBar"
             android:windowSoftInputMode="adjustPan" />
     </application>
 

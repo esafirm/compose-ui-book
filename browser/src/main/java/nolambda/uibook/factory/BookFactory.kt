@@ -5,6 +5,6 @@ import android.view.View
 import nolambda.uibook.annotations.BookMetaData
 
 interface BookFactory {
-    fun getView(context: Context): View
+    fun getBook(config: BookConfig): View
     fun getMetaData(): BookMetaData
 }

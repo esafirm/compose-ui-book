@@ -1,7 +1,5 @@
 package nolambda.uibook.browser.form
 
-import android.app.Activity
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import com.google.android.material.tabs.TabLayout
@@ -14,16 +12,20 @@ import nolambda.uibook.browser.measurement.MeasurementHelperImpl
 import nolambda.uibook.browser.show
 import nolambda.uibook.browser.viewstate.DefaultViewStateProvider
 import nolambda.uibook.browser.viewstate.ViewStateProvider
+import nolambda.uibook.factory.BookConfig
+
 
 typealias OnUpdate = BookHost.(Array<Any>) -> View
 typealias ViewState = Array<Any>
 
 class FormCreator(
-    private val context: Context,
+    private val config: BookConfig,
     private val meta: BookMetaData,
     private val viewStateProvider: ViewStateProvider = DefaultViewStateProvider(),
     private val inputCreator: InputCreator = DefaultInputCreator()
 ) {
+
+    private val context = config.context()
 
     private val inflater by lazy { LayoutInflater.from(context) }
     private val binding by lazy { ViewFormBinding.inflate(inflater) }
@@ -63,16 +65,22 @@ class FormCreator(
     }
 
     private fun setupMeasurementView() {
-        var decorView: View? = null
-        if (context is Activity) {
-            decorView = context.window.decorView
-        }
-        val measurementHelper = MeasurementHelperImpl(binding.containerComponent, decorView)
+        val measurementHelper = MeasurementHelperImpl(binding.containerComponent)
         val measurementView = componentCreator.createMeasurementView(measurementHelper)
         binding.containerTop.addView(measurementView)
     }
 
+    private fun setupToolbar() {
+        binding.toolbar.apply {
+            title = meta.name
+            setNavigationIcon(androidx.appcompat.R.drawable.abc_ic_ab_back_material)
+            setNavigationOnClickListener { config.onExit() }
+            elevation = 8F
+        }
+    }
+
     fun create(onUpdate: OnUpdate): View {
+        setupToolbar()
         setupMeasurementView()
 
         val viewState = createInputs(onUpdate)
