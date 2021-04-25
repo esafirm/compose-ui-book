@@ -2,13 +2,17 @@ package nolambda.uibook.browser.form
 
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.google.android.material.tabs.TabLayout
 import io.github.kbiakov.codeview.adapters.Options
 import io.github.kbiakov.codeview.highlight.ColorTheme
 import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.browser.BookHost
+import nolambda.uibook.browser.R
 import nolambda.uibook.browser.databinding.ViewFormBinding
 import nolambda.uibook.browser.measurement.MeasurementHelperImpl
+import nolambda.uibook.browser.measurement.MeasurementOverlayView
 import nolambda.uibook.browser.show
 import nolambda.uibook.browser.viewstate.DefaultViewStateProvider
 import nolambda.uibook.browser.viewstate.ViewStateProvider
@@ -64,24 +68,50 @@ class FormCreator(
         return viewState
     }
 
-    private fun setupMeasurementView() {
+    private fun setupMeasurementView(): MeasurementOverlayView {
         val measurementHelper = MeasurementHelperImpl(binding.containerComponent)
         val measurementView = componentCreator.createMeasurementView(measurementHelper)
         binding.containerTop.addView(measurementView)
+        return measurementView
     }
 
-    private fun setupToolbar() {
+    private fun setupToolbar(measurementView: MeasurementOverlayView) {
         binding.toolbar.apply {
             title = meta.name
             setNavigationIcon(androidx.appcompat.R.drawable.abc_ic_ab_back_material)
             setNavigationOnClickListener { config.onExit() }
-            elevation = 8F
+            inflateMenu(R.menu.menu_book)
+
+            setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.menu_measurement -> {
+                        val isEnable = toggleMeasurement(measurementView)
+                        val icon = if (isEnable) {
+                            R.drawable.ic_measurement_enabled
+                        } else {
+                            R.drawable.ic_measurement_disabled
+                        }
+                        item.icon = ContextCompat.getDrawable(context, icon)
+
+                        val message = if (isEnable) "enabled" else "disabled"
+                        Toast.makeText(binding.root.context, "Measurement $message", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                false
+            }
         }
     }
 
+    private fun toggleMeasurement(measurementView: MeasurementOverlayView): Boolean {
+        val isEnabled = measurementView.visibility == View.VISIBLE
+        val nextState = if (isEnabled) View.GONE else View.VISIBLE
+        measurementView.visibility = nextState
+        return isEnabled.not()
+    }
+
     fun create(onUpdate: OnUpdate): View {
-        setupToolbar()
-        setupMeasurementView()
+        val measurementView = setupMeasurementView()
+        setupToolbar(measurementView)
 
         val viewState = createInputs(onUpdate)
 

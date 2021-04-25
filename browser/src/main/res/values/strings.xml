@@ -2,4 +2,5 @@
 <resources>
     <string name="source_code">Source Code</string>
     <string name="modifier">Modifier</string>
+    <string name="menu_measurement">Enable measurement</string>
 </resources>
