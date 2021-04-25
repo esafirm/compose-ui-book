@@ -17,10 +17,6 @@ class UIBookActivity : AppCompatActivity() {
         val factory = library.getBookFactories()[index]
 
         setContentView(factory.getView(this))
-
-        supportActionBar?.run {
-            setDisplayHomeAsUpEnabled(true)
-        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

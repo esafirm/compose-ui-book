@@ -1,5 +1,6 @@
 package nolambda.uibook.browser.form
 
+import android.app.Activity
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import io.github.kbiakov.codeview.highlight.ColorTheme
 import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.browser.BookHost
 import nolambda.uibook.browser.databinding.ViewFormBinding
+import nolambda.uibook.browser.measurement.MeasurementHelperImpl
 import nolambda.uibook.browser.show
 import nolambda.uibook.browser.viewstate.DefaultViewStateProvider
 import nolambda.uibook.browser.viewstate.ViewStateProvider
@@ -25,6 +27,7 @@ class FormCreator(
 
     private val inflater by lazy { LayoutInflater.from(context) }
     private val binding by lazy { ViewFormBinding.inflate(inflater) }
+    private val componentCreator by lazy { ComponentCreator(context) }
 
     private val bookHost by lazy { BookHost(context, binding.containerComponent) }
 
@@ -59,7 +62,19 @@ class FormCreator(
         return viewState
     }
 
+    private fun setupMeasurementView() {
+        var decorView: View? = null
+        if (context is Activity) {
+            decorView = context.window.decorView
+        }
+        val measurementHelper = MeasurementHelperImpl(binding.containerComponent, decorView)
+        val measurementView = componentCreator.createMeasurementView(measurementHelper)
+        binding.containerTop.addView(measurementView)
+    }
+
     fun create(onUpdate: OnUpdate): View {
+        setupMeasurementView()
+
         val viewState = createInputs(onUpdate)
 
         // First render
