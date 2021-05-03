@@ -11,6 +11,7 @@ import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.browser.BookHost
 import nolambda.uibook.browser.R
 import nolambda.uibook.browser.databinding.ViewFormBinding
+import nolambda.uibook.browser.databinding.ViewSeparatorBinding
 import nolambda.uibook.browser.measurement.MeasurementHelperImpl
 import nolambda.uibook.browser.measurement.MeasurementOverlayView
 import nolambda.uibook.browser.show
@@ -50,6 +51,11 @@ class FormCreator(
         }
 
         meta.parameters.forEachIndexed { index, parameter ->
+
+            val isAddSeparator = index != 0
+            if (isAddSeparator) {
+                ViewSeparatorBinding.inflate(inflater, binding.containerInput, true)
+            }
 
             val setViewStateForIndex = { value: Any ->
                 setViewState(index, value)

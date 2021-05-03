@@ -1,13 +1,14 @@
 package nolambda.uibook.samples
 
 import android.graphics.Color
-import android.view.LayoutInflater
+import android.graphics.Typeface
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import nolambda.uibook.annotations.UIBook
 import nolambda.uibook.browser.BookHost
 import nolambda.uibook.databinding.ItemTextImageBinding
+import nolambda.uibook.databinding.ItemWithBooleanBinding
 
 @UIBook(name = "TextView")
 fun BookHost.createTextView(text: String): TextView {
@@ -30,8 +31,20 @@ fun BookHost.createInput(input: String, hint: String): View {
 
 @UIBook(name = "TextWithImage")
 fun BookHost.createTextWithImage(title: String): View {
-    val inflater = LayoutInflater.from(context)
     val binding = ItemTextImageBinding.inflate(inflater, parent, false)
     binding.txtTitle.text = title
+    return binding.root
+}
+
+@UIBook(name = "BooleanTest")
+fun BookHost.createBooleanText(isBold: Boolean): View {
+    val binding = ItemWithBooleanBinding.inflate(inflater, parent, false)
+    binding.txtSubtitle.setTypeface(
+        null, if (isBold) {
+            Typeface.BOLD
+        } else {
+            Typeface.NORMAL
+        }
+    )
     return binding.root
 }
