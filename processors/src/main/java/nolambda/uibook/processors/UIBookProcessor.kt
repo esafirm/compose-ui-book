@@ -2,8 +2,8 @@ package nolambda.uibook.processors
 
 import com.google.auto.service.AutoService
 import com.sun.source.util.Trees
-import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.annotations.UIBook
+import nolambda.uibook.processors.generator.BookCreatorMetaData
 import nolambda.uibook.processors.generator.UIBookGenerator
 import nolambda.uibook.processors.utils.Logger
 import nolambda.uibook.processors.utils.SourceCodeLocator
@@ -40,7 +40,7 @@ class UIBookProcessor : AbstractProcessor() {
         p0: MutableSet<out TypeElement>?,
         env: RoundEnvironment
     ): Boolean {
-        val books = mutableListOf<BookMetaData>()
+        val metas = mutableListOf<BookCreatorMetaData>()
 
         env.getElementsAnnotatedWith(UIBook::class.java).forEach { el ->
             if (el.kind != ElementKind.METHOD) {
@@ -51,26 +51,26 @@ class UIBookProcessor : AbstractProcessor() {
             val ktFile = sourceCodeLocator.sourceOf(el, processingEnv).createKtFile()
             ktFile.children.forEach { psiElement ->
                 val helper = ProcessorHelper(el, psiElement, logger)
-                val book = helper.createBook(ktFile)
-                if (book != null) {
-                    books.add(book)
+                val creatorMetaData = helper.createCreatorMetaData(ktFile)
+                if (creatorMetaData != null) {
+                    metas.add(creatorMetaData)
                 }
             }
         }
 
-        if (books.isNotEmpty()) {
-            generateFiles(books)
+        if (metas.isNotEmpty()) {
+            generateFiles(metas)
         }
 
         return true
     }
 
-    private fun generateFiles(books: List<BookMetaData>) {
-        logger.note("Generating ${books.size} files!")
+    private fun generateFiles(metas: List<BookCreatorMetaData>) {
+        logger.note("Generating ${metas.size} files!")
 
         val dest = processingEnv.options[OPTION_KAPT_KOTLIN_GENERATED]
             ?: throw IllegalStateException("Kapt option not exist")
-        UIBookGenerator(dest, books).generate()
+        UIBookGenerator(dest, metas).generate()
     }
 
 }

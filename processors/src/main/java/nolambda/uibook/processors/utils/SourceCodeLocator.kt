@@ -27,8 +27,9 @@ class SourceCodeLocator(private val logger: Logger) {
         environment: ProcessingEnvironment
     ): SourceCodeResult {
         val metadataFile = getMetadataForFunction(function, environment)
+        val functionIdentifier = "${function.simpleName}("
         val path = deserializeMetadata(metadataFile.readBytes()).entries
-            .single { it.key.contains(function.simpleName) }
+            .single { it.key.contains(functionIdentifier) }
             .value
 
         val sourceFile = File(path)

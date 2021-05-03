@@ -3,6 +3,7 @@ package nolambda.uibook.processors
 import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.annotations.FunctionParameter
 import nolambda.uibook.annotations.UIBook
+import nolambda.uibook.processors.generator.BookCreatorMetaData
 import nolambda.uibook.processors.utils.Logger
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.psi.KtFile
@@ -36,7 +37,7 @@ class ProcessorHelper(
         }?.filterNotNull().orEmpty()
     }
 
-    fun createBook(ktFile: KtFile): BookMetaData? {
+    fun createCreatorMetaData(ktFile: KtFile): BookCreatorMetaData? {
         if (isTheSame().not()) return null
 
         val annotation = el.getAnnotation(UIBook::class.java)
@@ -52,12 +53,15 @@ class ProcessorHelper(
             )
         }
 
-        return BookMetaData(
-            name = annotation.name,
-            function = function,
-            functionName = method.simpleName.toString(),
-            packageName = ktFile.packageName,
-            parameters = parameters
+        return BookCreatorMetaData(
+            annotation = annotation,
+            book = BookMetaData(
+                name = annotation.name,
+                function = function,
+                functionName = method.simpleName.toString(),
+                packageName = ktFile.packageName,
+                parameters = parameters
+            )
         )
     }
 

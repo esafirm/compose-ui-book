@@ -4,13 +4,15 @@ import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.annotations.FunctionParameter
+import nolambda.uibook.annotations.UIBook
 import nolambda.uibook.annotations.UIBookCons
+import nolambda.uibook.processors.getTypeMirror
 import java.io.File
 import java.util.*
 
 class UIBookGenerator(
     private val destDirectory: String,
-    private val books: List<BookMetaData>
+    private val metaDatas: List<BookCreatorMetaData>
 ) {
 
     private val destDir by lazy {
@@ -25,7 +27,7 @@ class UIBookGenerator(
     private val factoryInterface = ClassName(UIBookCons.DEST_PACKAGE, UIBookCons.FACTORY_INTERFACE_NAME)
 
     fun generate() {
-        val bookClassNames = books.map { book -> createBookFactory(book) }
+        val bookClassNames = metaDatas.map { book -> createBookFactory(book) }
         createLibrary(bookClassNames)
     }
 
@@ -56,8 +58,8 @@ class UIBookGenerator(
         spec.build().writeTo(destDir)
     }
 
-    private fun createBookFactory(book: BookMetaData): ClassName {
-        val formCreatorClass = ClassName("nolambda.uibook.browser.form", "FormCreator")
+    private fun createBookFactory(creatorMetaData: BookCreatorMetaData): ClassName {
+        val book = creatorMetaData.book
         val safeClassName = book.name.split(" ").joinToString("") { it.capitalize(Locale.getDefault()) }
         val className = "${safeClassName}BookFactory"
 
@@ -111,7 +113,7 @@ class UIBookGenerator(
                             .addParameter("config", bookConfigClass)
                             .addCode(buildCodeBlock {
                                 addStatement("// Initiate form creator")
-                                addStatement("return %T(config, meta).create {", formCreatorClass)
+                                createFormCreatorConstructor(creatorMetaData)
                                 indent()
                                 createParametersDeclaration(book)
                                 unindent()
@@ -133,6 +135,31 @@ class UIBookGenerator(
         file.writeTo(destDir)
 
         return ClassName(UIBookCons.DEST_PACKAGE, className)
+    }
+
+    @Suppress("DEPRECATION")
+    private fun CodeBlock.Builder.createFormCreatorConstructor(book: BookCreatorMetaData) {
+        val formCreatorClass = ClassName("nolambda.uibook.browser.form", "FormCreator")
+        val inputCreatorType = getTypeMirror { book.annotation.inputCreator }
+        val stateProviderType = getTypeMirror { book.annotation.viewStateProvider }
+
+        val defaultTypeName = UIBook.Default::class.asTypeName()
+        val isDefaultInputCreator = inputCreatorType.asTypeName() == defaultTypeName
+        val isDefaultViewStateProvider = stateProviderType.asTypeName() == defaultTypeName
+
+        var statementInput = ""
+        if (!isDefaultInputCreator) {
+            addStatement("val inputCreator = %T()", inputCreatorType)
+            statementInput = ", inputCreator = inputCreator"
+        }
+
+        var statementViewState = ""
+        if (!isDefaultViewStateProvider) {
+            addStatement("val stateProvider = %T()", stateProviderType)
+            statementViewState = ", stateProvider = stateProvider"
+        }
+
+        addStatement("return %T(config, meta$statementInput$statementViewState).create {", formCreatorClass)
     }
 
     private fun CodeBlock.Builder.createParametersDeclaration(book: BookMetaData) {

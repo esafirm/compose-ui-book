@@ -21,6 +21,16 @@ fun BookHost.createTextView(text: String): TextView {
     }
 }
 
+@UIBook(
+    name = "TextViewCustom",
+    inputCreator = ButtonInput::class
+)
+fun BookHost.createTextViewCustom(text: String): TextView {
+    return TextView(context).apply {
+        this.text = text
+    }
+}
+
 @UIBook(name = "Input")
 fun BookHost.createInput(input: String, hint: String): View {
     return EditText(context).apply {
