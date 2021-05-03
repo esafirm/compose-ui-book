@@ -6,6 +6,7 @@ import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.annotations.FunctionParameter
 import nolambda.uibook.annotations.UIBookCons
 import java.io.File
+import java.util.*
 
 class UIBookGenerator(
     private val destDirectory: String,
@@ -57,7 +58,8 @@ class UIBookGenerator(
 
     private fun createBookFactory(book: BookMetaData): ClassName {
         val formCreatorClass = ClassName("nolambda.uibook.browser.form", "FormCreator")
-        val className = "${book.name}BookFactory"
+        val safeClassName = book.name.split(" ").joinToString("") { it.capitalize(Locale.getDefault()) }
+        val className = "${safeClassName}BookFactory"
 
         val functionProperty = PropertySpec.builder("function", String::class)
             .addModifiers(KModifier.PRIVATE)

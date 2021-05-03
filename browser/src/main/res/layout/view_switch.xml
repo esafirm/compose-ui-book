@@ -9,7 +9,6 @@
         android:id="@+id/input_switch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:checked="true"
         android:theme="@style/Theme.UIBook.NoActionBar"
         app:useMaterialThemeColors="true"
         tools:text="This is a switch" />

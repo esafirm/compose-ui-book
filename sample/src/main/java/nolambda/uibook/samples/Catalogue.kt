@@ -36,7 +36,7 @@ fun BookHost.createTextWithImage(title: String): View {
     return binding.root
 }
 
-@UIBook(name = "BooleanTest")
+@UIBook(name = "This is a name")
 fun BookHost.createBooleanText(isBold: Boolean): View {
     val binding = ItemWithBooleanBinding.inflate(inflater, parent, false)
     binding.txtSubtitle.setTypeface(
