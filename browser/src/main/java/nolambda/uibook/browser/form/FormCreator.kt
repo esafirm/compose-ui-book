@@ -65,6 +65,7 @@ class FormCreator(
                 inflater = inflater,
                 parent = binding,
                 parameter = parameter,
+                defaultState = viewState[index],
                 setViewState = setViewStateForIndex
             )
 

@@ -14,6 +14,7 @@ class ButtonInput : InputCreator {
         inflater: LayoutInflater,
         parent: ViewFormBinding,
         parameter: FunctionParameter,
+        defaultState: Any,
         setViewState: (Any) -> Unit
     ): View {
         val context = parent.root.context

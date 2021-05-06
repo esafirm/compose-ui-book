@@ -15,6 +15,7 @@ class DefaultInputCreator : InputCreator {
         inflater: LayoutInflater,
         parent: ViewFormBinding,
         parameter: FunctionParameter,
+        defaultState: Any,
         setViewState: (Any) -> Unit
     ): View {
         val type = parameter.type
@@ -24,12 +25,16 @@ class DefaultInputCreator : InputCreator {
         }
         if (ParameterTypes.isNumber(type)) {
             return createFreeTextInput(inflater, parent, name, InputType.TYPE_CLASS_NUMBER) {
+                if (it.isBlank()) {
+                    setViewState(defaultState)
+                    return@createFreeTextInput
+                }
                 if (type == ParameterTypes.INT) {
-                    setViewState((it as String).toInt())
+                    setViewState(it.toInt())
                     return@createFreeTextInput
                 }
                 if (type == ParameterTypes.FLOAT) {
-                    setViewState((it as String).toFloat())
+                    setViewState(it.toFloat())
                     return@createFreeTextInput
                 }
                 error("Type $type is not handled on type conversion")
@@ -46,7 +51,7 @@ class DefaultInputCreator : InputCreator {
         parent: ViewFormBinding,
         hint: String,
         inputType: Int = InputType.TYPE_CLASS_TEXT,
-        setViewState: (Any) -> Unit
+        setViewState: (String) -> Unit
     ): View {
         val input = ViewInputBinding.inflate(inflater, parent.containerInput, false).apply {
             inpLayout.hint = hint

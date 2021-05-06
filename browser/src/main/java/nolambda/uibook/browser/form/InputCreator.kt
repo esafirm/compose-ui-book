@@ -10,6 +10,7 @@ interface InputCreator {
         inflater: LayoutInflater,
         parent: ViewFormBinding,
         parameter: FunctionParameter,
+        defaultState: Any,
         setViewState: (Any) -> Unit,
     ): View
 }
