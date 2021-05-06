@@ -8,7 +8,6 @@ class DefaultViewStateProvider : ViewStateProvider {
 
     override fun createViewState(book: BookMetaData): ViewState {
         val parameters = book.parameters
-
         return ViewState(parameters.size) {
             ParameterTypes.getDefaultStateForType(parameters[it].type)
         }

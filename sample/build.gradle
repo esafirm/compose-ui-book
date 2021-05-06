@@ -4,6 +4,8 @@ plugins {
     id 'kotlin-kapt'
 }
 
+apply from: "${rootDir}/gradle/launcher.gradle"
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"

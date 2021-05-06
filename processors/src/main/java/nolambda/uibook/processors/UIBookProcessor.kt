@@ -3,6 +3,7 @@ package nolambda.uibook.processors
 import com.google.auto.service.AutoService
 import com.sun.source.util.Trees
 import nolambda.uibook.annotations.UIBook
+import nolambda.uibook.annotations.code.CodeSpec
 import nolambda.uibook.processors.generator.BookCreatorMetaData
 import nolambda.uibook.processors.generator.UIBookGenerator
 import nolambda.uibook.processors.utils.Logger

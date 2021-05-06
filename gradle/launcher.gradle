@@ -1,0 +1,14 @@
+// Running the APK on your Android Device
+android.applicationVariants.all { variant ->
+    if (variant.install) {
+        tasks.create(name: "run${variant.name.capitalize()}", type: Exec, dependsOn: variant.install) {
+            group = 'Run'
+            description "Installs and Runs the APK for ${variant.description}."
+            doFirst {
+                def componentName = "${variant.applicationId}/.browser.UIBookListActivity"
+                println "COMPONENT: ${componentName}"
+                commandLine android.adbExe, 'shell', 'am', 'start', '-n', "$componentName"
+            }
+        }
+    }
+}

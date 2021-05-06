@@ -89,9 +89,10 @@ class UIBookGenerator(
             .delegate(buildCodeBlock {
                 beginControlFlow("lazy(%T.NONE)", LazyThreadSafetyMode::class)
                 addStatement(
-                    "%T(%S, function, %S, %S, parameters)",
+                    "%T(%S, function, %S, %S, %S, parameters)",
                     BookMetaData::class,
                     book.name,
+                    book.language,
                     book.functionName,
                     book.packageName
                 )

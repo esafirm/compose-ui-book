@@ -2,13 +2,16 @@ package nolambda.uibook.samples
 
 import android.graphics.Color
 import android.graphics.Typeface
+import android.util.TypedValue
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import nolambda.uibook.annotations.UIBook
+import nolambda.uibook.annotations.code.CodeSpec
 import nolambda.uibook.browser.BookHost
 import nolambda.uibook.databinding.ItemTextImageBinding
 import nolambda.uibook.databinding.ItemWithBooleanBinding
+import kotlin.math.max
 
 @UIBook(name = "TextView")
 fun BookHost.createTextView(text: String): TextView {
@@ -57,4 +60,22 @@ fun BookHost.createBooleanText(isBold: Boolean): View {
         }
     )
     return binding.root
+}
+
+@UIBook(name = "Custom code")
+@CodeSpec(
+    code = """
+        <TextView android:text="testing"
+                  android:textSize="17sp" />
+    """,
+    trimIndent = true,
+    language = "xml"
+)
+fun BookHost.createCustomCodeComponent(text: String, textSize: Float): View {
+    return TextView(context).apply {
+        this.text = if (text.isBlank()) "testing" else text
+        this.textSize =
+            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, max(1F, textSize), context.resources.displayMetrics)
+
+    }
 }

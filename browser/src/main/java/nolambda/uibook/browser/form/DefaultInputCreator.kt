@@ -22,8 +22,18 @@ class DefaultInputCreator : InputCreator {
         if (type == ParameterTypes.STRING) {
             return createFreeTextInput(inflater, parent, name, setViewState = setViewState)
         }
-        if (type == ParameterTypes.INT) {
-            return createFreeTextInput(inflater, parent, name, InputType.TYPE_CLASS_NUMBER, setViewState)
+        if (ParameterTypes.isNumber(type)) {
+            return createFreeTextInput(inflater, parent, name, InputType.TYPE_CLASS_NUMBER) {
+                if (type == ParameterTypes.INT) {
+                    setViewState((it as String).toInt())
+                    return@createFreeTextInput
+                }
+                if (type == ParameterTypes.FLOAT) {
+                    setViewState((it as String).toFloat())
+                    return@createFreeTextInput
+                }
+                error("Type $type is not handled on type conversion")
+            }
         }
         if (type == ParameterTypes.BOOLEAN) {
             return createBooleanInput(inflater, parent, name, setViewState)
