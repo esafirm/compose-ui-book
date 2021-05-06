@@ -76,7 +76,7 @@ class UIBookGenerator(
                     addStatement("listOf(")
                     indent()
                     book.parameters.forEach {
-                        addStatement("%T(%S, %S),", FunctionParameter::class, it.name, it.type)
+                        addStatement("%T(%S, %S, %S),", FunctionParameter::class, it.name, it.type, it.defaultValue)
                     }
                     unindent()
                     addStatement(")")

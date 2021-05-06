@@ -2,6 +2,7 @@ package nolambda.uibook.processors
 
 import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.annotations.FunctionParameter
+import nolambda.uibook.annotations.State
 import nolambda.uibook.annotations.UIBook
 import nolambda.uibook.annotations.code.CodeSpec
 import nolambda.uibook.processors.generator.BookCreatorMetaData
@@ -33,7 +34,12 @@ class ProcessorHelper(
             if (index == 0) {
                 null
             } else {
-                p.asType().toString()
+                val state: State? = p.getAnnotation(State::class.java)
+                FunctionParameter(
+                    name = "",
+                    type = p.asType().toString(),
+                    defaultValue = state?.defaultValue
+                )
             }
         }?.filterNotNull().orEmpty()
     }
@@ -49,7 +55,8 @@ class ProcessorHelper(
         val parameters = elParameters.zip(psiParameters) { elParam, psiParam ->
             FunctionParameter(
                 name = psiParam.name,
-                type = elParam
+                type = elParam.type,
+                defaultValue = elParam.defaultValue
             )
         }
 
@@ -94,7 +101,7 @@ class ProcessorHelper(
 
         val isParameterTheSame = psiParameters.mapIndexed { index, t ->
             // TODO: more accurate way to check type
-            elParameters[index].contains(t.type, ignoreCase = true)
+            elParameters[index].type.contains(t.type, ignoreCase = true)
         }.all { it }
 
         if (!isParameterTheSame) {

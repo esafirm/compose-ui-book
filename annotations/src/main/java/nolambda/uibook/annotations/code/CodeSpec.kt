@@ -1,5 +1,7 @@
 package nolambda.uibook.annotations.code
 
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.SOURCE)
 annotation class CodeSpec(
     /**
      * Code that will show in source code tab

@@ -21,10 +21,10 @@ class DefaultInputCreator : InputCreator {
         val type = parameter.type
         val name = parameter.name
         if (type == ParameterTypes.STRING) {
-            return createFreeTextInput(inflater, parent, name, setViewState = setViewState)
+            return createFreeTextInput(inflater, parent, name, defaultState = defaultState, setViewState = setViewState)
         }
         if (ParameterTypes.isNumber(type)) {
-            return createFreeTextInput(inflater, parent, name, InputType.TYPE_CLASS_NUMBER) {
+            return createFreeTextInput(inflater, parent, name, InputType.TYPE_CLASS_NUMBER, defaultState) {
                 if (it.isBlank()) {
                     setViewState(defaultState)
                     return@createFreeTextInput
@@ -51,11 +51,13 @@ class DefaultInputCreator : InputCreator {
         parent: ViewFormBinding,
         hint: String,
         inputType: Int = InputType.TYPE_CLASS_TEXT,
+        defaultState: Any,
         setViewState: (String) -> Unit
     ): View {
         val input = ViewInputBinding.inflate(inflater, parent.containerInput, false).apply {
             inpLayout.hint = hint
             inpEditText.inputType = inputType
+            inpEditText.setText(defaultState.toString())
             inpEditText.addTextChangedListener {
                 setViewState(it.toString())
             }

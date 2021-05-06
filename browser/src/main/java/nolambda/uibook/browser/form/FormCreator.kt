@@ -57,6 +57,8 @@ class FormCreator(
                 ViewSeparatorBinding.inflate(inflater, binding.containerInput, true)
             }
 
+            parameter.defaultValue
+
             val setViewStateForIndex = { value: Any ->
                 setViewState(index, value)
             }

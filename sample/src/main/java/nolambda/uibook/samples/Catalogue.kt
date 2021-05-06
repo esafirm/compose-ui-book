@@ -6,12 +6,12 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import nolambda.uibook.annotations.State
 import nolambda.uibook.annotations.UIBook
 import nolambda.uibook.annotations.code.CodeSpec
 import nolambda.uibook.browser.BookHost
 import nolambda.uibook.databinding.ItemTextImageBinding
 import nolambda.uibook.databinding.ItemWithBooleanBinding
-import kotlin.math.max
 
 @UIBook(name = "TextView")
 fun BookHost.createTextView(text: String): TextView {
@@ -71,11 +71,13 @@ fun BookHost.createBooleanText(isBold: Boolean): View {
     trimIndent = true,
     language = "xml"
 )
-fun BookHost.createCustomCodeComponent(text: String, textSize: Float): View {
+fun BookHost.createCustomCodeComponent(
+    text: String,
+    @State(defaultValue = "17") textSize: Float
+): View {
     return TextView(context).apply {
         this.text = if (text.isBlank()) "testing" else text
         this.textSize =
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, max(1F, textSize), context.resources.displayMetrics)
-
+            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, textSize, context.resources.displayMetrics)
     }
 }

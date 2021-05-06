@@ -8,8 +8,21 @@ class DefaultViewStateProvider : ViewStateProvider {
 
     override fun createViewState(book: BookMetaData): ViewState {
         val parameters = book.parameters
-        return ViewState(parameters.size) {
-            ParameterTypes.getDefaultStateForType(parameters[it].type)
+        return ViewState(parameters.size) { index ->
+            val param = parameters[index]
+            val defaultValue = param.defaultValue
+
+            if (defaultValue == null) {
+                ParameterTypes.getDefaultStateForType(param.type)
+            } else {
+                when (param.type) {
+                    ParameterTypes.STRING -> defaultValue.toString()
+                    ParameterTypes.INT -> defaultValue.toInt()
+                    ParameterTypes.FLOAT -> defaultValue.toFloat()
+                    ParameterTypes.BOOLEAN -> defaultValue.toBoolean()
+                    else -> error("Type ${param.type} has no default state")
+                }
+            }
         }
     }
 }
