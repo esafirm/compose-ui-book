@@ -21,6 +21,12 @@ Simple and extensible UI component explorer for Android
 
 ## Getting Started
 
+
+### Setup Module
+
+Usually the UI component explorer is separated from the main app. So the first thing you should do is to create empty module
+with `com.android.application` plugin. After that:
+
 In your root `build.gradle`
 
 ```groovy
@@ -43,9 +49,29 @@ dependencies {
 
 change `x.y.z` to version in the [release page](https://github.com/esafirm/android-ui-book/releases)
 
+### Create First Book
+
+To create book simple creat an extension function that extend `BookHost`, return `View` and give the function `@UIBook` annotation.
+In this case I will create a Kotlin file with name `Catalogue.kt` and then create this function:
+
+```kotlin
+@UIBook(name = "TextView")
+fun BookHost.createTextView(text: String): TextView {
+  /**
+  * This will draw text
+  */
+  return TextView(context).apply {
+    this.text = text
+    setTextColor(Color.RED)
+  }
+}
+```
+
+That's it now run the new module that you just created.
+
 ## Advanced
 
-For now, you can check `:samples` module for complete features.
+For now, you can check `:sample` module for complete features.
 
 ## Support
 
