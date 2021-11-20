@@ -6,6 +6,8 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import nolambda.uibook.annotations.State
 import nolambda.uibook.annotations.UIBook
 import nolambda.uibook.annotations.code.CodeSpec
@@ -81,3 +83,9 @@ fun BookHost.createCustomCodeComponent(
             TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, textSize, context.resources.displayMetrics)
     }
 }
+
+//@UIBook(name = "Compose code")
+//@Composable
+//fun BookHost.SampleText() {
+//    Text(text = "This is a compose text")
+//}
