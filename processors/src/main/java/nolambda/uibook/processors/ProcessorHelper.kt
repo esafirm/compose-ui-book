@@ -68,7 +68,8 @@ class ProcessorHelper(
                 language = codeSpec?.language ?: "kotlin",
                 functionName = method.simpleName.toString(),
                 packageName = ktFile.packageName,
-                parameters = parameters
+                parameters = parameters,
+                isComposeFunction = psiMethod.isComposableAnnotationExists()
             )
         )
     }
@@ -109,5 +110,9 @@ class ProcessorHelper(
         }
 
         return isParameterTheSame
+    }
+
+    private fun KtNamedFunction.isComposableAnnotationExists(): Boolean {
+        return annotationEntries.any { it.shortName?.asString() == "Composable" }
     }
 }

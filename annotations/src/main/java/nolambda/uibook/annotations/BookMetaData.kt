@@ -8,5 +8,6 @@ data class BookMetaData(
     val language: String,
     val functionName: String,
     val packageName: String,
-    val parameters: List<FunctionParameter>
+    val parameters: List<FunctionParameter>,
+    val isComposeFunction: Boolean
 ) : Serializable

@@ -84,8 +84,8 @@ fun BookHost.createCustomCodeComponent(
     }
 }
 
-//@UIBook(name = "Compose code")
-//@Composable
-//fun BookHost.SampleText() {
-//    Text(text = "This is a compose text")
-//}
+@UIBook(name = "Compose code")
+@Composable
+fun BookHost.SampleText(text: String) {
+    Text(text = text)
+}
