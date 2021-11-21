@@ -12,16 +12,12 @@ class DefaultViewStateProvider : ViewStateProvider {
             val param = parameters[index]
             val defaultValue = param.defaultValue
 
-            if (defaultValue == null) {
-                ParameterTypes.getDefaultStateForType(param.type)
-            } else {
-                when (param.type) {
-                    ParameterTypes.STRING -> defaultValue.toString()
-                    ParameterTypes.INT -> defaultValue.toInt()
-                    ParameterTypes.FLOAT -> defaultValue.toFloat()
-                    ParameterTypes.BOOLEAN -> defaultValue.toBoolean()
-                    else -> error("Type ${param.type} has no default state")
-                }
+            when (param.type) {
+                ParameterTypes.STRING -> defaultValue
+                ParameterTypes.INT -> defaultValue.toInt()
+                ParameterTypes.FLOAT -> defaultValue.toFloat()
+                ParameterTypes.BOOLEAN -> defaultValue.toBoolean()
+                else -> error("Type ${param.type} has no default state")
             }
         }
     }

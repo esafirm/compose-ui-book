@@ -10,15 +10,5 @@ class ParameterTypes {
         fun isNumber(type: String): Boolean {
             return type == INT || type == FLOAT
         }
-
-        fun getDefaultStateForType(type: String): Any {
-            return when (type) {
-                STRING -> ""
-                INT -> 0
-                FLOAT -> 0F
-                BOOLEAN -> false
-                else -> error("No default value provided for $type")
-            }
-        }
     }
 }

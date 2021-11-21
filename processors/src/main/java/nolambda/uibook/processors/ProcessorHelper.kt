@@ -6,6 +6,7 @@ import nolambda.uibook.annotations.State
 import nolambda.uibook.annotations.UIBook
 import nolambda.uibook.annotations.code.CodeSpec
 import nolambda.uibook.processors.generator.BookCreatorMetaData
+import nolambda.uibook.processors.utils.DefaultValueResolver
 import nolambda.uibook.processors.utils.Logger
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.psi.KtFile
@@ -22,9 +23,11 @@ class ProcessorHelper(
 
     private val psiParameters by lazy {
         (psiElement as? KtFunction)?.valueParameters?.map {
+            val type = it.typeReference?.text.orEmpty()
             FunctionParameter(
                 name = it.name.orEmpty(),
-                type = it.typeReference?.text.orEmpty()
+                type = type,
+                defaultValue = DefaultValueResolver.getDefaultValueForType(type)
             )
         }.orEmpty()
     }
@@ -35,10 +38,13 @@ class ProcessorHelper(
                 null
             } else {
                 val state: State? = p.getAnnotation(State::class.java)
+                val type = p.asType().toString()
+                val defaultValue = state?.defaultValue ?: DefaultValueResolver.getDefaultValueForType(type)
+
                 FunctionParameter(
                     name = "",
-                    type = p.asType().toString(),
-                    defaultValue = state?.defaultValue
+                    type = type,
+                    defaultValue = defaultValue
                 )
             }
         }?.filterNotNull().orEmpty()

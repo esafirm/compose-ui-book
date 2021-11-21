@@ -8,6 +8,7 @@ android {
 
     buildFeatures {
         viewBinding true
+        compose true
     }
 
     defaultConfig {
@@ -33,6 +34,10 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.0.5'
+    }
 }
 
 dependencies {
@@ -54,6 +59,10 @@ dependencies {
 
     // Code editor and syntax highlight
     implementation 'com.github.kbiakov:CodeView-Android:1.3.2'
+
+    // Compose
+    api 'androidx.compose.ui:ui:1.0.5'
+    api 'androidx.compose.material:material:1.0.5'
 }
 
 task sourcesJar(type: Jar) {
