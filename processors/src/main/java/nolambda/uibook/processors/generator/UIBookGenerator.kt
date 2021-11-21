@@ -247,7 +247,7 @@ class UIBookGenerator(
         addStatement("setContent {")
 
         addFunctionCallWithParameter(book) { index, _ ->
-            addStatement("state${index}.value")
+            addStatement("state${index}.value,")
         }
 
         // End of setContent
