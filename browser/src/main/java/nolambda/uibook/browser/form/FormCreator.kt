@@ -46,8 +46,10 @@ class FormCreator(
 
             // Invalidate view
             val child = onUpdate(bookHost, viewState)
-            binding.containerComponent.removeAllViews()
-            binding.containerComponent.addView(child)
+            if (meta.isComposeFunction.not()) {
+                binding.containerComponent.removeAllViews()
+                binding.containerComponent.addView(child)
+            }
         }
 
         meta.parameters.forEachIndexed { index, parameter ->
@@ -56,8 +58,6 @@ class FormCreator(
             if (isAddSeparator) {
                 ViewSeparatorBinding.inflate(inflater, binding.containerInput, true)
             }
-
-            parameter.defaultValue
 
             val setViewStateForIndex = { value: Any ->
                 setViewState(index, value)

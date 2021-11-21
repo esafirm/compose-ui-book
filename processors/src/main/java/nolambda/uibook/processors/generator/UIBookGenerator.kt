@@ -7,12 +7,16 @@ import nolambda.uibook.annotations.FunctionParameter
 import nolambda.uibook.annotations.UIBook
 import nolambda.uibook.annotations.UIBookCons
 import nolambda.uibook.processors.getTypeMirror
+import nolambda.uibook.processors.utils.DefaultValueResolver
+import nolambda.uibook.processors.utils.Logger
 import java.io.File
 import java.util.*
+import com.squareup.kotlinpoet.buildCodeBlock as buildCodeBlock1
 
 class UIBookGenerator(
     private val destDirectory: String,
-    private val metaDatas: List<BookCreatorMetaData>
+    private val metaDatas: List<BookCreatorMetaData>,
+    private val logger: Logger
 ) {
 
     private val destDir by lazy {
@@ -25,10 +29,13 @@ class UIBookGenerator(
     private val viewClass = ClassName("android.view", "View")
     private val libraryClass = ClassName(UIBookCons.DEST_PACKAGE, UIBookCons.LIBRARY_CLASS_NAME)
     private val factoryInterface = ClassName(UIBookCons.DEST_PACKAGE, UIBookCons.FACTORY_INTERFACE_NAME)
+    private val composeViewClass = ClassName("androidx.compose.ui.platform", "ComposeView")
 
     fun generate() {
         val bookClassNames = metaDatas.map { book -> createBookFactory(book) }
         createLibrary(bookClassNames)
+
+        logger.note("Generated all books!")
     }
 
     private fun createLibrary(books: List<ClassName>) {
@@ -41,7 +48,7 @@ class UIBookGenerator(
                         FunSpec.builder("getBookFactories")
                             .addModifiers(KModifier.OVERRIDE)
                             .returns(list.parameterizedBy(factoryInterface))
-                            .addCode(buildCodeBlock {
+                            .addCode(buildCodeBlock1 {
                                 addStatement("// List all book factories in here")
                                 addStatement("return listOf(")
                                 indent()
@@ -60,7 +67,11 @@ class UIBookGenerator(
 
     private fun createBookFactory(creatorMetaData: BookCreatorMetaData): ClassName {
         val book = creatorMetaData.book
-        val safeClassName = book.name.split(" ").joinToString("") { it.capitalize(Locale.getDefault()) }
+        val safeClassName = book.name.split(" ").joinToString("") {
+            it.replaceFirstChar { char ->
+                if (char.isLowerCase()) char.titlecase(Locale.getDefault()) else char.toString()
+            }
+        }
         val className = "${safeClassName}BookFactory"
 
         val functionProperty = PropertySpec.builder("function", String::class)
@@ -71,7 +82,7 @@ class UIBookGenerator(
         val parametersProperty =
             PropertySpec.builder("parameters", List::class.parameterizedBy(FunctionParameter::class))
                 .addModifiers(KModifier.PRIVATE)
-                .delegate(buildCodeBlock {
+                .delegate(buildCodeBlock1 {
                     beginControlFlow("lazy(%T.NONE)", LazyThreadSafetyMode::class)
                     addStatement("listOf(")
                     indent()
@@ -86,15 +97,16 @@ class UIBookGenerator(
 
         val metaDataProperty = PropertySpec.builder("meta", BookMetaData::class)
             .addModifiers(KModifier.PRIVATE)
-            .delegate(buildCodeBlock {
+            .delegate(buildCodeBlock1 {
                 beginControlFlow("lazy(%T.NONE)", LazyThreadSafetyMode::class)
                 addStatement(
-                    "%T(%S, function, %S, %S, %S, parameters)",
+                    "%T(%S, function, %S, %S, %S, parameters, %L)",
                     BookMetaData::class,
                     book.name,
                     book.language,
                     book.functionName,
-                    book.packageName
+                    book.packageName,
+                    book.isComposeFunction
                 )
                 endControlFlow()
             })
@@ -102,6 +114,7 @@ class UIBookGenerator(
 
         val file = FileSpec.builder(UIBookCons.DEST_PACKAGE, className)
             .addImport(book.packageName, book.functionName)
+            .addComposeImportIfNeeded(book)
             .addType(
                 TypeSpec.classBuilder(className)
                     .addSuperinterface(factoryInterface)
@@ -112,11 +125,23 @@ class UIBookGenerator(
                         FunSpec.builder("getBook")
                             .addModifiers(KModifier.OVERRIDE)
                             .addParameter("config", bookConfigClass)
-                            .addCode(buildCodeBlock {
+                            .addCode(buildCodeBlock1 {
+
+                                if (book.isComposeFunction) {
+                                    addStatement("var composeView: %T? = null", composeViewClass)
+                                    addComposeStateHolder(book)
+                                }
+
                                 addStatement("// Initiate form creator")
-                                createFormCreatorConstructor(creatorMetaData)
+                                addFormCreatorConstructor(creatorMetaData)
                                 indent()
-                                createParametersDeclaration(book)
+
+                                if (book.isComposeFunction) {
+                                    addComposeBookFunctionCall(book)
+                                } else {
+                                    addBookFunctionCall(book)
+                                }
+
                                 unindent()
                                 addStatement("}")
                             })
@@ -139,7 +164,7 @@ class UIBookGenerator(
     }
 
     @Suppress("DEPRECATION")
-    private fun CodeBlock.Builder.createFormCreatorConstructor(book: BookCreatorMetaData) {
+    private fun CodeBlock.Builder.addFormCreatorConstructor(book: BookCreatorMetaData) {
         val formCreatorClass = ClassName("nolambda.uibook.browser.form", "FormCreator")
         val inputCreatorType = getTypeMirror { book.annotation.inputCreator }
         val stateProviderType = getTypeMirror { book.annotation.viewStateProvider }
@@ -163,13 +188,126 @@ class UIBookGenerator(
         addStatement("return %T(config, meta$statementInput$statementViewState).create {", formCreatorClass)
     }
 
-    private fun CodeBlock.Builder.createParametersDeclaration(book: BookMetaData) {
-        addStatement("${book.functionName}(")
-        indent()
+    private fun CodeBlock.Builder.addComposeStateHolder(book: BookMetaData) {
         book.parameters.forEachIndexed { index, param ->
+            val value = DefaultValueResolver.createDefaultState(param)
+            addStatement("val state${index} = mutableStateOf(${value})")
+        }
+    }
+
+    /**
+     * Add book function call to the code block
+     *
+     * Example:
+     *
+     * ## Catalogue
+     * fun BookHost.SampleText() { … }
+     *
+     * ## Result in code block
+     * SampleText()
+     *
+     * @param book - The book meta data
+     */
+    private fun CodeBlock.Builder.addBookFunctionCall(book: BookMetaData) {
+        addFunctionCallWithParameter(book) { index, param ->
             addStatement("it[${index}] as %T,", TypeMapper.mapToClassName(param.type))
         }
+    }
+
+    /**
+     * This is the same as [addBookFunctionCall] except it add ComposeView wrapper
+     * around the function call
+     *
+     * Example:
+     *
+     * ## Catalogue
+     * @Composable
+     * fun BookHost.SampleText() {}
+     *
+     * ## Result in code block
+     * ComposeView(context) {
+     *   setContent {
+     *     SampleText()
+     *   }
+     * }
+     *
+     * @param book - The book meta data
+     */
+    private fun CodeBlock.Builder.addComposeBookFunctionCall(book: BookMetaData) {
+        addStatement("// Assign input to state")
+        book.parameters.forEachIndexed { index, param ->
+            addStatement("state${index}.value = it[${index}] as ${TypeMapper.mapToClassName(param.type)}")
+        }
+
+        addStatement("// Instantiate view for the first time")
+        beginControlFlow("if (composeView == null)")
+        addStatement("composeView = %T(context).apply {", composeViewClass)
+
+        indent()
+        addStatement("setContent {")
+
+        addFunctionCallWithParameter(book) { index, _ ->
+            addStatement("state${index}.value,")
+        }
+
+        // End of setContent
+        addStatement("}")
         unindent()
-        addStatement(")")
+
+        // End of apply
+        addStatement("}")
+
+        // End of if
+        endControlFlow()
+
+        addStatement("composeView!!")
+    }
+
+    /**
+     * Base function for add function call with parameter
+     *
+     * Example:
+     *
+     * ## UI Book
+     * fun BookHost.Text(param1: String, param2: String) { … }
+     *
+     * ## Result
+     * Text(
+     *  parameterStatement1,
+     *  parameterStatement2,
+     * )
+     *
+     * @param book - meta data
+     * @param statementCreator - parameter statement creator
+     */
+    private fun CodeBlock.Builder.addFunctionCallWithParameter(
+        book: BookMetaData,
+        statementCreator: (Int, FunctionParameter) -> Unit
+    ) {
+        val hasParameter = book.parameters.isNotEmpty()
+        if (hasParameter) {
+            indent()
+            addStatement("${book.functionName}(")
+
+            indent()
+            book.parameters.forEachIndexed { index, param ->
+                statementCreator.invoke(index, param)
+            }
+            unindent()
+
+            addStatement(")")
+            unindent()
+        } else {
+            indent()
+            addStatement("${book.functionName}()")
+            unindent()
+        }
+    }
+
+    private fun FileSpec.Builder.addComposeImportIfNeeded(book: BookMetaData): FileSpec.Builder {
+        if (book.isComposeFunction) {
+            addImport("androidx.compose.runtime", "mutableStateOf")
+        }
+        return this
     }
 }

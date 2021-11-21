@@ -1,6 +1,7 @@
 package nolambda.uibook.processors.generator
 
 import com.squareup.kotlinpoet.ClassName
+import java.util.Locale
 
 object TypeMapper {
     fun mapToClassName(type: String): ClassName {
@@ -23,7 +24,8 @@ object TypeMapper {
             return ClassName("kotlin", type.substring(type.lastIndexOf(".") + 1))
         }
         if (javaTypes.any { it.equals(type, ignoreCase = true) }) {
-            return ClassName("kotlin", type.capitalize())
+            return ClassName("kotlin",
+                type.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })
         }
         return null
     }

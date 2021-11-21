@@ -71,7 +71,7 @@ class UIBookProcessor : AbstractProcessor() {
 
         val dest = processingEnv.options[OPTION_KAPT_KOTLIN_GENERATED]
             ?: throw IllegalStateException("Kapt option not exist")
-        UIBookGenerator(dest, metas).generate()
+        UIBookGenerator(dest, metas, logger).generate()
     }
 
 }

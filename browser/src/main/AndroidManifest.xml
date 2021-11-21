@@ -5,6 +5,7 @@
     <application>
         <activity
             android:name=".UIBookListActivity"
+            android:exported="true"
             android:theme="@style/Theme.UIBook">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -14,6 +15,7 @@
 
         <activity
             android:name=".UIBookActivity"
+            android:exported="false"
             android:theme="@style/Theme.UIBook.NoActionBar"
             android:windowSoftInputMode="adjustPan" />
     </application>

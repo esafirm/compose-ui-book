@@ -1,6 +1,5 @@
 plugins {
     id 'java-library'
-    id 'maven'
     id 'kotlin'
     id 'kotlin-kapt'
 }
@@ -24,6 +23,11 @@ compileTestKotlin {
     }
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
 task sourcesJar(type: Jar) {
     archiveClassifier.set('sources')
     from sourceSets.main.allSource
@@ -42,9 +46,5 @@ dependencies {
     implementation 'com.google.auto.service:auto-service:1.0-rc6'
     kapt 'com.google.auto.service:auto-service:1.0-rc6'
 
-    // Resolve unresolved references when building
-    compileOnly files("${System.getProperty('java.home')}/../lib/tools.jar")
-
-    // unused for the moment
     implementation "com.squareup:kotlinpoet:1.8.0"
 }

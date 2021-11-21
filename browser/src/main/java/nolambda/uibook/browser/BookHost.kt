@@ -8,7 +8,7 @@ class BookHost(
     val context: Context,
     val parent: ViewGroup
 ) {
-    val inflater by lazy(LazyThreadSafetyMode.NONE) {
+    val inflater: LayoutInflater by lazy(LazyThreadSafetyMode.NONE) {
         LayoutInflater.from(context)
     }
 }
