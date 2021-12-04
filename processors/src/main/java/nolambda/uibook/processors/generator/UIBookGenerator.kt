@@ -14,12 +14,12 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
+import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
 import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.annotations.FunctionParameter
 import nolambda.uibook.annotations.UIBook
 import nolambda.uibook.annotations.UIBookCons
-import nolambda.uibook.processors.getTypeMirror
 import nolambda.uibook.processors.utils.DefaultValueResolver
 import nolambda.uibook.processors.utils.Logger
 import java.util.*
@@ -173,12 +173,12 @@ class UIBookGenerator(
     @Suppress("DEPRECATION")
     private fun CodeBlock.Builder.addFormCreatorConstructor(book: BookCreatorMetaData) {
         val formCreatorClass = ClassName("nolambda.uibook.browser.form", "FormCreator")
-        val inputCreatorType = getTypeMirror { book.annotation.inputCreator }
-        val stateProviderType = getTypeMirror { book.annotation.viewStateProvider }
+        val inputCreatorType = book.customComponent.inputCreator?.toTypeName()
+        val stateProviderType = book.customComponent.viewStateProvider?.toTypeName()
 
         val defaultTypeName = UIBook.Default::class.asTypeName()
-        val isDefaultInputCreator = inputCreatorType.asTypeName() == defaultTypeName
-        val isDefaultViewStateProvider = stateProviderType.asTypeName() == defaultTypeName
+        val isDefaultInputCreator = inputCreatorType == null || inputCreatorType == defaultTypeName
+        val isDefaultViewStateProvider = stateProviderType == null || stateProviderType == defaultTypeName
 
         var statementInput = ""
         if (!isDefaultInputCreator) {

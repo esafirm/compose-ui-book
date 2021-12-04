@@ -2,21 +2,24 @@ package nolambda.uibook.processors
 
 import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.getAnnotationsByType
+import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
+import com.google.devtools.ksp.symbol.KSType
 import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.annotations.FunctionParameter
 import nolambda.uibook.annotations.State
 import nolambda.uibook.annotations.UIBook
 import nolambda.uibook.annotations.code.CodeSpec
 import nolambda.uibook.processors.generator.BookCreatorMetaData
+import nolambda.uibook.processors.generator.CustomComponent
 import nolambda.uibook.processors.utils.DefaultValueResolver
 import nolambda.uibook.processors.utils.Logger
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtNamedFunction
-import javax.lang.model.element.ExecutableElement
 
+@KspExperimental
 class ProcessorHelper(
     private val el: KSFunctionDeclaration,
     private val psiElement: PsiElement,
@@ -35,21 +38,17 @@ class ProcessorHelper(
     }
 
     private val elParameters by lazy {
-        (el as? ExecutableElement)?.parameters?.mapIndexed { index, p ->
-            if (index == 0) {
-                null
-            } else {
-                val state: State? = p.getAnnotation(State::class.java)
-                val type = p.asType().toString()
-                val defaultValue = state?.defaultValue ?: DefaultValueResolver.getDefaultValueForType(type)
+        el.parameters.map { p ->
+            val state: State? = p.getAnnotationsByType(State::class).firstOrNull()
+            val type = p.type.toString()
+            val defaultValue = state?.defaultValue ?: DefaultValueResolver.getDefaultValueForType(type)
 
-                FunctionParameter(
-                    name = "",
-                    type = type,
-                    defaultValue = defaultValue
-                )
-            }
-        }?.filterNotNull().orEmpty()
+            FunctionParameter(
+                name = "",
+                type = type,
+                defaultValue = defaultValue
+            )
+        }
     }
 
     @KspExperimental
@@ -71,17 +70,34 @@ class ProcessorHelper(
 
         return BookCreatorMetaData(
             annotation = annotation,
+            customComponent = getCustomComponent(),
             book = BookMetaData(
                 name = annotation.name,
                 function = getFunctionCode(codeSpec, psiMethod),
                 language = codeSpec?.language ?: "kotlin",
-                functionName = el.simpleName.toString(),
+                functionName = el.simpleName.asString(),
                 packageName = ktFile.packageName,
                 parameters = parameters,
                 isComposeFunction = psiMethod.isComposableAnnotationExists()
             ),
             originatingFile = el.containingFile!!
         )
+    }
+
+    private fun getCustomComponent(): CustomComponent {
+        val ksAnnotation = el.annotations.firstOrNull {
+            it.shortName.asString() == UIBook::class.simpleName
+        }
+
+        return CustomComponent(
+            inputCreator = ksAnnotation.argumentAsKtype(1),
+            viewStateProvider = ksAnnotation.argumentAsKtype(2),
+        )
+    }
+
+    private fun KSAnnotation?.argumentAsKtype(index: Int): KSType? {
+        if (this == null) return null
+        return arguments.getOrNull(index)?.value as? KSType
     }
 
     private fun getFunctionCode(codeSpec: CodeSpec?, ktFunction: KtNamedFunction): String {
@@ -106,9 +122,8 @@ class ProcessorHelper(
 
     private fun isTheSame(): Boolean {
         if (psiElement !is KtFunction) return false
-        if (el !is ExecutableElement) return false
-        if (el.simpleName.toString() != psiElement.name) return false
-        if ((el.parameters.size - 1) != psiElement.valueParameters.size) return false
+        if (el.simpleName.asString() != psiElement.name) return false
+        if (el.parameters.size != psiElement.valueParameters.size) return false
 
         val isParameterTheSame = psiParameters.mapIndexed { index, t ->
             // TODO: more accurate way to check type
@@ -116,7 +131,7 @@ class ProcessorHelper(
         }.all { it }
 
         if (!isParameterTheSame) {
-            logger.error("There's a parameter mistmatch that might be false positive: ${el.simpleName}")
+            logger.error("There's a parameter mistmatch that might be false positive: ${el.simpleName.asString()}")
         }
 
         return isParameterTheSame
