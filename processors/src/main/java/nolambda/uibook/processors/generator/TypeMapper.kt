@@ -1,15 +1,15 @@
 package nolambda.uibook.processors.generator
 
 import com.squareup.kotlinpoet.ClassName
-import java.util.Locale
+import java.util.*
 
 object TypeMapper {
     fun mapToClassName(type: String): ClassName {
-        val javaClassName = convertJavaType(type)
+        val javaClassName = convertFromJavaType(type)
         if (javaClassName != null) {
             return javaClassName
         }
-        error("Can't handle type: $type")
+        return ClassName("kotlin", type)
     }
 
     private val javaTypes = listOf(
@@ -19,7 +19,7 @@ object TypeMapper {
         "float"
     )
 
-    private fun convertJavaType(type: String): ClassName? {
+    private fun convertFromJavaType(type: String): ClassName? {
         if (type.contains("java.lang", ignoreCase = true)) {
             return ClassName("kotlin", type.substring(type.lastIndexOf(".") + 1))
         }

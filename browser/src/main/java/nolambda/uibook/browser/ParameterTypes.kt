@@ -2,10 +2,10 @@ package nolambda.uibook.browser
 
 class ParameterTypes {
     companion object {
-        const val STRING = "java.lang.String"
-        const val INT = "int"
-        const val FLOAT = "float"
-        const val BOOLEAN = "boolean"
+        const val STRING = "String"
+        const val INT = "Int"
+        const val FLOAT = "Float"
+        const val BOOLEAN = "Boolean"
 
         fun isNumber(type: String): Boolean {
             return type == INT || type == FLOAT

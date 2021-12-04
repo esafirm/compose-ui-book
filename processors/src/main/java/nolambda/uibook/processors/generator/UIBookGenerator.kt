@@ -1,29 +1,35 @@
 package nolambda.uibook.processors.generator
 
-import com.squareup.kotlinpoet.*
+import com.google.devtools.ksp.processing.CodeGenerator
+import com.google.devtools.ksp.processing.Dependencies
+import com.google.devtools.ksp.symbol.KSFile
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.asTypeName
+import com.squareup.kotlinpoet.buildCodeBlock
+import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
+import com.squareup.kotlinpoet.ksp.toTypeName
+import com.squareup.kotlinpoet.ksp.writeTo
 import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.annotations.FunctionParameter
 import nolambda.uibook.annotations.UIBook
 import nolambda.uibook.annotations.UIBookCons
-import nolambda.uibook.processors.getTypeMirror
 import nolambda.uibook.processors.utils.DefaultValueResolver
 import nolambda.uibook.processors.utils.Logger
-import java.io.File
 import java.util.*
-import com.squareup.kotlinpoet.buildCodeBlock as buildCodeBlock1
 
+@KotlinPoetKspPreview
 class UIBookGenerator(
-    private val destDirectory: String,
+    private val codeGenerator: CodeGenerator,
     private val metaDatas: List<BookCreatorMetaData>,
     private val logger: Logger
 ) {
-
-    private val destDir by lazy {
-        val destDir = File(destDirectory)
-        if (!destDir.exists()) destDir.mkdirs()
-        destDir
-    }
 
     private val bookConfigClass = ClassName("nolambda.uibook.factory", "BookConfig")
     private val viewClass = ClassName("android.view", "View")
@@ -33,12 +39,13 @@ class UIBookGenerator(
 
     fun generate() {
         val bookClassNames = metaDatas.map { book -> createBookFactory(book) }
-        createLibrary(bookClassNames)
+        val allFiles = metaDatas.map { it.originatingFile }.distinct()
+        createLibrary(bookClassNames, allFiles)
 
         logger.note("Generated all books!")
     }
 
-    private fun createLibrary(books: List<ClassName>) {
+    private fun createLibrary(books: List<ClassName>, allFiles: List<KSFile>) {
         val list = ClassName("kotlin.collections", "List")
         val spec = FileSpec.builder(UIBookCons.DEST_PACKAGE, UIBookCons.LIBRARY_IMPL_CLASS_NAME)
             .addType(
@@ -48,7 +55,7 @@ class UIBookGenerator(
                         FunSpec.builder("getBookFactories")
                             .addModifiers(KModifier.OVERRIDE)
                             .returns(list.parameterizedBy(factoryInterface))
-                            .addCode(buildCodeBlock1 {
+                            .addCode(buildCodeBlock {
                                 addStatement("// List all book factories in here")
                                 addStatement("return listOf(")
                                 indent()
@@ -62,7 +69,7 @@ class UIBookGenerator(
                     ).build()
             )
 
-        spec.build().writeTo(destDir)
+        spec.build().writeTo(codeGenerator, Dependencies(true, *allFiles.toTypedArray()))
     }
 
     private fun createBookFactory(creatorMetaData: BookCreatorMetaData): ClassName {
@@ -82,7 +89,7 @@ class UIBookGenerator(
         val parametersProperty =
             PropertySpec.builder("parameters", List::class.parameterizedBy(FunctionParameter::class))
                 .addModifiers(KModifier.PRIVATE)
-                .delegate(buildCodeBlock1 {
+                .delegate(buildCodeBlock {
                     beginControlFlow("lazy(%T.NONE)", LazyThreadSafetyMode::class)
                     addStatement("listOf(")
                     indent()
@@ -97,7 +104,7 @@ class UIBookGenerator(
 
         val metaDataProperty = PropertySpec.builder("meta", BookMetaData::class)
             .addModifiers(KModifier.PRIVATE)
-            .delegate(buildCodeBlock1 {
+            .delegate(buildCodeBlock {
                 beginControlFlow("lazy(%T.NONE)", LazyThreadSafetyMode::class)
                 addStatement(
                     "%T(%S, function, %S, %S, %S, parameters, %L)",
@@ -125,7 +132,7 @@ class UIBookGenerator(
                         FunSpec.builder("getBook")
                             .addModifiers(KModifier.OVERRIDE)
                             .addParameter("config", bookConfigClass)
-                            .addCode(buildCodeBlock1 {
+                            .addCode(buildCodeBlock {
 
                                 if (book.isComposeFunction) {
                                     addStatement("var composeView: %T? = null", composeViewClass)
@@ -158,7 +165,7 @@ class UIBookGenerator(
                     .build()
             ).build()
 
-        file.writeTo(destDir)
+        file.writeTo(codeGenerator, Dependencies(aggregating = true, creatorMetaData.originatingFile))
 
         return ClassName(UIBookCons.DEST_PACKAGE, className)
     }
@@ -166,12 +173,12 @@ class UIBookGenerator(
     @Suppress("DEPRECATION")
     private fun CodeBlock.Builder.addFormCreatorConstructor(book: BookCreatorMetaData) {
         val formCreatorClass = ClassName("nolambda.uibook.browser.form", "FormCreator")
-        val inputCreatorType = getTypeMirror { book.annotation.inputCreator }
-        val stateProviderType = getTypeMirror { book.annotation.viewStateProvider }
+        val inputCreatorType = book.customComponent.inputCreator?.toTypeName()
+        val stateProviderType = book.customComponent.viewStateProvider?.toTypeName()
 
         val defaultTypeName = UIBook.Default::class.asTypeName()
-        val isDefaultInputCreator = inputCreatorType.asTypeName() == defaultTypeName
-        val isDefaultViewStateProvider = stateProviderType.asTypeName() == defaultTypeName
+        val isDefaultInputCreator = inputCreatorType == null || inputCreatorType == defaultTypeName
+        val isDefaultViewStateProvider = stateProviderType == null || stateProviderType == defaultTypeName
 
         var statementInput = ""
         if (!isDefaultInputCreator) {

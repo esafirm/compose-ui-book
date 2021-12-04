@@ -42,7 +42,7 @@ fun BookHost.createTextView(text: String): TextView {
 }
 
 @UIBook(
-    name = "TextViewCustom",
+    name = "Custom Input",
     inputCreator = ButtonInput::class
 )
 fun BookHost.createTextViewCustom(text: String): TextView {

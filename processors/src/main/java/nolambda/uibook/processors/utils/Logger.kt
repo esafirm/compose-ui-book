@@ -1,18 +1,13 @@
 package nolambda.uibook.processors.utils
 
-import javax.annotation.processing.ProcessingEnvironment
-import javax.tools.Diagnostic
+import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 
-class Logger(private val env: ProcessingEnvironment) {
+class Logger(private val env: SymbolProcessorEnvironment) {
     fun error(message: String) {
-        print(Diagnostic.Kind.ERROR, message)
+        env.logger.error(message)
     }
 
     fun note(message: String) {
-        print(Diagnostic.Kind.NOTE, message)
-    }
-
-    private fun print(kind: Diagnostic.Kind, message: String) {
-        env.messager.printMessage(kind, message)
+        env.logger.info(message)
     }
 }
