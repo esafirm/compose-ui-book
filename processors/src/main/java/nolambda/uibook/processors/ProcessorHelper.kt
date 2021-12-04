@@ -1,5 +1,8 @@
 package nolambda.uibook.processors
 
+import com.google.devtools.ksp.KspExperimental
+import com.google.devtools.ksp.getAnnotationsByType
+import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.annotations.FunctionParameter
 import nolambda.uibook.annotations.State
@@ -12,11 +15,10 @@ import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtNamedFunction
-import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 
 class ProcessorHelper(
-    private val el: Element,
+    private val el: KSFunctionDeclaration,
     private val psiElement: PsiElement,
     private val logger: Logger
 ) {
@@ -50,12 +52,13 @@ class ProcessorHelper(
         }?.filterNotNull().orEmpty()
     }
 
+    @KspExperimental
     fun createCreatorMetaData(ktFile: KtFile): BookCreatorMetaData? {
         if (isTheSame().not()) return null
 
-        val codeSpec: CodeSpec? = el.getAnnotation(CodeSpec::class.java)
-        val annotation = el.getAnnotation(UIBook::class.java)
-        val method = el as ExecutableElement
+        val codeSpec: CodeSpec? = el.getAnnotationsByType(CodeSpec::class).firstOrNull()
+        val annotation = el.getAnnotationsByType(UIBook::class).first()
+
         val psiMethod = psiElement as KtNamedFunction
 
         val parameters = elParameters.zip(psiParameters) { elParam, psiParam ->
@@ -72,11 +75,12 @@ class ProcessorHelper(
                 name = annotation.name,
                 function = getFunctionCode(codeSpec, psiMethod),
                 language = codeSpec?.language ?: "kotlin",
-                functionName = method.simpleName.toString(),
+                functionName = el.simpleName.toString(),
                 packageName = ktFile.packageName,
                 parameters = parameters,
                 isComposeFunction = psiMethod.isComposableAnnotationExists()
-            )
+            ),
+            originatingFile = el.containingFile!!
         )
     }
 
