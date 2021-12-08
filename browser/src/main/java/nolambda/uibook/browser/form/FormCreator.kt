@@ -3,11 +3,14 @@ package nolambda.uibook.browser.form
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
 import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.browser.BookForm
 import nolambda.uibook.browser.BookHost
+import nolambda.uibook.browser.InputData
 import nolambda.uibook.browser.R
 import nolambda.uibook.browser.databinding.ViewFormBinding
 import nolambda.uibook.browser.databinding.ViewSeparatorBinding
@@ -36,9 +39,7 @@ class FormCreator(
 
     private val bookHost by lazy { BookHost(context, binding.containerComponent) }
 
-    private fun createInputs(onUpdate: OnUpdate): ViewState {
-        val viewState: Array<Any> = viewStateProvider.createViewState(meta)
-
+    private fun createInputViews(viewState: Array<Any>, onUpdate: OnUpdate): List<View> {
         val setViewState = { index: Int, value: Any ->
             viewState[index] = value
 
@@ -50,7 +51,7 @@ class FormCreator(
             }
         }
 
-        meta.parameters.forEachIndexed { index, parameter ->
+        return meta.parameters.mapIndexed { index, parameter ->
 
             val isAddSeparator = index != 0
             if (isAddSeparator) {
@@ -69,10 +70,8 @@ class FormCreator(
                 setViewState = setViewStateForIndex
             )
 
-            binding.containerInput.addView(input)
+            input
         }
-
-        return viewState
     }
 
     private fun setupMeasurementView(): MeasurementOverlayView {
@@ -116,48 +115,35 @@ class FormCreator(
         return isEnabled.not()
     }
 
-//    fun create(onUpdate: OnUpdate): View {
-//        val measurementView = setupMeasurementView()
-//        setupToolbar(measurementView)
-//
-//        val viewState = createInputs(onUpdate)
-//
-//        // First render
-//        binding.containerComponent.addView(onUpdate(bookHost, viewState))
-//
-//        val functionCode = meta.function.replace("return ", "")
-//            .removeSurrounding("{", "}")
-//            .trimIndent()
-//
-//        binding.txtCode.setOptions(
-//            Options.get(context)
-//                .withCode(functionCode)
-//                .withLanguage("kotlin")
-//                .withTheme(ColorTheme.MONOKAI)
-//        )
-//
-//        binding.tab.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-//            override fun onTabSelected(tab: TabLayout.Tab) {
-//                val isSourceCode = tab.position == 0
-//                binding.txtCode.show(isSourceCode, animate = true)
-//                binding.containerInput.show(!isSourceCode, animate = true)
-//            }
-//
-//            override fun onTabUnselected(tab: TabLayout.Tab?) {
-//            }
-//
-//            override fun onTabReselected(tab: TabLayout.Tab?) {
-//            }
-//        })
-//
-//        return binding.root
-//    }
-
     fun create(onUpdate: OnUpdate): View {
-        val viewState = createInputs(onUpdate)
+        val viewState: Array<Any> = viewStateProvider.createViewState(meta)
+        val composeInputCreator = DefaultComposeInputCreator()
+
         return ComposeView(context).apply {
             setContent {
-                BookForm(metaData = meta, view = onUpdate(bookHost, viewState))
+
+                val view = remember { mutableStateOf(onUpdate(bookHost, viewState)) }
+                val setViewState = remember {
+                    { index: Int, value: Any ->
+                        viewState[index] = value
+
+                        // Invalidate view
+                        val child = onUpdate(bookHost, viewState)
+                        if (meta.isComposeFunction.not()) {
+                            view.value = child
+                        }
+                    }
+                }
+
+                BookForm(
+                    metaData = meta,
+                    bookView = view.value,
+                    inputData = InputData(
+                        viewState = viewState,
+                        inputCreator = composeInputCreator,
+                        setViewState = setViewState
+                    )
+                )
             }
         }
     }

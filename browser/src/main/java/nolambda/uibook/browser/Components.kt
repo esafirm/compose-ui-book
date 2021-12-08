@@ -1,6 +1,8 @@
 package nolambda.uibook.browser
 
 import android.view.View
+import android.widget.FrameLayout
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -8,6 +10,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
@@ -34,11 +38,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.children
 import com.wakaztahir.codeeditor.highlight.model.CodeLang
 import com.wakaztahir.codeeditor.highlight.prettify.PrettifyParser
 import com.wakaztahir.codeeditor.highlight.theme.CodeThemeType
 import com.wakaztahir.codeeditor.highlight.utils.parseCodeAsAnnotatedString
 import nolambda.uibook.annotations.BookMetaData
+import nolambda.uibook.browser.form.ComposeInputCreator
 
 @Composable
 fun BookList(bookNames: List<String>) {
@@ -79,12 +85,49 @@ private fun ClickableText(
     )
 }
 
+class InputData(
+    val viewState: Array<Any>,
+    val inputCreator: ComposeInputCreator,
+    val setViewState: (Int, Any) -> Unit
+)
+
+@Composable
+private fun PixelGrid() {
+    Canvas(modifier = Modifier.fillMaxSize()) {
+        val canvasWidth = size.width
+        val canvasHeight = size.height
+
+        val gridSize = 12
+
+        repeat(gridSize) {
+            val endHeight = canvasHeight / gridSize * it
+            val endWidth = canvasWidth / gridSize * it
+
+            drawLine(
+                start = Offset(x = endWidth, y = 0F),
+                end = Offset(x = endWidth, y = canvasHeight),
+                color = Color.Gray,
+                alpha = 0.2F
+            )
+
+            drawLine(
+                start = Offset(x = canvasWidth, y = endHeight),
+                end = Offset(x = 0F, y = endHeight),
+                color = Color.Gray,
+                alpha = 0.2F
+            )
+        }
+    }
+}
+
 @Composable
 fun BookForm(
     metaData: BookMetaData,
-    view: View
+    bookView: View,
+    inputData: InputData
 ) {
     val selectedIndex = remember { mutableStateOf(0) }
+    val context = LocalContext.current
     Column {
         TopAppBar {
             Row {
@@ -97,7 +140,30 @@ fun BookForm(
                 .fillMaxWidth()
                 .weight(1F)
         ) {
-            AndroidView(factory = { view }, modifier = Modifier.align(Alignment.Center))
+            PixelGrid()
+            AndroidView(
+                factory = {
+                    if (metaData.isComposeFunction) {
+                        bookView
+                    } else {
+                        // Add container so it can be easily updated
+                        FrameLayout(context).apply {
+                            addView(bookView)
+                        }
+                    }
+                },
+                modifier = Modifier.align(Alignment.Center),
+                update = { currentView ->
+                    if (metaData.isComposeFunction.not()) {
+                        currentView as FrameLayout
+                        val child = currentView.children.first()
+                        if (child != bookView) {
+                            currentView.removeAllViewsInLayout()
+                            currentView.addView(bookView)
+                        }
+                    }
+                }
+            )
         }
 
         Column(modifier = Modifier.weight(1F)) {
@@ -111,8 +177,35 @@ fun BookForm(
             if (selectedIndex.value == 0) {
                 SourceCodeView(rawSourceCode = metaData.function)
             } else {
-                Text(text = "Modifier view")
+                InputView(metaData = metaData, inputData = inputData)
             }
+        }
+    }
+}
+
+@Composable
+fun InputView(
+    metaData: BookMetaData,
+    inputData: InputData
+) {
+    val inputCreator = inputData.inputCreator
+    val viewState = inputData.viewState
+    val setViewState = inputData.setViewState
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        metaData.parameters.forEachIndexed { index, parameter ->
+
+            inputCreator.CreateInput(
+                parameter = parameter,
+                defaultState = viewState[index],
+                setViewState = { newViewState -> setViewState(index, newViewState) },
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
