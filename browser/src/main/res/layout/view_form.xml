@@ -69,13 +69,5 @@
             android:padding="@dimen/spacing16"
             android:visibility="gone" />
 
-        <io.github.kbiakov.codeview.CodeView
-            android:id="@+id/txt_code"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/tab"
-            android:layout_alignParentBottom="true"
-            android:background="#272822" />
-
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
