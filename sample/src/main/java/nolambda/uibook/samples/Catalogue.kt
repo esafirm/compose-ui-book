@@ -61,14 +61,14 @@ fun BookHost.createInput(input: String, hint: String): View {
 
 @UIBook(name = "TextWithImage")
 fun BookHost.createTextWithImage(title: String): View {
-    val binding = ItemTextImageBinding.inflate(inflater, parent, false)
+    val binding = ItemTextImageBinding.inflate(inflater, null, false)
     binding.txtTitle.text = title
     return binding.root
 }
 
 @UIBook(name = "This is a name")
 fun BookHost.createBooleanText(isBold: Boolean): View {
-    val binding = ItemWithBooleanBinding.inflate(inflater, parent, false)
+    val binding = ItemWithBooleanBinding.inflate(inflater, null, false)
     binding.txtSubtitle.setTypeface(
         null, if (isBold) {
             Typeface.BOLD

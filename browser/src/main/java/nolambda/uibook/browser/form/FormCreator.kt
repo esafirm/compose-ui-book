@@ -1,13 +1,11 @@
 package nolambda.uibook.browser.form
 
-import android.view.LayoutInflater
 import android.view.View
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
 import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.browser.BookHost
-import nolambda.uibook.browser.databinding.ViewFormBinding
 import nolambda.uibook.browser.viewstate.DefaultViewStateProvider
 import nolambda.uibook.browser.viewstate.ViewStateProvider
 import nolambda.uibook.components.bookform.BookForm
@@ -26,11 +24,7 @@ class FormCreator(
 ) {
 
     private val context = config.context()
-
-    private val inflater by lazy { LayoutInflater.from(context) }
-    private val binding by lazy { ViewFormBinding.inflate(inflater) }
-
-    private val bookHost by lazy { BookHost(context, binding.containerComponent) }
+    private val bookHost by lazy { BookHost(context) }
 
     fun create(onUpdate: OnUpdate): View {
         val viewState: Array<Any> = viewStateProvider.createViewState(meta)

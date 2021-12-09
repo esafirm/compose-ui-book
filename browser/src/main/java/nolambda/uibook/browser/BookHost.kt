@@ -5,8 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 
 class BookHost(
-    val context: Context,
-    val parent: ViewGroup
+    val context: Context
 ) {
     val inflater: LayoutInflater by lazy(LazyThreadSafetyMode.NONE) {
         LayoutInflater.from(context)
