@@ -23,10 +23,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar">
 
-        <nolambda.uibook.browser.PixelGridView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
         <RelativeLayout
             android:id="@+id/container_component"
             android:layout_width="match_parent"

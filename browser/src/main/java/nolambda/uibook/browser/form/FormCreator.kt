@@ -8,9 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
 import nolambda.uibook.annotations.BookMetaData
-import nolambda.uibook.browser.BookForm
 import nolambda.uibook.browser.BookHost
-import nolambda.uibook.browser.InputData
 import nolambda.uibook.browser.R
 import nolambda.uibook.browser.databinding.ViewFormBinding
 import nolambda.uibook.browser.databinding.ViewSeparatorBinding
@@ -18,6 +16,8 @@ import nolambda.uibook.browser.measurement.MeasurementHelperImpl
 import nolambda.uibook.browser.measurement.MeasurementOverlayView
 import nolambda.uibook.browser.viewstate.DefaultViewStateProvider
 import nolambda.uibook.browser.viewstate.ViewStateProvider
+import nolambda.uibook.components.bookform.BookForm
+import nolambda.uibook.components.bookform.InputData
 import nolambda.uibook.factory.BookConfig
 
 
@@ -35,7 +35,6 @@ class FormCreator(
 
     private val inflater by lazy { LayoutInflater.from(context) }
     private val binding by lazy { ViewFormBinding.inflate(inflater) }
-    private val componentCreator by lazy { ComponentCreator(context) }
 
     private val bookHost by lazy { BookHost(context, binding.containerComponent) }
 
@@ -72,13 +71,6 @@ class FormCreator(
 
             input
         }
-    }
-
-    private fun setupMeasurementView(): MeasurementOverlayView {
-        val measurementHelper = MeasurementHelperImpl(binding.containerComponent)
-        val measurementView = componentCreator.createMeasurementView(measurementHelper)
-        binding.containerTop.addView(measurementView)
-        return measurementView
     }
 
     private fun setupToolbar(measurementView: MeasurementOverlayView) {
@@ -136,7 +128,7 @@ class FormCreator(
                 }
 
                 BookForm(
-                    metaData = meta,
+                    meta = meta,
                     bookView = view.value,
                     inputData = InputData(
                         viewState = viewState,

@@ -1,24 +1,28 @@
-package nolambda.uibook.browser
+package nolambda.uibook.components.bookform
 
+import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.ripple.rememberRipple
@@ -28,163 +32,126 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.view.children
 import com.wakaztahir.codeeditor.highlight.model.CodeLang
 import com.wakaztahir.codeeditor.highlight.prettify.PrettifyParser
 import com.wakaztahir.codeeditor.highlight.theme.CodeThemeType
 import com.wakaztahir.codeeditor.highlight.utils.parseCodeAsAnnotatedString
 import nolambda.uibook.annotations.BookMetaData
-import nolambda.uibook.browser.form.ComposeInputCreator
+import nolambda.uibook.browser.R
+import nolambda.uibook.browser.form.ComponentCreator
+import nolambda.uibook.browser.measurement.MeasurementHelperImpl
 
 @Composable
-fun BookList(bookNames: List<String>) {
-    val context = LocalContext.current
-    Column {
-        TopAppBar {
-            Text(
-                text = "UIBook",
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-        }
-        LazyColumn {
-            itemsIndexed(bookNames) { index, name ->
-                ClickableText(text = name) {
-                    UIBookActivity.start(context, index)
-                }
+private fun ColumnScope.Toolbar(
+    name: String,
+    isMeasurementEnabled: Boolean,
+    onToggleClick: () -> Unit
+) {
+    TopAppBar {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = name, fontSize = 18.sp, modifier = Modifier.padding(16.dp))
+
+            val resource = if (isMeasurementEnabled) {
+                R.drawable.ic_measurement_enabled
+            } else {
+                R.drawable.ic_measurement_disabled
+            }
+            val image = painterResource(id = resource)
+
+            Button(onClick = onToggleClick) {
+                Image(painter = image, contentDescription = "Toggle Measurement")
             }
         }
     }
 }
 
 @Composable
-private fun ClickableText(
-    text: String,
-    textColor: Color = Color.Black,
-    onClick: () -> Unit
+private fun BoxScope.BookViewContainer(
+    meta: BookMetaData,
+    bookView: View,
+    isMeasurementEnabled: Boolean
 ) {
-    Text(
-        text = text, color = textColor, modifier = Modifier
-            .fillMaxWidth()
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(),
-                onClick = onClick
-            )
-            .padding(16.dp)
+    val context = LocalContext.current
+
+    AndroidView(
+        factory = {
+            if (meta.isComposeFunction) {
+                bookView
+            } else {
+                // Add container so it can be easily updated
+                FrameLayout(context).apply {
+                    layoutParams = fillMaxSize()
+
+                    addMeasurementHelper()
+                    addView(FrameLayout(context).apply {
+                        layoutParams = wrapSize().apply {
+                            gravity = Gravity.CENTER
+                        }
+
+                        addView(bookView)
+                    })
+                }
+            }
+        },
+        modifier = Modifier.align(Alignment.Center),
+        update = { outerView ->
+            if (meta.isComposeFunction.not()) {
+
+                val container = (outerView as ViewGroup).getChildAt(1) as FrameLayout
+                val child = container.getChildAt(0)
+
+                if (child != bookView) {
+                    container.removeView(child)
+                    container.addView(bookView)
+                }
+
+                val measurementView = outerView.getChildAt(1)
+                measurementView.visibility = if (isMeasurementEnabled) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
+            }
+        }
     )
 }
 
-class InputData(
-    val viewState: Array<Any>,
-    val inputCreator: ComposeInputCreator,
-    val setViewState: (Int, Any) -> Unit
-)
+private fun ViewGroup.fillMaxSize(): FrameLayout.LayoutParams {
+    return FrameLayout.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT
+    )
+}
 
-@Composable
-private fun PixelGrid() {
-    Canvas(modifier = Modifier.fillMaxSize()) {
-        val canvasWidth = size.width
-        val canvasHeight = size.height
+private fun ViewGroup.wrapSize(): FrameLayout.LayoutParams {
+    return FrameLayout.LayoutParams(
+        ViewGroup.LayoutParams.WRAP_CONTENT,
+        ViewGroup.LayoutParams.WRAP_CONTENT,
+    )
+}
 
-        val gridSize = 12
-
-        repeat(gridSize) {
-            val endHeight = canvasHeight / gridSize * it
-            val endWidth = canvasWidth / gridSize * it
-
-            drawLine(
-                start = Offset(x = endWidth, y = 0F),
-                end = Offset(x = endWidth, y = canvasHeight),
-                color = Color.Gray,
-                alpha = 0.2F
-            )
-
-            drawLine(
-                start = Offset(x = canvasWidth, y = endHeight),
-                end = Offset(x = 0F, y = endHeight),
-                color = Color.Gray,
-                alpha = 0.2F
-            )
-        }
-    }
+private fun ViewGroup.addMeasurementHelper() {
+    val componentCreator = ComponentCreator(context)
+    val measurementHelper = MeasurementHelperImpl(this)
+    val measurementView = componentCreator.createMeasurementView(measurementHelper)
+    addView(measurementView)
 }
 
 @Composable
-fun BookForm(
-    metaData: BookMetaData,
-    bookView: View,
-    inputData: InputData
-) {
-    val selectedIndex = remember { mutableStateOf(0) }
-    val context = LocalContext.current
-    Column {
-        TopAppBar {
-            Row {
-                Text(text = metaData.name, fontSize = 18.sp, modifier = Modifier.padding(16.dp))
-            }
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1F)
-        ) {
-            PixelGrid()
-            AndroidView(
-                factory = {
-                    if (metaData.isComposeFunction) {
-                        bookView
-                    } else {
-                        // Add container so it can be easily updated
-                        FrameLayout(context).apply {
-                            addView(bookView)
-                        }
-                    }
-                },
-                modifier = Modifier.align(Alignment.Center),
-                update = { currentView ->
-                    if (metaData.isComposeFunction.not()) {
-                        currentView as FrameLayout
-                        val child = currentView.children.first()
-                        if (child != bookView) {
-                            currentView.removeAllViewsInLayout()
-                            currentView.addView(bookView)
-                        }
-                    }
-                }
-            )
-        }
-
-        Column(modifier = Modifier.weight(1F)) {
-            TabView(
-                titles = listOf("Source Code".uppercase(), "Modifier".uppercase()),
-                selectedIndex = selectedIndex.value
-            ) {
-                selectedIndex.value = it
-            }
-
-            if (selectedIndex.value == 0) {
-                SourceCodeView(rawSourceCode = metaData.function)
-            } else {
-                InputView(metaData = metaData, inputData = inputData)
-            }
-        }
-    }
-}
-
-@Composable
-fun InputView(
+private fun InputView(
     metaData: BookMetaData,
     inputData: InputData
 ) {
@@ -212,7 +179,7 @@ fun InputView(
 
 
 @Composable
-fun SourceCodeView(
+private fun SourceCodeView(
     rawSourceCode: String
 ) {
     val verticalScrollState = rememberScrollState()
@@ -237,7 +204,9 @@ fun SourceCodeView(
     }
 
     Text(
-        parsedCode, modifier = Modifier
+        parsedCode,
+        fontFamily = FontFamily.Monospace,
+        modifier = Modifier
             .fillMaxSize()
             .background(colorResource(id = R.color.monokai_background))
             .padding(horizontal = 16.dp)
@@ -248,7 +217,7 @@ fun SourceCodeView(
 }
 
 @Composable
-fun TabView(
+private fun TabView(
     titles: List<String>,
     selectedIndex: Int = 0,
     onClick: (Int) -> Unit,
@@ -294,3 +263,43 @@ private fun Modifier.rippleClick(onClick: () -> Unit): Modifier {
     )
 }
 
+@Composable
+fun BookForm(
+    meta: BookMetaData,
+    bookView: View,
+    inputData: InputData
+) {
+
+    val selectedIndex = remember { mutableStateOf(0) }
+    val isMeasurementEnabled = remember { mutableStateOf(true) }
+
+    Column {
+        Toolbar(name = meta.name, isMeasurementEnabled = isMeasurementEnabled.value) {
+            isMeasurementEnabled.value = isMeasurementEnabled.value.not()
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1F)
+        ) {
+            PixelGrid()
+            BookViewContainer(meta = meta, bookView = bookView, isMeasurementEnabled = isMeasurementEnabled.value)
+        }
+
+        Column(modifier = Modifier.weight(1F)) {
+            TabView(
+                titles = listOf("Source Code".uppercase(), "Modifier".uppercase()),
+                selectedIndex = selectedIndex.value
+            ) {
+                selectedIndex.value = it
+            }
+
+            if (selectedIndex.value == 0) {
+                SourceCodeView(rawSourceCode = meta.function)
+            } else {
+                InputView(metaData = meta, inputData = inputData)
+            }
+        }
+    }
+}
