@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,12 +31,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -51,7 +54,7 @@ import nolambda.uibook.browser.form.ComponentCreator
 import nolambda.uibook.browser.measurement.MeasurementHelperImpl
 
 @Composable
-private fun ColumnScope.Toolbar(
+private fun Toolbar(
     name: String,
     isMeasurementEnabled: Boolean,
     onToggleClick: () -> Unit
@@ -118,7 +121,7 @@ private fun BoxScope.BookViewContainer(
                     container.addView(bookView)
                 }
 
-                val measurementView = outerView.getChildAt(1)
+                val measurementView = outerView.getChildAt(0)
                 measurementView.visibility = if (isMeasurementEnabled) {
                     View.VISIBLE
                 } else {
@@ -216,13 +219,21 @@ private fun SourceCodeView(
     )
 }
 
+@Preview
+@Composable
+private fun TabViewPreview() {
+    Box(modifier = Modifier.background(Color.White)) {
+        TabView(titles = listOf("TESTING", "BAAA"), onClick = {})
+    }
+}
+
 @Composable
 private fun TabView(
     titles: List<String>,
     selectedIndex: Int = 0,
     onClick: (Int) -> Unit,
 ) {
-    Row {
+    Row(modifier = Modifier.shadow(1.dp)) {
         titles.forEachIndexed { index, title ->
 
             val isSelected = selectedIndex == index
@@ -232,6 +243,8 @@ private fun TabView(
                 Text(
                     text = title,
                     color = textColor,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -277,7 +290,6 @@ fun BookForm(
         Toolbar(name = meta.name, isMeasurementEnabled = isMeasurementEnabled.value) {
             isMeasurementEnabled.value = isMeasurementEnabled.value.not()
         }
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()

@@ -1,8 +1,8 @@
 package nolambda.uibook.browser.form
 
-import android.text.InputType
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import nolambda.uibook.annotations.FunctionParameter
 import nolambda.uibook.browser.ParameterTypes
@@ -21,7 +22,7 @@ class DefaultInputCreator : InputCreator {
     @Composable
     private fun FreeTextInput(
         hint: String,
-        inputType: Int = InputType.TYPE_CLASS_TEXT,
+        keyboardType: KeyboardType = KeyboardType.Text,
         defaultState: Any,
         setViewState: (String) -> Unit
     ) {
@@ -30,6 +31,7 @@ class DefaultInputCreator : InputCreator {
         TextField(
             value = textState.value,
             label = { Text(hint) },
+            keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             onValueChange = { value -> textState.value = value },
             modifier = Modifier.fillMaxWidth()
         )
@@ -70,7 +72,7 @@ class DefaultInputCreator : InputCreator {
             return
         }
         if (ParameterTypes.isNumber(type)) {
-            FreeTextInput(name, InputType.TYPE_CLASS_NUMBER, defaultState) {
+            FreeTextInput(name, KeyboardType.Number, defaultState) {
                 if (it.isBlank()) {
                     setViewState(defaultState)
                     return@FreeTextInput
