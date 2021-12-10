@@ -1,82 +1,98 @@
 package nolambda.uibook.browser.form
 
-import android.text.InputType
-import android.view.LayoutInflater
-import android.view.View
-import androidx.core.widget.addTextChangedListener
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Switch
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import nolambda.uibook.annotations.FunctionParameter
 import nolambda.uibook.browser.ParameterTypes
-import nolambda.uibook.browser.databinding.ViewFormBinding
-import nolambda.uibook.browser.databinding.ViewInputBinding
-import nolambda.uibook.browser.databinding.ViewSwitchBinding
 
 class DefaultInputCreator : InputCreator {
-    override fun createInput(
-        inflater: LayoutInflater,
-        parent: ViewFormBinding,
-        parameter: FunctionParameter,
+
+    @Composable
+    private fun FreeTextInput(
+        hint: String,
+        keyboardType: KeyboardType = KeyboardType.Text,
         defaultState: Any,
+        setViewState: (String) -> Unit
+    ) {
+        val textState = remember { mutableStateOf(TextFieldValue(defaultState.toString())) }
+
+        TextField(
+            value = textState.value,
+            label = { Text(hint) },
+            keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+            onValueChange = { value -> textState.value = value },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        // Update the view state
+        val text = textState.value.text
+        LaunchedEffect(text) { setViewState(text) }
+    }
+
+    @Composable
+    private fun BooleanInput(
+        hint: String,
         setViewState: (Any) -> Unit
-    ): View {
+    ) {
+        val checkedState = remember { mutableStateOf(true) }
+        Row(modifier = Modifier.fillMaxWidth()) {
+
+            Text(text = hint, modifier = Modifier.weight(1F))
+
+            Switch(
+                checked = checkedState.value,
+                onCheckedChange = { checkedState.value = it },
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
+        }
+
+        // Update view state
+        val isChecked = checkedState.value
+        LaunchedEffect(isChecked) { setViewState(isChecked) }
+    }
+
+    @Composable
+    override fun CreateInput(parameter: FunctionParameter, defaultState: Any, setViewState: (Any) -> Unit) {
         val type = parameter.type
         val name = parameter.name
         if (type == ParameterTypes.STRING) {
-            return createFreeTextInput(inflater, parent, name, defaultState = defaultState, setViewState = setViewState)
+            FreeTextInput(name, defaultState = defaultState, setViewState = setViewState)
+            return
         }
         if (ParameterTypes.isNumber(type)) {
-            return createFreeTextInput(inflater, parent, name, InputType.TYPE_CLASS_NUMBER, defaultState) {
+            FreeTextInput(name, KeyboardType.Number, defaultState) {
                 if (it.isBlank()) {
                     setViewState(defaultState)
-                    return@createFreeTextInput
+                    return@FreeTextInput
                 }
                 if (type == ParameterTypes.INT) {
                     setViewState(it.toInt())
-                    return@createFreeTextInput
+                    return@FreeTextInput
                 }
                 if (type == ParameterTypes.FLOAT) {
                     setViewState(it.toFloat())
-                    return@createFreeTextInput
+                    return@FreeTextInput
                 }
                 error("Type $type is not handled on type conversion")
             }
+            return
         }
         if (type == ParameterTypes.BOOLEAN) {
-            return createBooleanInput(inflater, parent, name, setViewState)
+            BooleanInput(name, setViewState)
+            return
         }
         error("There's no input handler for $name with type $type")
-    }
-
-    private fun createFreeTextInput(
-        inflater: LayoutInflater,
-        parent: ViewFormBinding,
-        hint: String,
-        inputType: Int = InputType.TYPE_CLASS_TEXT,
-        defaultState: Any,
-        setViewState: (String) -> Unit
-    ): View {
-        val input = ViewInputBinding.inflate(inflater, parent.containerInput, false).apply {
-            inpLayout.hint = hint
-            inpEditText.inputType = inputType
-            inpEditText.setText(defaultState.toString())
-            inpEditText.addTextChangedListener {
-                setViewState(it.toString())
-            }
-        }
-        return input.root
-    }
-
-    private fun createBooleanInput(
-        inflater: LayoutInflater,
-        parent: ViewFormBinding,
-        hint: String,
-        setViewState: (Any) -> Unit
-    ): View {
-        val input = ViewSwitchBinding.inflate(inflater, parent.containerComponent, false).apply {
-            inputSwitch.text = hint
-            inputSwitch.setOnCheckedChangeListener { _, isChecked ->
-                setViewState(isChecked)
-            }
-        }
-        return input.root
     }
 }

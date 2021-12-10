@@ -16,7 +16,7 @@
         <activity
             android:name=".UIBookActivity"
             android:exported="false"
-            android:theme="@style/Theme.UIBook.NoActionBar"
+            android:theme="@style/Theme.UIBook"
             android:windowSoftInputMode="adjustPan" />
     </application>
 

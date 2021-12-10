@@ -1,9 +1,7 @@
 package nolambda.uibook.browser.form
 
-import android.view.LayoutInflater
-import android.view.View
+import androidx.compose.runtime.Composable
 import nolambda.uibook.annotations.FunctionParameter
-import nolambda.uibook.browser.databinding.ViewFormBinding
 
 /**
  * Input creator is a factory interface to create the input in UI Book
@@ -12,11 +10,11 @@ import nolambda.uibook.browser.databinding.ViewFormBinding
  * @see [DefaultInputCreator]
  */
 interface InputCreator {
-    fun createInput(
-        inflater: LayoutInflater,
-        parent: ViewFormBinding,
+
+    @Composable
+    fun CreateInput(
         parameter: FunctionParameter,
         defaultState: Any,
         setViewState: (Any) -> Unit,
-    ): View
+    )
 }

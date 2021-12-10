@@ -4,12 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
 import nolambda.uibook.factory.ActivityHost
 import nolambda.uibook.factory.BookConfig
 import nolambda.uibook.factory.LibraryLoader
 
-class UIBookActivity : AppCompatActivity() {
+class UIBookActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
