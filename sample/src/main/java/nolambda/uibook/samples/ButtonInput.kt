@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import nolambda.uibook.annotations.FunctionParameter
 import nolambda.uibook.browser.form.InputCreator
-import java.util.*
+import java.util.UUID
 
 class ButtonInput : InputCreator {
 
