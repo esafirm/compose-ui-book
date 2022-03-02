@@ -1,9 +1,5 @@
 package nolambda.uibook.components.bookform
 
-import android.view.Gravity
-import android.view.View
-import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,7 +30,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
@@ -43,16 +38,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import com.wakaztahir.codeeditor.highlight.model.CodeLang
 import com.wakaztahir.codeeditor.highlight.prettify.PrettifyParser
 import com.wakaztahir.codeeditor.highlight.theme.CodeThemeType
 import com.wakaztahir.codeeditor.highlight.utils.parseCodeAsAnnotatedString
 import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.browser.R
-import nolambda.uibook.browser.form.ComponentCreator
 import nolambda.uibook.browser.form.ComposeEmitter
-import nolambda.uibook.browser.measurement.MeasurementHelperImpl
 
 @Composable
 private fun Toolbar(
@@ -80,88 +72,6 @@ private fun Toolbar(
             }
         }
     }
-}
-
-@Composable
-private fun BoxScope.BookViewContainer(
-    meta: BookMetaData,
-    bookView: ComposeEmitter,
-    isMeasurementEnabled: Boolean
-) {
-
-    if (meta.isComposeFunction) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            bookView()
-        }
-    } else {
-        // Handle android only
-    }
-}
-
-@Composable
-private fun BoxScope.AndroidContainerView(
-    meta: BookMetaData,
-    bookView: View,
-    isMeasurementEnabled: Boolean
-) {
-    val context = LocalContext.current
-    AndroidView(
-        factory = {
-            // Add container so it can be easily updated
-            FrameLayout(context).apply {
-                layoutParams = fillMaxSize()
-
-                addMeasurementHelper()
-                addView(FrameLayout(context).apply {
-                    layoutParams = wrapSize().apply {
-                        gravity = Gravity.CENTER
-                    }
-
-                    addView(bookView)
-                })
-            }
-        },
-        modifier = Modifier.align(Alignment.Center),
-        update = { outerView ->
-            val container = (outerView as ViewGroup).getChildAt(1) as FrameLayout
-            val child = container.getChildAt(0)
-
-            if (child != bookView) {
-                container.removeView(child)
-                container.addView(bookView)
-            }
-
-            val measurementView = outerView.getChildAt(0)
-            measurementView.visibility = if (isMeasurementEnabled) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
-        }
-    )
-}
-
-private fun ViewGroup.fillMaxSize(): FrameLayout.LayoutParams {
-    return FrameLayout.LayoutParams(
-        ViewGroup.LayoutParams.MATCH_PARENT,
-        ViewGroup.LayoutParams.MATCH_PARENT
-    )
-}
-
-private fun ViewGroup.wrapSize(): FrameLayout.LayoutParams {
-    return FrameLayout.LayoutParams(
-        ViewGroup.LayoutParams.WRAP_CONTENT,
-        ViewGroup.LayoutParams.WRAP_CONTENT,
-    )
-}
-
-private fun ViewGroup.addMeasurementHelper() {
-    val componentCreator = ComponentCreator(context)
-    val measurementHelper = MeasurementHelperImpl(this)
-    val measurementView = componentCreator.createMeasurementView(measurementHelper)
-    addView(measurementView)
 }
 
 @Composable
@@ -295,7 +205,7 @@ fun BookForm(
 ) {
 
     val selectedIndex = remember { mutableStateOf(0) }
-    val isMeasurementEnabled = remember { mutableStateOf(true) }
+    val isMeasurementEnabled = GlobalState.measurementEnabled
 
     Column {
         Toolbar(name = meta.name, isMeasurementEnabled = isMeasurementEnabled.value) {
@@ -304,10 +214,15 @@ fun BookForm(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .align(Alignment.CenterHorizontally)
                 .weight(1F)
         ) {
             PixelGrid()
-            BookViewContainer(meta = meta, bookView = bookView, isMeasurementEnabled = isMeasurementEnabled.value)
+            Box(
+                modifier = Modifier.align(Alignment.Center)
+            ) {
+                bookView()
+            }
         }
 
         Column(modifier = Modifier.weight(1F)) {

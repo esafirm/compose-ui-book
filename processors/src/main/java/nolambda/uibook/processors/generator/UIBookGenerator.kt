@@ -39,6 +39,10 @@ class UIBookGenerator(
     private val composeViewClass = ClassName("androidx.compose.ui.platform", "ComposeView")
     private val composeEmitterClass = ClassName("nolambda.uibook.browser.form", "ComposeEmitter")
     private val composeViewCreatorClass = ClassName("nolambda.uibook.browser.form", "ComposeViewCreator")
+    private val androidContainerClass = ClassName("nolambda.uibook.components.bookform", "AndroidContainer")
+
+    // Functions
+    private val mutableStateOfClass = ClassName("androidx.compose.runtime", "mutableStateOf")
 
     fun generate() {
         val bookClassNames = metaDatas.map { book -> createBookFactory(book) }
@@ -137,10 +141,7 @@ class UIBookGenerator(
                             .addParameter("config", bookConfigClass)
                             .addCode(buildCodeBlock {
 
-                                if (book.isComposeFunction) {
-                                    addComposeStateHolder(book)
-                                }
-
+                                addComposeStateHolder(book)
                                 addStatement("// Initiate form creator")
                                 addFormCreatorConstructor(creatorMetaData)
 
@@ -203,8 +204,7 @@ class UIBookGenerator(
         }
         endControlFlow()
 
-
-        addComposeBookFunctionCall(bookCreator.book)
+        addBookFunctionCall(bookCreator.book)
 
         addStatement(
             "return %T(config, meta, onUpdateState, onChildCreation$statementInput$statementViewState).create()",
@@ -223,32 +223,12 @@ class UIBookGenerator(
     private fun CodeBlock.Builder.addComposeStateHolder(book: BookMetaData) {
         book.parameters.forEachIndexed { index, param ->
             val value = DefaultValueResolver.createDefaultState(param)
-            addStatement("val state${index} = mutableStateOf(${value})")
+            addStatement("val state${index} = %T(${value})", mutableStateOfClass)
         }
     }
 
     /**
      * Add book function call to the code block
-     *
-     * Example:
-     *
-     * ### Catalogue
-     * `fun BookHost.SampleText() { … }`
-     *
-     * ### Result in code block
-     * `SampleText()`
-     *
-     * @param book - The book meta data
-     */
-    private fun CodeBlock.Builder.addBookFunctionCall(book: BookMetaData) {
-        addFunctionCallWithParameter(book) { index, param ->
-            addStatement("it[${index}] as %T,", TypeMapper.mapToClassName(param.type))
-        }
-    }
-
-    /**
-     * This is the same as [addBookFunctionCall] except it add ComposeView wrapper
-     * around the function call
      *
      * Example:
      *
@@ -269,12 +249,27 @@ class UIBookGenerator(
      *
      * @param book - The book meta data
      */
-    private fun CodeBlock.Builder.addComposeBookFunctionCall(book: BookMetaData) {
+    private fun CodeBlock.Builder.addBookFunctionCall(book: BookMetaData) {
         beginControlFlow("val onChildCreation: %T = {", composeViewCreatorClass)
         addStatement("// Instantiate view for the first time")
+
+        // If android, then wrap it in AndroidContainer
+        val isAndroidView = book.isComposeFunction.not()
+        if (isAndroidView) {
+            addStatement("%T(", androidContainerClass)
+            indent()
+        }
+
         addFunctionCallWithParameter(book) { index, _ ->
             addStatement("state${index}.value,")
         }
+
+        // End of wrap
+        if (isAndroidView) {
+            unindent()
+            addStatement(")")
+        }
+
         endControlFlow()
     }
 
