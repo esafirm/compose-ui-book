@@ -1,9 +1,9 @@
 package nolambda.uibook.factory
 
-import android.view.View
 import nolambda.uibook.annotations.BookMetaData
+import nolambda.uibook.browser.form.ComposeEmitter
 
 interface BookFactory {
-    fun getBook(config: BookConfig): View
+    fun getBook(config: BookConfig): ComposeEmitter
     fun getMetaData(): BookMetaData
 }

@@ -5,9 +5,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.ComponentActivity
+import androidx.compose.material.Text
+import androidx.compose.ui.platform.ComposeView
 import nolambda.uibook.factory.ActivityHost
 import nolambda.uibook.factory.BookConfig
 import nolambda.uibook.factory.LibraryLoader
+import nolambda.uibook.factory.TestFactory
 
 class UIBookActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +25,23 @@ class UIBookActivity : ComponentActivity() {
         val config = BookConfig(host) {
             finish()
         }
-        setContentView(factory.getBook(config))
+        setContentView(ComposeView(this).apply {
+            setContent {
+                factory.getBook(config).invoke()
+            }
+        })
+
+//        setContentView(ComposeView(this).apply {
+//            setContent {
+//                TestFactory { state1, state2 ->
+//                    Text(text = """
+//                        Hi this is from compose
+//                        State1: $state1
+//                        State2: $state2
+//                    """.trimIndent())
+//                }.getBook(config).invoke()
+//            }
+//        })
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

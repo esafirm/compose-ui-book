@@ -51,6 +51,7 @@ import com.wakaztahir.codeeditor.highlight.utils.parseCodeAsAnnotatedString
 import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.browser.R
 import nolambda.uibook.browser.form.ComponentCreator
+import nolambda.uibook.browser.form.ComposeEmitter
 import nolambda.uibook.browser.measurement.MeasurementHelperImpl
 
 @Composable
@@ -84,49 +85,59 @@ private fun Toolbar(
 @Composable
 private fun BoxScope.BookViewContainer(
     meta: BookMetaData,
+    bookView: ComposeEmitter,
+    isMeasurementEnabled: Boolean
+) {
+
+    if (meta.isComposeFunction) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            bookView()
+        }
+    } else {
+        // Handle android only
+    }
+}
+
+@Composable
+private fun BoxScope.AndroidContainerView(
+    meta: BookMetaData,
     bookView: View,
     isMeasurementEnabled: Boolean
 ) {
     val context = LocalContext.current
-
     AndroidView(
         factory = {
-            if (meta.isComposeFunction) {
-                bookView
-            } else {
-                // Add container so it can be easily updated
-                FrameLayout(context).apply {
-                    layoutParams = fillMaxSize()
+            // Add container so it can be easily updated
+            FrameLayout(context).apply {
+                layoutParams = fillMaxSize()
 
-                    addMeasurementHelper()
-                    addView(FrameLayout(context).apply {
-                        layoutParams = wrapSize().apply {
-                            gravity = Gravity.CENTER
-                        }
+                addMeasurementHelper()
+                addView(FrameLayout(context).apply {
+                    layoutParams = wrapSize().apply {
+                        gravity = Gravity.CENTER
+                    }
 
-                        addView(bookView)
-                    })
-                }
+                    addView(bookView)
+                })
             }
         },
         modifier = Modifier.align(Alignment.Center),
         update = { outerView ->
-            if (meta.isComposeFunction.not()) {
+            val container = (outerView as ViewGroup).getChildAt(1) as FrameLayout
+            val child = container.getChildAt(0)
 
-                val container = (outerView as ViewGroup).getChildAt(1) as FrameLayout
-                val child = container.getChildAt(0)
+            if (child != bookView) {
+                container.removeView(child)
+                container.addView(bookView)
+            }
 
-                if (child != bookView) {
-                    container.removeView(child)
-                    container.addView(bookView)
-                }
-
-                val measurementView = outerView.getChildAt(0)
-                measurementView.visibility = if (isMeasurementEnabled) {
-                    View.VISIBLE
-                } else {
-                    View.GONE
-                }
+            val measurementView = outerView.getChildAt(0)
+            measurementView.visibility = if (isMeasurementEnabled) {
+                View.VISIBLE
+            } else {
+                View.GONE
             }
         }
     )
@@ -279,7 +290,7 @@ private fun Modifier.rippleClick(onClick: () -> Unit): Modifier {
 @Composable
 fun BookForm(
     meta: BookMetaData,
-    bookView: View,
+    bookView: ComposeEmitter,
     inputData: InputData
 ) {
 

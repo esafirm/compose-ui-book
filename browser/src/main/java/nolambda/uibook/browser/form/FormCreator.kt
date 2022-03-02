@@ -1,9 +1,6 @@
 package nolambda.uibook.browser.form
 
-import android.view.View
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.ComposeView
+import androidx.compose.runtime.Composable
 import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.browser.BookHost
 import nolambda.uibook.browser.viewstate.DefaultViewStateProvider
@@ -12,13 +9,15 @@ import nolambda.uibook.components.bookform.BookForm
 import nolambda.uibook.components.bookform.InputData
 import nolambda.uibook.factory.BookConfig
 
-
-typealias OnUpdate = BookHost.(Array<Any>) -> View
+typealias ComposeEmitter = @Composable () -> Unit
+typealias ComposeViewCreator = @Composable BookHost.(Array<Any>) -> Unit
 typealias ViewState = Array<Any>
 
 class FormCreator(
     config: BookConfig,
     private val meta: BookMetaData,
+    private val onUpdateState: (Array<Any>) -> Unit,
+    private val onChildCreation: ComposeViewCreator,
     private val viewStateProvider: ViewStateProvider = DefaultViewStateProvider(),
     private val inputCreator: InputCreator = DefaultInputCreator()
 ) {
@@ -26,34 +25,23 @@ class FormCreator(
     private val context = config.context()
     private val bookHost by lazy { BookHost(context) }
 
-    fun create(onUpdate: OnUpdate): View {
+    fun create(): ComposeEmitter {
         val viewState: Array<Any> = viewStateProvider.createViewState(meta)
+        val setViewState = { index: Int, value: Any ->
+            viewState[index] = value
+            onUpdateState(viewState)
+        }
 
-        return ComposeView(context).apply {
-            setContent {
-                val view = remember { mutableStateOf(onUpdate(bookHost, viewState)) }
-                val setViewState = remember {
-                    { index: Int, value: Any ->
-                        viewState[index] = value
-
-                        // Invalidate view
-                        val child = onUpdate(bookHost, viewState)
-                        if (meta.isComposeFunction.not()) {
-                            view.value = child
-                        }
-                    }
-                }
-
-                BookForm(
-                    meta = meta,
-                    bookView = view.value,
-                    inputData = InputData(
-                        viewState = viewState,
-                        inputCreator = inputCreator,
-                        setViewState = setViewState
-                    )
+        return {
+            BookForm(
+                meta = meta,
+                bookView = { onChildCreation(bookHost, viewState) },
+                inputData = InputData(
+                    viewState = viewState,
+                    inputCreator = inputCreator,
+                    setViewState = setViewState
                 )
-            }
+            )
         }
     }
 }
