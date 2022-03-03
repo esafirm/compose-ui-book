@@ -18,9 +18,10 @@ repositories {
 
 dependencies {
   implementation(compose.desktop.currentOs)
+  implementation(project(":browser-core"))
 }
 
-tasks.withType<KotlinCompile>() {
+tasks.withType<KotlinCompile> {
   kotlinOptions.jvmTarget = "11"
 }
 
