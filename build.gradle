@@ -18,23 +18,10 @@ buildscript {
 plugins {
     id "com.google.devtools.ksp" version "1.5.31-1.0.0"
     id 'org.jetbrains.kotlin.jvm' version '1.5.30' apply false
+    id "org.jetbrains.compose" version "$composeVersion" apply false
 }
 
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        maven { url "https://jitpack.io" }
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/codeckle/compose-code-editor")
-            credentials {
-                username = "esafirm-public"
-                password = "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"
-            }
-        }
-    }
-}
+apply from: "${rootDir}/gradle/repositories.gradle"
 
 task clean(type: Delete) {
     delete rootProject.buildDir

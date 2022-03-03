@@ -1,0 +1,15 @@
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/codeckle/compose-code-editor")
+            credentials {
+                username = "esafirm-public"
+                password = "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"
+            }
+        }
+    }
+}
