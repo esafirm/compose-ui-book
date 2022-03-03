@@ -10,6 +10,7 @@ pluginManagement {
 rootProject.name = "UI Book"
 
 include ':browser'
+include ':browser-core'
 include ':browser-desktop'
 include ':processors'
 include ':annotations'
@@ -17,4 +18,4 @@ include ':sample'
 include ':samples:components'
 
 
-include ':core'
+include ':browser-core'

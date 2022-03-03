@@ -4,6 +4,7 @@ import nolambda.uibook.browser.BookHost
 
 interface BrowserConfig {
     val bookHost: BookHost
+    val resourceLoader: ResourceLoader
 }
 
 object AppBrowserConfig : BrowserConfig {
@@ -16,4 +17,7 @@ object AppBrowserConfig : BrowserConfig {
 
     override val bookHost: BookHost
         get() = internalConfig.bookHost
+
+    override val resourceLoader: ResourceLoader
+        get() = internalConfig.resourceLoader
 }

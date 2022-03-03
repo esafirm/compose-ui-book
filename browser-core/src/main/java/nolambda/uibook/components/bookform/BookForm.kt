@@ -1,6 +1,7 @@
 package nolambda.uibook.components.bookform
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -39,6 +40,8 @@ import com.wakaztahir.codeeditor.prettify.PrettifyParser
 import com.wakaztahir.codeeditor.theme.CodeThemeType
 import com.wakaztahir.codeeditor.utils.parseCodeAsAnnotatedString
 import nolambda.uibook.annotations.BookMetaData
+import nolambda.uibook.browser.config.AppBrowserConfig
+import nolambda.uibook.browser.config.ResourceIds
 import nolambda.uibook.browser.form.ComposeEmitter
 import nolambda.uibook.components.UIBookColors
 
@@ -48,6 +51,8 @@ private fun Toolbar(
     isMeasurementEnabled: Boolean,
     onToggleClick: () -> Unit
 ) {
+    val resourceLoader = AppBrowserConfig.resourceLoader
+
     TopAppBar {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -56,15 +61,16 @@ private fun Toolbar(
         ) {
             Text(text = name, fontSize = 18.sp, modifier = Modifier.padding(16.dp))
 
-//            val resource = if (isMeasurementEnabled) {
-//                R.drawable.ic_measurement_enabled
-//            } else {
-//                R.drawable.ic_measurement_disabled
-//            }
-//            val image = painterResource(id = resource)
+
+            val id = if (isMeasurementEnabled) {
+                ResourceIds.MEASUREMENT_ENABLED
+            } else {
+                ResourceIds.MEASUREMENT_DISABLED
+            }
+            val image = resourceLoader.load(id)
 
             Button(onClick = onToggleClick) {
-//                Image(painter = image, contentDescription = "Toggle Measurement")
+                Image(painter = image, contentDescription = "Toggle Measurement")
             }
         }
     }

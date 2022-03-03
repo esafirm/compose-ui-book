@@ -39,7 +39,10 @@ class UIBookGenerator(
     private val composeViewClass = ClassName("androidx.compose.ui.platform", "ComposeView")
     private val composeEmitterClass = ClassName("nolambda.uibook.browser.form", "ComposeEmitter")
     private val composeViewCreatorClass = ClassName("nolambda.uibook.browser.form", "ComposeViewCreator")
+
+    // Android Specific
     private val androidContainerClass = ClassName("nolambda.uibook.components.bookform", "AndroidContainer")
+    private val androidBookHost = ClassName("nolambda.uibook.browser", "AndroidBookHost")
 
     // Functions
     private val mutableStateOfClass = ClassName("androidx.compose.runtime", "mutableStateOf")
@@ -256,6 +259,7 @@ class UIBookGenerator(
         // If android, then wrap it in AndroidContainer
         val isAndroidView = book.isComposeFunction.not()
         if (isAndroidView) {
+            addStatement("this as %T", androidBookHost)
             addStatement("%T(", androidContainerClass)
             indent()
         }

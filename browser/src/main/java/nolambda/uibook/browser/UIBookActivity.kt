@@ -6,8 +6,6 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.platform.ComposeView
-import nolambda.uibook.factory.ActivityHost
-import nolambda.uibook.factory.AndroidBookConfig
 import nolambda.uibook.factory.LibraryLoader
 
 class UIBookActivity : ComponentActivity() {

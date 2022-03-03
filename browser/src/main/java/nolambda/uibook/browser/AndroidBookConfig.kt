@@ -1,7 +1,8 @@
-package nolambda.uibook.factory
+package nolambda.uibook.browser
 
 import android.app.Activity
 import android.content.Context
+import nolambda.uibook.factory.BookConfig
 
 sealed class Host
 class ActivityHost(val activity: Activity) : Host()
