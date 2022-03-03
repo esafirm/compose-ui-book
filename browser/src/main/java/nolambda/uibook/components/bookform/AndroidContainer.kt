@@ -17,6 +17,10 @@ import androidx.compose.ui.viewinterop.AndroidView
 import nolambda.uibook.browser.form.ComponentCreator
 import nolambda.uibook.browser.measurement.MeasurementHelperImpl
 
+/**
+ * A container to bridge pure compose with Android's View
+ * The placement of this is managed in the processor/generator itself
+ */
 @Composable
 fun AndroidContainer(
     bookView: View

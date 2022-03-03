@@ -26,12 +26,13 @@ import coil.compose.rememberImagePainter
 import nolambda.uibook.annotations.State
 import nolambda.uibook.annotations.UIBook
 import nolambda.uibook.annotations.code.CodeSpec
+import nolambda.uibook.browser.AndroidBookHost
 import nolambda.uibook.browser.BookHost
 import nolambda.uibook.databinding.ItemTextImageBinding
 import nolambda.uibook.databinding.ItemWithBooleanBinding
 
 @UIBook(name = "TextView")
-fun BookHost.createTextView(text: String): TextView {
+fun AndroidBookHost.createTextView(text: String): TextView {
     /**
      * This will draw text
      */

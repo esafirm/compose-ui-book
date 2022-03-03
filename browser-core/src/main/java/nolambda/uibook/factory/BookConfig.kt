@@ -1,7 +1,5 @@
 package nolambda.uibook.factory
 
-interface BookHost
-
-data class BookConfig(
+interface BookConfig {
     val onExit: () -> Unit
-)
+}

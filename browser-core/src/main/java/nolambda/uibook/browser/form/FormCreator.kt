@@ -3,6 +3,7 @@ package nolambda.uibook.browser.form
 import androidx.compose.runtime.Composable
 import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.browser.BookHost
+import nolambda.uibook.browser.config.AppBrowserConfig
 import nolambda.uibook.browser.viewstate.DefaultViewStateProvider
 import nolambda.uibook.browser.viewstate.ViewStateProvider
 import nolambda.uibook.components.bookform.BookForm
@@ -22,8 +23,7 @@ class FormCreator(
     private val inputCreator: InputCreator = DefaultInputCreator()
 ) {
 
-    private val context = config.context()
-    private val bookHost by lazy { BookHost(context) }
+    private val bookHost by lazy { AppBrowserConfig.bookHost }
 
     fun create(): ComposeEmitter {
         val viewState: Array<Any> = viewStateProvider.createViewState(meta)

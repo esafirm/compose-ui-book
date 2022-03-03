@@ -14,14 +14,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import nolambda.uibook.browser.UIBookActivity
 
 @Composable
-fun BookList(bookNames: List<String>) {
-    val context = LocalContext.current
+fun BookList(
+    bookNames: List<String>,
+    navigateToBook: (index: Int) -> Unit
+) {
     Column {
         TopAppBar {
             Text(
@@ -33,7 +33,7 @@ fun BookList(bookNames: List<String>) {
         LazyColumn {
             itemsIndexed(bookNames) { index, name ->
                 ClickableText(text = name) {
-                    UIBookActivity.start(context, index)
+                    navigateToBook(index)
                 }
             }
         }

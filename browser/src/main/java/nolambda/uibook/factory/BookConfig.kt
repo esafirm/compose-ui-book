@@ -6,10 +6,11 @@ import android.content.Context
 sealed class Host
 class ActivityHost(val activity: Activity) : Host()
 
-data class BookConfig(
+data class AndroidBookConfig(
     val host: Host,
-    val onExit: () -> Unit
-) {
+    override val onExit: () -> Unit
+) : BookConfig {
+
     fun context(): Context {
         return when (host) {
             is ActivityHost -> host.activity

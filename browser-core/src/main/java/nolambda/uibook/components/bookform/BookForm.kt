@@ -1,13 +1,12 @@
 package nolambda.uibook.components.bookform
 
-import androidx.compose.foundation.Image
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -30,21 +29,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.wakaztahir.codeeditor.highlight.model.CodeLang
-import com.wakaztahir.codeeditor.highlight.prettify.PrettifyParser
-import com.wakaztahir.codeeditor.highlight.theme.CodeThemeType
-import com.wakaztahir.codeeditor.highlight.utils.parseCodeAsAnnotatedString
+import com.wakaztahir.codeeditor.model.CodeLang
+import com.wakaztahir.codeeditor.prettify.PrettifyParser
+import com.wakaztahir.codeeditor.theme.CodeThemeType
+import com.wakaztahir.codeeditor.utils.parseCodeAsAnnotatedString
 import nolambda.uibook.annotations.BookMetaData
-import nolambda.uibook.browser.R
 import nolambda.uibook.browser.form.ComposeEmitter
+import nolambda.uibook.components.UIBookColors
 
 @Composable
 private fun Toolbar(
@@ -60,15 +56,15 @@ private fun Toolbar(
         ) {
             Text(text = name, fontSize = 18.sp, modifier = Modifier.padding(16.dp))
 
-            val resource = if (isMeasurementEnabled) {
-                R.drawable.ic_measurement_enabled
-            } else {
-                R.drawable.ic_measurement_disabled
-            }
-            val image = painterResource(id = resource)
+//            val resource = if (isMeasurementEnabled) {
+//                R.drawable.ic_measurement_enabled
+//            } else {
+//                R.drawable.ic_measurement_disabled
+//            }
+//            val image = painterResource(id = resource)
 
             Button(onClick = onToggleClick) {
-                Image(painter = image, contentDescription = "Toggle Measurement")
+//                Image(painter = image, contentDescription = "Toggle Measurement")
             }
         }
     }
@@ -132,7 +128,7 @@ private fun SourceCodeView(
         fontFamily = FontFamily.Monospace,
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(id = R.color.monokai_background))
+            .background(UIBookColors.MONOKAI)
             .padding(horizontal = 16.dp)
             .padding(top = 16.dp)
             .verticalScroll(verticalScrollState)
@@ -158,7 +154,7 @@ private fun TabView(
         titles.forEachIndexed { index, title ->
 
             val isSelected = selectedIndex == index
-            val textColor = colorResource(id = if (isSelected) R.color.purple_700 else R.color.black)
+            val textColor = if (isSelected) UIBookColors.PURPLE_700 else Color.Black
 
             Box(modifier = Modifier.weight(1F)) {
                 Text(

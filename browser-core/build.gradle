@@ -1,6 +1,7 @@
 plugins {
     id 'java-library'
     id 'kotlin'
+    id 'org.jetbrains.compose' version "$composeVersion"
 }
 
 java {
@@ -10,4 +11,6 @@ java {
 
 dependencies {
     api project(':annotations')
+    api compose.desktop.currentOs
+    implementation "com.wakaztahir:codeeditor:3.0.3"
 }
