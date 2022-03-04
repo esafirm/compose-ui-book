@@ -4,6 +4,7 @@ plugins {
     id("com.android.library")
     kotlin("multiplatform")
     id("org.jetbrains.compose")
+    id("com.google.devtools.ksp")
 }
 
 kotlin {
@@ -23,6 +24,8 @@ kotlin {
 
                 // Needed only for preview.
                 implementation(compose.preview)
+
+                ksp(project(":processors"))
             }
         }
         named("androidMain") {

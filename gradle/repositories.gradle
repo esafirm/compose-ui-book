@@ -8,7 +8,7 @@ allprojects {
             url = uri("https://maven.pkg.github.com/codeckle/compose-code-editor")
             credentials {
                 username = "esafirm-public"
-                password = "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"
+                password = "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"
             }
         }
     }

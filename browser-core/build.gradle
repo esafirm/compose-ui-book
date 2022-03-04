@@ -1,16 +1,27 @@
 plugins {
-    id 'java-library'
-    id 'kotlin'
     id 'org.jetbrains.compose'
+    id 'org.jetbrains.kotlin.multiplatform'
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
+kotlin {
+    jvm {
+        withJava()
+    }
 
-dependencies {
-    api project(':annotations')
-    api compose.desktop.currentOs
-    implementation "com.wakaztahir:codeeditor:3.0.3"
+    sourceSets {
+        named("commonMain") {
+            dependencies {
+                api(compose.runtime)
+                api(compose.foundation)
+                api(compose.material)
+
+                // Needed only for preview.
+                implementation(compose.preview)
+
+                // UI-Book
+                api(project(':annotations'))
+                api("com.wakaztahir:codeeditor:3.0.3")
+            }
+        }
+    }
 }

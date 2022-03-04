@@ -19,3 +19,4 @@ include ':samples:components'
 
 
 include ':browser-core'
+include ':sample-component'
