@@ -1,6 +1,5 @@
 package nolambda.uibook.sample.component
 
-import android.graphics.Color
 import android.graphics.Typeface
 import android.util.TypedValue
 import android.view.View
@@ -10,7 +9,6 @@ import nolambda.uibook.annotations.State
 import nolambda.uibook.annotations.UIBook
 import nolambda.uibook.annotations.code.CodeSpec
 import nolambda.uibook.browser.AndroidBookHost
-import nolambda.uibook.browser.BookHost
 import nolambda.uibook.databinding.ItemTextImageBinding
 import nolambda.uibook.databinding.ItemWithBooleanBinding
 
@@ -25,15 +23,15 @@ fun AndroidBookHost.createTextView(text: String): TextView {
     }
 }
 
-//@UIBook(
-//    name = "Custom Input",
-//    inputCreator = ButtonInput::class
-//)
-//fun AndroidBookHost.createTextViewCustom(text: String): TextView {
-//    return TextView(context).apply {
-//        this.text = text
-//    }
-//}
+@UIBook(
+    name = "Custom Input",
+    inputCreator = ButtonInput::class
+)
+fun AndroidBookHost.createTextViewCustom(text: String): TextView {
+    return TextView(context).apply {
+        this.text = text
+    }
+}
 
 @UIBook(name = "Input")
 fun AndroidBookHost.createInput(input: String, hint: String): View {
@@ -63,23 +61,23 @@ fun AndroidBookHost.createBooleanText(isBold: Boolean): View {
     return binding.root
 }
 
-//@UIBook(name = "Custom code")
-//@CodeSpec(
-//    code = """
-//        <TextView android:text="testing"
-//                  android:textSize="17sp" />
-//    """,
-//    trimIndent = true,
-//    language = "xml"
-//)
-//fun AndroidBookHost.createCustomCodeComponent(
-//    text: String,
-//    @State(defaultValue = "17") textSize: Float
-//): View {
-//    return TextView(context).apply {
-//        this.text = text.ifBlank { "testing" }
-//        this.textSize =
-//            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, textSize, context.resources.displayMetrics)
-//    }
-//}
+@UIBook(name = "Custom code")
+@CodeSpec(
+    code = """
+        <TextView android:text="testing"
+                  android:textSize="17sp" />
+    """,
+    trimIndent = true,
+    language = "xml"
+)
+fun AndroidBookHost.createCustomCodeComponent(
+    text: String,
+    @State(defaultValue = "17F") textSize: Float
+): View {
+    return TextView(context).apply {
+        this.text = text.ifBlank { "testing" }
+        this.textSize =
+            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, textSize, context.resources.displayMetrics)
+    }
+}
 
