@@ -21,7 +21,7 @@ jobs:
       - name: Extract Secrets
         env:
           SECRET_PROPS: ${{ secrets.SECRET_PROPERTIES }}
-        run: echo $SECRET_PROPS >> secret.properties
+        run: echo "$SECRET_PROPS" >> secret.properties
 
       - name: Build with Gradle
         run: ./gradlew build
