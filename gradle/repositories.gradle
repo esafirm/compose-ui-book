@@ -1,3 +1,9 @@
+final secretProps = new Properties()
+file("secret.properties").withInputStream { secretProps.load(it) }
+
+println "Username ${secretProps.get("github.username")}"
+println "Token: ${secretProps.get("github.token")}"
+
 allprojects {
     repositories {
         google()
@@ -7,8 +13,8 @@ allprojects {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/codeckle/compose-code-editor")
             credentials {
-                username = "esafirm-public"
-                password = "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"
+                username = secretProps.get("github.username")
+                password = secretProps.get("github.token")
             }
         }
     }

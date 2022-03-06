@@ -1,4 +1,4 @@
-Compose Multiplatform Application
+## UI Book Example
 
 **Desktop**
 - `./gradlew run` - run application
