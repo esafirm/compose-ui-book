@@ -15,8 +15,3 @@ include ':browser-desktop'
 include ':processors'
 include ':annotations'
 include ':sample'
-include ':samples:components'
-
-
-include ':browser-core'
-include ':sample-component'
