@@ -17,5 +17,11 @@ jobs:
         with:
           distribution: adopt-openj9
           java-version: '11'
+
+      - name: Extract Secrets
+        env:
+          SECRET_PROPS: ${{ secrets.SECRET_PROPERTIES }}
+        run: echo "$SECRET_PROPS" >> secret.properties
+
       - name: Build with Gradle
         run: ./gradlew build

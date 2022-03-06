@@ -3,4 +3,5 @@ ext {
     compileSdkVersion = 31
     targetSdkVersion = 31
     minSdkVersion = 21
+    composeVersion = "1.0.0"
 }

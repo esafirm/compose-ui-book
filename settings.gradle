@@ -1,13 +1,17 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
+        maven {
+            url "https://maven.pkg.jetbrains.space/public/p/compose/dev"
+        }
     }
 }
 
+rootProject.name = "UI Book"
 
 include ':browser'
-include ':samples'
+include ':browser-core'
+include ':browser-desktop'
 include ':processors'
 include ':annotations'
 include ':sample'
-rootProject.name = "UI Book"

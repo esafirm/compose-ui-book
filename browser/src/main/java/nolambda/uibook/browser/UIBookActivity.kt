@@ -5,8 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.ComponentActivity
-import nolambda.uibook.factory.ActivityHost
-import nolambda.uibook.factory.BookConfig
+import androidx.compose.ui.platform.ComposeView
 import nolambda.uibook.factory.LibraryLoader
 
 class UIBookActivity : ComponentActivity() {
@@ -19,10 +18,14 @@ class UIBookActivity : ComponentActivity() {
         val factory = library.getBookFactories()[index]
 
         val host = ActivityHost(this)
-        val config = BookConfig(host) {
+        val config = AndroidBookConfig(host) {
             finish()
         }
-        setContentView(factory.getBook(config))
+        setContentView(ComposeView(this).apply {
+            setContent {
+                factory.getBook(config).invoke()
+            }
+        })
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

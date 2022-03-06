@@ -3,6 +3,7 @@ package nolambda.uibook.browser
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.ui.platform.LocalContext
 import nolambda.uibook.components.booklist.BookList
 import nolambda.uibook.factory.LibraryLoader
 
@@ -14,7 +15,10 @@ class UIBookListActivity : ComponentActivity() {
         val names = library.getBookFactories().map { it.getMetaData().name }
 
         setContent {
-            BookList(bookNames = names)
+            val context = LocalContext.current
+            BookList(bookNames = names) { index ->
+                UIBookActivity.start(context, index)
+            }
         }
     }
 }
