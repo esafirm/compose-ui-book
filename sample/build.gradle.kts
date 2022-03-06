@@ -19,6 +19,9 @@ kotlin {
         named("desktopMain") {
             dependencies {
                 implementation(project(":browser-desktop"))
+
+                implementation("com.squareup.okhttp3:okhttp:4.9.3")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
             }
         }
         named("androidMain") {
