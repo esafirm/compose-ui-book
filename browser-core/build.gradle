@@ -20,7 +20,7 @@ kotlin {
 
                 // UI-Book
                 api(project(':annotations'))
-                api("com.wakaztahir:codeeditor:3.0.3")
+                api("com.wakaztahir:codeeditor:3.0.5")
             }
         }
     }

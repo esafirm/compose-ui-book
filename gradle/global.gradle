@@ -1,7 +1,7 @@
 ext {
-    kotlin_version = "1.5.31"
-    compileSdkVersion = 31
-    targetSdkVersion = 31
+    kotlin_version = "1.7.20"
+    compileSdkVersion = 32
+    targetSdkVersion = 32
     minSdkVersion = 21
-    composeVersion = "1.0.0"
+    composeVersion = "1.2.0"
 }
