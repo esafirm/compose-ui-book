@@ -11,7 +11,7 @@ allprojects {
         maven { url "https://jitpack.io" }
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/codeckle/compose-code-editor")
+            url = uri("https://maven.pkg.github.com/qawaz/compose-code-editor")
             credentials {
                 username = secretProps.get("github.username")
                 password = secretProps.get("github.token")

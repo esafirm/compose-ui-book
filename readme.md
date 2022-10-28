@@ -17,8 +17,6 @@ Simple and extensible UI component explorer for Android
 	</a>
 </details>
 
-
-
 ## Getting Started
 
 
@@ -72,6 +70,12 @@ That's it now run the new module that you just created.
 ## Advanced
 
 For now, you can check `:sample` module for complete features.
+
+## Development
+
+To develop the project, you need to use Android Studio Dolphin above.
+
+It have some strange issue with IntelliJ Idea 2022.3 EAP.
 
 ## Support
 

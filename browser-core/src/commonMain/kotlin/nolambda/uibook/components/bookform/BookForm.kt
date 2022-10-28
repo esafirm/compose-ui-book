@@ -118,7 +118,7 @@ private fun SourceCodeView(
     }
 
     val parser = remember { PrettifyParser() }
-    val theme = remember { CodeThemeType.Monokai.theme() }
+    val theme = remember { CodeThemeType.Monokai.theme }
 
     val parsedCode = remember {
         parseCodeAsAnnotatedString(
