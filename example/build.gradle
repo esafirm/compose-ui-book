@@ -17,5 +17,3 @@ plugins {
     id "org.jetbrains.kotlin.jvm" version "1.5.30" apply false
     id "org.jetbrains.compose" version "1.0.0" apply false
 }
-
-apply from: "${rootDir}/../gradle/repositories.gradle"

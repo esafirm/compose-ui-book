@@ -16,13 +16,7 @@ buildscript {
 }
 
 plugins {
-    id "com.google.devtools.ksp" version "1.7.20-1.0.7"
+    id "com.google.devtools.ksp" version "1.7.10-1.0.6"
     id 'org.jetbrains.kotlin.jvm' version "$kotlin_version" apply false
     id "org.jetbrains.compose" version "$composeVersion" apply false
-}
-
-apply from: "${rootDir}/gradle/repositories.gradle"
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
 }

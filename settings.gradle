@@ -7,11 +7,37 @@ pluginManagement {
     }
 }
 
+final secretProps = new Properties()
+file("secret.properties").withInputStream { secretProps.load(it) }
+
+println "Username ${secretProps.get("github.username")}"
+println "Token: ${secretProps.get("github.token")}"
+
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url "https://maven.pkg.jetbrains.space/public/p/compose/dev"
+        }
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/qawaz/compose-code-editor")
+            credentials {
+                username = secretProps.get("github.username")
+                password = secretProps.get("github.token")
+            }
+        }
+    }
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+}
+
 rootProject.name = "UI Book"
 
 include ':browser'
 include ':browser-core'
 include ':browser-desktop'
+include ':browser-js'
 include ':processors'
 include ':annotations'
 include ':sample'
