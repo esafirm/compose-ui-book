@@ -37,7 +37,7 @@ kotlin {
                 // Compose Image Loading
                 implementation("io.coil-kt:coil-compose:1.3.1")
 
-                implementation(project(":browser"))
+                implementation(project(":browser-android"))
             }
         }
     }
@@ -85,5 +85,6 @@ compose.desktop {
 }
 
 dependencies {
-    ksp(project(":processors"))
+    add("kspAndroid", project(":annotations-processor"))
+    add("kspDesktop", project(":annotations-processor"))
 }
