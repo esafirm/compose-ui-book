@@ -9,9 +9,9 @@ pluginManagement {
 
 rootProject.name = "UI Book"
 
-include ':browser'
+include ':browser-android'
 include ':browser-core'
 include ':browser-desktop'
-include ':processors'
 include ':annotations'
+include ':annotations-processor'
 include ':sample'

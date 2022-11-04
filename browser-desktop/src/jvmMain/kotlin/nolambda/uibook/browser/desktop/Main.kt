@@ -39,7 +39,6 @@ fun runBrowser() {
         override val resourceLoader: ResourceLoader by lazy {
             DesktopResourceLoader()
         }
-
     })
 
     application {
