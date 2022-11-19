@@ -23,5 +23,8 @@ jobs:
           SECRET_PROPS: ${{ secrets.SECRET_PROPERTIES }}
         run: echo "$SECRET_PROPS" >> secret.properties
 
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Build Android book
+        run: ./gradlew :sample:assembleDebug
+
+      - name: Build desktop book
+        run: ./gradlew :sample:desktopJar
