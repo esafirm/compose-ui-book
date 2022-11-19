@@ -3,9 +3,11 @@ package nolambda.uibook.sample.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -54,19 +56,23 @@ fun BookHost.CircularImage(
 
 @UIBook(name = "Overflow Sample")
 @Composable
-fun BookHost.OverflowSample() {
+fun BookHost.OverflowSample(
+    @State(defaultValue = "100") parentWidth: Int,
+    @State(defaultValue = "200") childWidth: Int
+) {
     Box(
         modifier = Modifier
-            .width(100.dp)
+            .width(parentWidth.dp)
             .height(200.dp)
             .background(Color.Red)
     ) {
         Box(
-            modifier = Modifier.width(200.dp)
+            modifier = Modifier
+                .requiredWidth(childWidth.dp)
                 .height(100.dp)
                 .background(Color.Blue)
         ) {
-            Text("This blue box should have 200 dp width", color = Color.White)
+            Text("This blue box should have $childWidth dp width", color = Color.White)
         }
     }
 }
