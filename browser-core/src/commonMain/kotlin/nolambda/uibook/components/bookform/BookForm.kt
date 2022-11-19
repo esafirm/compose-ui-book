@@ -3,6 +3,7 @@ package nolambda.uibook.components.bookform
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.TransformableState
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.horizontalScroll
@@ -26,13 +27,16 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -174,33 +178,22 @@ private fun Modifier.rippleClick(onClick: () -> Unit): Modifier {
 @Composable
 private fun BoxScope.DeviceFrame(
     selectedDevice: Device,
+    scale: Float,
+    transformableState: TransformableState,
     book: ComposeEmitter
 ) {
-
-    val scale = remember { mutableStateOf(1f) }
-    val rotation = remember { mutableStateOf(0f) }
-    val offset = remember { mutableStateOf(Offset.Zero) }
-
-    val state = rememberTransformableState { zoomChange, offsetChange, rotationChange ->
-        scale.value = scale.value * zoomChange
-        rotation.value = rotation.value + rotationChange
-        offset.value += offset.value + offsetChange
-    }
-
     val originalModifier = Modifier.align(Alignment.Center)
     val finalModifier = if (selectedDevice != Devices.responsive) {
         originalModifier
-            .width(selectedDevice.resolution.logicalDevice.width.dp)
-            .height(selectedDevice.resolution.logicalDevice.height.dp)
+            .width(selectedDevice.resolution.nativeSize.width.dp)
+            .height(selectedDevice.resolution.nativeSize.height.dp)
             .graphicsLayer(
-                scaleX = scale.value,
-                scaleY = scale.value,
-                translationX = offset.value.x,
-                translationY = offset.value.y
+                scaleX = scale,
+                scaleY = scale,
             )
-            .border(1.dp, Color.Gray, RectangleShape)
-            .transformable(state)
+            .transformable(transformableState)
             .background(Color.White)
+            .border(1.dp, Color.Gray, RectangleShape)
     } else originalModifier
 
     Box(Modifier.fillMaxSize()) {
@@ -245,13 +238,13 @@ private fun ControlPane(
 @Composable
 private fun AdaptivePane(
     largeScreenThreshold: Int,
+    modifier: Modifier = Modifier,
     columnModifier: @Composable ColumnScope.() -> Modifier,
     rowModifier: @Composable RowScope.() -> Modifier,
     content: @Composable (Modifier) -> Unit
 ) {
-    BoxWithConstraints {
+    BoxWithConstraints(modifier = modifier) {
         val isLargeScreen = maxWidth > largeScreenThreshold.dp
-        val w = maxWidth
         if (isLargeScreen) {
             Row {
                 content(rowModifier())
@@ -273,33 +266,41 @@ fun BookForm(
     val selectedDevice = remember { mutableStateOf(Devices.responsive) }
     val isMeasurementEnabled = GlobalState.measurementEnabled
 
+    val (scale, setScale) = remember { mutableStateOf(1f) }
+    val state = rememberTransformableState { zoomChange, _, _ ->
+        setScale(scale * zoomChange)
+    }
+
     Column {
         FormToolbar(
             name = meta.name,
             isMeasurementEnabled = isMeasurementEnabled.value,
             selectedDevice = selectedDevice.value,
+            scale = scale,
             onDeviceSelected = selectedDevice::value::set,
             onToggleClick = { isMeasurementEnabled.value = isMeasurementEnabled.value.not() },
-            onScaleChange = {
-                val currentDevice = selectedDevice.value
-                selectedDevice.value = currentDevice.copy(
-                    resolution = currentDevice.resolution.copy(scaleFactor = it)
-                )
-            }
+            onScaleChange = setScale,
+            modifier = Modifier.zIndex(1F)
         )
 
         AdaptivePane(
             largeScreenThreshold = LARGE_SCREEN_THRESHOLD,
+            modifier = Modifier.zIndex(0F),
             columnModifier = { Modifier.weight(1F) },
             rowModifier = { Modifier.weight(1F) }
         ) { adaptiveModifier ->
 
             Row(
-                modifier = Modifier.weight(1F)
+                modifier = Modifier.weight(1F).zIndex(0F)
             ) {
                 Box {
                     PixelGrid()
-                    DeviceFrame(selectedDevice.value, bookView)
+                    DeviceFrame(
+                        selectedDevice = selectedDevice.value,
+                        scale = scale,
+                        transformableState = state,
+                        bookView
+                    )
                 }
             }
 
@@ -308,6 +309,7 @@ fun BookForm(
                 inputData = inputData,
                 modifier = adaptiveModifier.composed {
                     Modifier.background(MaterialTheme.colors.background)
+                        .zIndex(1F)
                 }
             )
         }

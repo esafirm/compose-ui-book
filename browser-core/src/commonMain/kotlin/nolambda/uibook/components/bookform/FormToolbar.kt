@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.Button
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
@@ -34,6 +35,7 @@ internal fun FormToolbar(
     name: String,
     isMeasurementEnabled: Boolean,
     selectedDevice: Device,
+    scale: Float,
     onScaleChange: (scale: Float) -> Unit,
     onDeviceSelected: (Device) -> Unit,
     onToggleClick: () -> Unit,
@@ -51,7 +53,7 @@ internal fun FormToolbar(
             Row {
                 if (selectedDevice != Devices.responsive) {
                     ScaleCounter(
-                        currentScale = selectedDevice.resolution.scaleFactor,
+                        currentScale = scale,
                         onScaleChange = onScaleChange
                     )
                 }
@@ -139,6 +141,7 @@ private fun ScaleCounter(
         }
         Text(
             text = currentScale.toString().substring(0, 3),
+            color = MaterialTheme.typography.subtitle1.color,
             modifier = Modifier.align(Alignment.CenterVertically)
                 .padding(horizontal = 8.dp)
         )
