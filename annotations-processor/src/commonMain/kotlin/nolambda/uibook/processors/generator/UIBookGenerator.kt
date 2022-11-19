@@ -89,9 +89,11 @@ class UIBookGenerator(
         }
         val className = "${safeClassName}BookFactory"
 
+        // Dollar sign doesn't work on multi-line string
+        // https://youtrack.jetbrains.com/issue/KT-2425
         val functionProperty = PropertySpec.builder("function", String::class)
             .addModifiers(KModifier.PRIVATE)
-            .initializer("%P", book.function)
+            .initializer("%P", book.function.replace("$", ""))
             .build()
 
         val parametersProperty =

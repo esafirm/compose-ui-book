@@ -16,4 +16,5 @@ expect fun randomResourceId(): String
 object ResourceIds {
     val MEASUREMENT_ENABLED = StringResourceId()
     val MEASUREMENT_DISABLED = StringResourceId()
+    val DEVICE_FRAME = StringResourceId()
 }

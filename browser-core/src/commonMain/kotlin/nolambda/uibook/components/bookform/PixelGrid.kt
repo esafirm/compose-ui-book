@@ -4,31 +4,40 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
 @Composable
-fun PixelGrid() {
-    Canvas(modifier = Modifier.fillMaxSize()) {
+fun PixelGrid(
+    gridSize: Dp = 8.dp,
+    modifier: Modifier = Modifier
+) {
+    Canvas(modifier = Modifier.fillMaxSize().composed { modifier }) {
         val canvasWidth = size.width
         val canvasHeight = size.height
 
-        val gridSize = 12
+        val gridSizeInPx = gridSize.toPx()
 
-        repeat(gridSize) {
-            val endHeight = canvasHeight / gridSize * it
-            val endWidth = canvasWidth / gridSize * it
-
+        // Draw vertical lines
+        repeat((canvasWidth / gridSizeInPx).toInt()) { gridCount ->
+            val currentX = gridCount * gridSizeInPx
             drawLine(
-                start = Offset(x = endWidth, y = 0F),
-                end = Offset(x = endWidth, y = canvasHeight),
+                start = Offset(x = currentX, y = 0F),
+                end = Offset(x = currentX, y = canvasHeight),
                 color = Color.Gray,
                 alpha = 0.2F
             )
+        }
 
+        // Draw horizontal lines
+        repeat((canvasHeight / gridSizeInPx).toInt()) { gridCount ->
+            val currentY = gridCount * gridSizeInPx
             drawLine(
-                start = Offset(x = canvasWidth, y = endHeight),
-                end = Offset(x = 0F, y = endHeight),
+                start = Offset(x = canvasWidth, y = currentY),
+                end = Offset(x = 0F, y = currentY),
                 color = Color.Gray,
                 alpha = 0.2F
             )
