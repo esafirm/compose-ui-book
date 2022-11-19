@@ -22,6 +22,7 @@ class AndroidResourceLoader : ResourceLoader {
         return when (id) {
             ResourceIds.MEASUREMENT_ENABLED -> R.drawable.ic_measurement_enabled
             ResourceIds.MEASUREMENT_DISABLED -> R.drawable.ic_measurement_disabled
+            ResourceIds.DEVICE_FRAME -> R.drawable.ic_device
             else -> null
         }
     }

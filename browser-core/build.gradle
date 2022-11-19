@@ -1,12 +1,21 @@
 plugins {
     id 'org.jetbrains.compose'
     id 'org.jetbrains.kotlin.multiplatform'
+    id 'com.android.library'
+}
+
+android {
+    defaultConfig {
+        namespace "nolambda.uibook"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        compileSdk rootProject.ext.compileSdkVersion
+    }
 }
 
 kotlin {
-    jvm {
-        withJava()
-    }
+    android()
+    jvm("desktop")
 
     sourceSets {
         named("commonMain") {

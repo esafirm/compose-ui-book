@@ -30,6 +30,7 @@ import kotlin.math.min
 
 @Composable
 internal fun FormToolbar(
+    modifier: Modifier = Modifier,
     name: String,
     isMeasurementEnabled: Boolean,
     selectedDevice: Device,
@@ -39,7 +40,7 @@ internal fun FormToolbar(
 ) {
     val expandDeviceSelector = remember { mutableStateOf(false) }
 
-    TopAppBar {
+    TopAppBar(modifier = modifier) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
