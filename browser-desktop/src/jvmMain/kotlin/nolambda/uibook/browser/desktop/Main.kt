@@ -47,7 +47,7 @@ fun runBrowser() {
     application {
         Window(
             onCloseRequest = ::exitApplication,
-            title = "Android UI Book - Browser",
+            title = "Compose UI Book - Browser",
             state = rememberWindowState(
                 size = DpSize(1440.dp, 600.dp),
                 position = WindowPosition(alignment = Alignment.Center),

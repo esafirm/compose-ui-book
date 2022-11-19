@@ -1,4 +1,4 @@
-# Android UI Book
+# Compose UI Book
 
 [![](https://jitpack.io/v/esafirm/android-ui-book.svg)](https://jitpack.io/#esafirm/android-ui-book)
 
