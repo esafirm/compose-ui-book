@@ -1,5 +1,6 @@
 package nolambda.uibook.components.bookform
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -22,14 +23,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,10 +44,9 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
@@ -54,7 +60,9 @@ import com.wakaztahir.codeeditor.model.CodeLang
 import com.wakaztahir.codeeditor.prettify.PrettifyParser
 import com.wakaztahir.codeeditor.theme.CodeThemeType
 import com.wakaztahir.codeeditor.utils.parseCodeAsAnnotatedString
+import kotlinx.coroutines.delay
 import nolambda.uibook.annotations.BookMetaData
+import nolambda.uibook.browser.config.AppBrowserConfig
 import nolambda.uibook.browser.form.ComposeEmitter
 import nolambda.uibook.components.UIBookColors
 import nolambda.uibook.frame.Device
@@ -115,17 +123,72 @@ private fun SourceCodeView(
         )
     }
 
-    Text(
-        parsedCode,
-        fontFamily = FontFamily.Monospace,
-        modifier = Modifier
-            .fillMaxSize()
-            .background(UIBookColors.MONOKAI)
-            .padding(horizontal = 16.dp)
-            .padding(top = 16.dp)
-            .verticalScroll(verticalScrollState)
-            .horizontalScroll(horizontalScrollState)
-    )
+    val showClipboardState = remember { mutableStateOf(false) }
+
+    Box {
+        Text(
+            parsedCode,
+            fontFamily = FontFamily.Monospace,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(UIBookColors.MONOKAI)
+                .padding(horizontal = 16.dp)
+                .padding(top = 16.dp)
+                .verticalScroll(verticalScrollState)
+                .horizontalScroll(horizontalScrollState)
+        )
+
+        Button(
+            onClick = {
+                AppBrowserConfig.clipboardManager.copyToClipboard(functionCode)
+                showClipboardState.value = true
+            },
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(16.dp)
+                .alpha(0.8f)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ContentCopy,
+                contentDescription = "Copy to clipboard",
+                tint = Color.White
+            )
+        }
+
+        NotificationBar(
+            message = "Copied to clipboard",
+            showState = showClipboardState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+                .padding(bottom = 24.dp)
+        )
+    }
+}
+
+@Composable
+private fun NotificationBar(
+    message: String,
+    timeoutInMs: Long = 1_200,
+    showState: MutableState<Boolean>,
+    modifier: Modifier
+) {
+    AnimatedVisibility(showState.value, modifier = modifier) {
+
+        LaunchedEffect(Unit) {
+            delay(timeoutInMs)
+            showState.value = false
+        }
+
+        Box(
+            modifier = Modifier.clip(RoundedCornerShape(8.dp))
+                .background(UIBookColors.GREEN_SUCCESS)
+        ) {
+            Text(
+                text = message,
+                color = Color.White,
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
+            )
+        }
+    }
 }
 
 @Composable

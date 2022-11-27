@@ -24,6 +24,10 @@ kotlin {
                 api(compose.foundation)
                 api(compose.material)
 
+                println("Compose: $compose")
+
+                api(compose.materialIconsExtended)
+
                 // Needed only for preview.
                 implementation(compose.preview)
 
