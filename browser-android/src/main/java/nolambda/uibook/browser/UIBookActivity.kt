@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.platform.ComposeView
-import nolambda.uibook.factory.LibraryLoader
+import nolambda.uibook.browser.config.AppBrowserConfig
 
 class UIBookActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -14,7 +14,7 @@ class UIBookActivity : ComponentActivity() {
 
         val index = intent.extras?.getInt(EXTRA_INDEX) ?: 0
 
-        val library = LibraryLoader.load()
+        val library = AppBrowserConfig.libraryLoader.load()
         val factory = library.getBookFactories()[index]
 
         val host = ActivityHost(this)
@@ -34,6 +34,7 @@ class UIBookActivity : ComponentActivity() {
                 onBackPressed()
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }

@@ -23,12 +23,13 @@ import nolambda.uibook.browser.EmptyBookHost
 import nolambda.uibook.browser.config.AppBrowserConfig
 import nolambda.uibook.browser.config.BrowserConfig
 import nolambda.uibook.browser.config.ResourceLoader
+import nolambda.uibook.clipboard.ClipboardManager
+import nolambda.uibook.clipboard.DesktopClipboardManager
 import nolambda.uibook.components.booklist.BookList
 import nolambda.uibook.factory.BookConfig
+import nolambda.uibook.factory.DesktopLibraryLoader
 import nolambda.uibook.factory.LibraryLoader
-
-val library = LibraryLoader.load()
-val names = library.getBookFactories().map { it.getMetaData().name }
+import nolambda.uibook.factory.UIBookLibrary
 
 fun main() {
     runBrowser()
@@ -42,7 +43,17 @@ fun runBrowser() {
         override val resourceLoader: ResourceLoader by lazy {
             DesktopResourceLoader()
         }
+        override val clipboardManager: ClipboardManager by lazy {
+            DesktopClipboardManager()
+        }
+
+        override val libraryLoader: LibraryLoader by lazy {
+            DesktopLibraryLoader()
+        }
     })
+
+    val library = AppBrowserConfig.libraryLoader.load()
+    val names = library.getBookFactories().map { it.getMetaData().name }
 
     application {
         Window(
@@ -59,7 +70,7 @@ fun runBrowser() {
                     ComponentList(names) { index ->
                         selectedIndex = index
                     }
-                    ComponentViewer(selectedIndex)
+                    ComponentViewer(selectedIndex, library)
                 }
             }
         }
@@ -78,7 +89,8 @@ private fun RowScope.ComponentList(
 
 @Composable
 private fun RowScope.ComponentViewer(
-    selectedIndex: Int
+    selectedIndex: Int,
+    library: UIBookLibrary
 ) {
     val emptyBookConfig = object : BookConfig {
         override val onExit: () -> Unit = {}

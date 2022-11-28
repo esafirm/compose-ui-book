@@ -20,9 +20,15 @@ kotlin {
     sourceSets {
         named("commonMain") {
             dependencies {
+
+                // We should get all compose related dependencies from the plugin
+                // compose => ComposePlugin#Dependencies
+                // https://github.com/JetBrains/compose-jb/blob/master/gradle-plugins/compose/src/main/kotlin/org/jetbrains/compose/ComposePlugin.kt#L111
+
                 api(compose.runtime)
                 api(compose.foundation)
                 api(compose.material)
+                api(compose.materialIconsExtended)
 
                 // Needed only for preview.
                 implementation(compose.preview)

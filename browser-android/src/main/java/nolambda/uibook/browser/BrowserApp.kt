@@ -7,6 +7,10 @@ import nolambda.uibook.browser.config.AppBrowserConfig
 import nolambda.uibook.browser.config.BrowserConfig
 import nolambda.uibook.browser.config.ResourceLoader
 import nolambda.uibook.browser.resourceloader.AndroidResourceLoader
+import nolambda.uibook.clipboard.AndroidClipboardManager
+import nolambda.uibook.clipboard.ClipboardManager
+import nolambda.uibook.factory.AndroidLibraryLoader
+import nolambda.uibook.factory.LibraryLoader
 
 class BrowserApp : Application() {
 
@@ -17,6 +21,14 @@ class BrowserApp : Application() {
 
             override val resourceLoader: ResourceLoader by lazy {
                 AndroidResourceLoader()
+            }
+
+            override val clipboardManager: ClipboardManager by lazy {
+                AndroidClipboardManager(this@BrowserApp)
+            }
+
+            override val libraryLoader: LibraryLoader by lazy {
+                AndroidLibraryLoader()
             }
         })
     }

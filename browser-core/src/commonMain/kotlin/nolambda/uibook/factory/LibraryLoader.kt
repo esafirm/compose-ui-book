@@ -1,7 +1,8 @@
 package nolambda.uibook.factory
 
-internal interface LibraryLoaderInterface {
+/**
+ * Load the UI Book library that already captured by the annotation processor.
+ */
+interface LibraryLoader {
     fun load(): UIBookLibrary
 }
-
-expect object LibraryLoader : LibraryLoaderInterface
