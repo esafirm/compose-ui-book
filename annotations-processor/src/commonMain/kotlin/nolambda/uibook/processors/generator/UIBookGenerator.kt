@@ -38,6 +38,10 @@ class UIBookGenerator(
     private val composeEmitterClass = ClassName("nolambda.uibook.browser.form", "ComposeEmitter")
     private val composeViewCreatorClass = ClassName("nolambda.uibook.browser.form", "ComposeViewCreator")
 
+    // Input creator
+    private val inputClass = ClassName("nolambda.uibook.browser.form", "InputCreator")
+    private val defaultInputClass = ClassName("nolambda.uibook.browser.form", "DefaultInputCreator")
+
     // Android Specific
     private val androidContainerClass = ClassName("nolambda.uibook.components.bookform", "AndroidContainer")
     private val androidBookHost = ClassName("nolambda.uibook.browser", "AndroidBookHost")
@@ -177,21 +181,21 @@ class UIBookGenerator(
      * FormCreator(config, meta, onUpdateState, onChildCreation).create()
      * ```
      */
-    @Suppress("DEPRECATION")
     private fun CodeBlock.Builder.addFormCreatorConstructor(bookCreator: BookCreatorMetaData) {
         val formCreatorClass = ClassName("nolambda.uibook.browser.form", "FormCreator")
-        val inputCreatorType = bookCreator.customComponent.inputCreator?.toTypeName()
         val stateProviderType = bookCreator.customComponent.viewStateProvider?.toTypeName()
 
         val defaultTypeName = UIBook.Default::class.asTypeName()
-        val isDefaultInputCreator = inputCreatorType == null || inputCreatorType == defaultTypeName
         val isDefaultViewStateProvider = stateProviderType == null || stateProviderType == defaultTypeName
 
-        var statementInput = ""
-        if (!isDefaultInputCreator) {
-            addStatement("val inputCreator = %T()", inputCreatorType)
-            statementInput = ", inputCreator = inputCreator"
+        addStatement("val inputCreators = arrayOf<%T>(", inputClass)
+        bookCreator.customComponent.inputCreators.forEach {
+            val selectedClass = it ?: defaultInputClass
+            addStatement("   %T(),", selectedClass)
         }
+        addStatement(")")
+
+        val statementInput = ", inputCreators = inputCreators"
 
         var statementViewState = ""
         if (!isDefaultViewStateProvider) {

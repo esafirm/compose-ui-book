@@ -20,7 +20,7 @@ class FormCreator(
     private val onUpdateState: (Array<Any>) -> Unit,
     private val onChildCreation: ComposeViewCreator,
     private val viewStateProvider: ViewStateProvider = DefaultViewStateProvider(),
-    private val inputCreator: InputCreator = DefaultInputCreator()
+    private val inputCreators: Array<InputCreator>
 ) {
 
     private val bookHost by lazy { AppBrowserConfig.bookHost }
@@ -38,7 +38,7 @@ class FormCreator(
                 bookView = { onChildCreation(bookHost, viewState) },
                 inputData = InputData(
                     viewState = viewState,
-                    inputCreator = inputCreator,
+                    inputCreators = inputCreators,
                     setViewState = setViewState
                 )
             )

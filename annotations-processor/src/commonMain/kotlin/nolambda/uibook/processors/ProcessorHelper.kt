@@ -2,29 +2,40 @@ package nolambda.uibook.processors
 
 import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.getAnnotationsByType
+import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
-import nolambda.uibook.annotations.BookMetaData
-import nolambda.uibook.annotations.FunctionParameter
+import com.squareup.kotlinpoet.asTypeName
+import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
+import com.squareup.kotlinpoet.ksp.toTypeName
 import nolambda.uibook.annotations.State
 import nolambda.uibook.annotations.UIBook
 import nolambda.uibook.annotations.code.CodeSpec
 import nolambda.uibook.processors.generator.BookCreatorMetaData
+import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.processors.generator.CustomComponent
+import nolambda.uibook.annotations.FunctionParameter
 import nolambda.uibook.processors.utils.DefaultValueResolver
 import nolambda.uibook.processors.utils.Logger
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtNamedFunction
+import kotlin.reflect.KClass
 
+/**
+ * Parse the [UIBook] annotation and generate the [BookCreatorMetaData]
+ */
 @KspExperimental
+@OptIn(KotlinPoetKspPreview::class)
 class ProcessorHelper(
     private val el: KSFunctionDeclaration,
     private val psiElement: PsiElement,
     private val logger: Logger
 ) {
+
+    private val defaultUiBookTypeName = UIBook.Default::class.asTypeName()
 
     private val psiParameters by lazy {
         (psiElement as? KtFunction)?.valueParameters?.map {
@@ -85,14 +96,22 @@ class ProcessorHelper(
     }
 
     private fun getCustomComponent(): CustomComponent {
-        val ksAnnotation = el.annotations.firstOrNull {
-            it.shortName.asString() == UIBook::class.simpleName
+        val ksAnnotation = el.getKsAnnotationByType(UIBook::class).firstOrNull()
+        val arrayOfInputCreators = el.parameters.map {
+            val original = it.getKsAnnotationByType(State::class).firstOrNull().argumentAsKtype(1)?.toTypeName()
+            if (original == defaultUiBookTypeName) null else original
         }
 
         return CustomComponent(
-            inputCreator = ksAnnotation.argumentAsKtype(1),
-            viewStateProvider = ksAnnotation.argumentAsKtype(2),
+            inputCreators = arrayOfInputCreators,
+            viewStateProvider = ksAnnotation.argumentAsKtype(1)
         )
+    }
+
+    private fun KSAnnotated.getKsAnnotationByType(klass: KClass<*>): Sequence<KSAnnotation> {
+        return annotations.filter {
+            it.shortName.asString() == klass.simpleName
+        }
     }
 
     private fun KSAnnotation?.argumentAsKtype(index: Int): KSType? {

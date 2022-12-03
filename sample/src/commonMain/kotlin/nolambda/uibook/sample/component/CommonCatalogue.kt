@@ -3,11 +3,9 @@ package nolambda.uibook.sample.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
@@ -38,8 +36,11 @@ import nolambda.uibook.browser.BookHost
 
 @UIBook(name = "Compose code")
 @Composable
-fun BookHost.SampleText(text: String) {
-    Text(text = text)
+fun BookHost.SampleText(
+    @State(defaultValue = "", inputCreator = ButtonInput::class) text: String,
+    @State(defaultValue = "true") testFlag: Boolean
+) {
+    Text(text = "Text: $text -- $testFlag")
 }
 
 @UIBook(name = "Circular Image Sample")

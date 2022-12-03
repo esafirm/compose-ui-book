@@ -6,8 +6,7 @@ import kotlin.reflect.KClass
 @Retention(AnnotationRetention.SOURCE)
 annotation class UIBook(
     val name: String,
-    val viewStateProvider: KClass<*> = Default::class,
-    val inputCreator: KClass<*> = Default::class
+    val viewStateProvider: KClass<*> = Default::class
 ) {
     object Default
 }

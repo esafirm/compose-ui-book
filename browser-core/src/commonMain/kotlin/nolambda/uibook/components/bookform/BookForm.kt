@@ -36,11 +36,9 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -75,7 +73,7 @@ private fun InputView(
     metaData: BookMetaData,
     inputData: InputData
 ) {
-    val inputCreator = inputData.inputCreator
+    val inputCreators = inputData.inputCreators
     val viewState = inputData.viewState
     val setViewState = inputData.setViewState
 
@@ -86,7 +84,7 @@ private fun InputView(
     ) {
         metaData.parameters.forEachIndexed { index, parameter ->
 
-            inputCreator.CreateInput(
+            inputCreators[index].CreateInput(
                 parameter = parameter,
                 defaultState = viewState[index],
                 setViewState = { newViewState -> setViewState(index, newViewState) },

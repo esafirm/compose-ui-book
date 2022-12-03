@@ -1,5 +1,7 @@
 package nolambda.uibook.annotations
 
+import kotlin.reflect.KClass
+
 /**
  * Represent each parameter in UI book function
  *
@@ -7,7 +9,7 @@ package nolambda.uibook.annotations
  *
  * ```kotlin
  * @UIBook
- * fun BookHost.Text(@Choices(values = arrayOf("a","b")) aText: String = "Some text") {...}
+ * fun BookHost.Text(@State(inputCreator = ButtonInput::class) aText: String = "Some text") {...}
  * ```
  *
  * In above example function parameter will represent `aText` with value
@@ -15,7 +17,6 @@ package nolambda.uibook.annotations
  * name: aText
  * type: String
  * defaultValue: "Some text"
- * annotation: Choices(values = arrayOf("a","b"))
  *
  */
 data class FunctionParameter(
