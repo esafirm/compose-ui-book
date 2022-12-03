@@ -17,9 +17,9 @@ kotlin {
             dependencies {
                 implementation(project(":annotations"))
 
-                val kotlin_version: String by rootProject
-                implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlin_version")
-                implementation("com.google.devtools.ksp:symbol-processing-api:1.5.31-1.0.0")
+                val kotlinVersion: String by rootProject
+                implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlinVersion")
+                implementation("com.google.devtools.ksp:symbol-processing-api:1.7.20-1.0.8")
 
                 val kotlinPoetVersion = "1.10.2"
                 implementation("com.squareup:kotlinpoet:$kotlinPoetVersion")

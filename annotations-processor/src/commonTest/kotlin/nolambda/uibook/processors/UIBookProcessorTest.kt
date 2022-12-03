@@ -12,12 +12,11 @@ class UIBookProcessorTest : AbstractKspTest(UIBookProcessorProvider()) {
         val result = compile(
             """
             package test
-            
+
             import nolambda.uibook.annotations.UIBook
             import androidx.compose.runtime.Composable
-            import androidx.compose.material.Text
-            
-            
+            import androidx.compose.material.Text       
+
             @UIBook(name = "Compose code")
             @Composable
             fun BookHost.SampleText(text: String) {
