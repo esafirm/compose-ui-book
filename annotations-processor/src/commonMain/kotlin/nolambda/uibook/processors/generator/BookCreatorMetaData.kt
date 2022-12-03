@@ -2,10 +2,8 @@ package nolambda.uibook.processors.generator
 
 import com.google.devtools.ksp.symbol.KSFile
 import com.google.devtools.ksp.symbol.KSType
-import com.squareup.kotlinpoet.TypeName
 import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.annotations.UIBook
-import kotlin.reflect.KType
 
 data class BookCreatorMetaData(
     val annotation: UIBook,
