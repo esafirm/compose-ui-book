@@ -23,16 +23,6 @@ fun AndroidBookHost.createTextView(text: String): TextView {
     }
 }
 
-@UIBook(
-    name = "Custom Input",
-    inputCreator = ButtonInput::class
-)
-fun AndroidBookHost.createTextViewCustom(text: String): TextView {
-    return TextView(context).apply {
-        this.text = text
-    }
-}
-
 @UIBook(name = "Input")
 fun AndroidBookHost.createInput(input: String, hint: String): View {
     return EditText(context).apply {
