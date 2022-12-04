@@ -2,6 +2,7 @@ package nolambda.uibook.processors.generator
 
 import com.google.devtools.ksp.symbol.KSFile
 import com.google.devtools.ksp.symbol.KSType
+import com.squareup.kotlinpoet.TypeName
 import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.annotations.UIBook
 
@@ -17,6 +18,6 @@ data class BookCreatorMetaData(
  * In java annotation processing, we still can use TypeMirrorException
  */
 class CustomComponent(
-    val inputCreator: KSType? = null,
+    val inputCreators: List<TypeName?>,
     val viewStateProvider: KSType? = null
 )

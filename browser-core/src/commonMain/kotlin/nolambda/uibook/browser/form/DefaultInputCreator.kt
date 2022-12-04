@@ -17,6 +17,9 @@ import androidx.compose.ui.text.input.TextFieldValue
 import nolambda.uibook.annotations.FunctionParameter
 import nolambda.uibook.browser.ParameterTypes
 
+/**
+ * [InputCreator] that determine the input based on the type of the parameter
+ */
 class DefaultInputCreator : InputCreator {
 
     @Composable
