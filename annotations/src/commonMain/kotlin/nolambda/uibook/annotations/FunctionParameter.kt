@@ -1,7 +1,5 @@
 package nolambda.uibook.annotations
 
-import kotlin.reflect.KClass
-
 /**
  * Represent each parameter in UI book function
  *
@@ -23,4 +21,6 @@ data class FunctionParameter(
     val name: String,
     val type: String,
     val defaultValue: String
-)
+) {
+    val isNumberType get() = type == "Int" || type == "Float" || type == "Double" || type == "Long"
+}

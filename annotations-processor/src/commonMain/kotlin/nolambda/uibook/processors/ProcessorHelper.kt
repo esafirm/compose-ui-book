@@ -139,6 +139,9 @@ class ProcessorHelper(
         return function
     }
 
+    /**
+     * Check if PSI and KSP are the same
+     */
     private fun isTheSame(): Boolean {
         if (psiElement !is KtFunction) return false
         if (el.simpleName.asString() != psiElement.name) return false

@@ -2,6 +2,7 @@ package nolambda.uibook.sample.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,20 +36,26 @@ import nolambda.uibook.annotations.State
 import nolambda.uibook.annotations.UIBook
 import nolambda.uibook.browser.BookHost
 import nolambda.uibook.browser.form.OptionInputCreator
+import nolambda.uibook.browser.form.SliderInputCreator
 
 internal class SimpleItem : OptionInputCreator<String>(listOf("A", "B", "C"))
+internal class SimpleIntSlider : SliderInputCreator(steps = 10, valueRange = 0f..10f)
 
 @UIBook(name = "Compose code")
 @Composable
 fun BookHost.SampleText(
     @State(defaultValue = "", inputCreator = ButtonInput::class) text: String,
     @State(defaultValue = "true") testFlag: Boolean,
-    @State(defaultValue = "A", inputCreator = SimpleItem::class) switch: String
+    @State(defaultValue = "A", inputCreator = SimpleItem::class) switch: String,
+    @State(defaultValue = "0", inputCreator = SimpleIntSlider::class) slider: Int
 ) {
-    Column {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
         Text("First value: $text")
         Text("Second value: $testFlag")
         Text("Third value: $switch")
+        Text("Slider value: $slider")
     }
 }
 

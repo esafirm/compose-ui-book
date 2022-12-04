@@ -1,6 +1,7 @@
 package nolambda.uibook.browser.form
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Button
@@ -32,27 +33,31 @@ abstract class OptionInputCreator<T : Any>(
     ) {
         val (selectedItem, setSelectedItem) = remember { mutableStateOf(defaultState) }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items.forEach { item ->
-                Button(
-                    onClick = {
-                        setViewState(item)
-                        setSelectedItem(item)
-                    },
-                    modifier = Modifier.weight(1F),
-                    colors = if (selectedItem == item) {
-                        ButtonDefaults.buttonColors(
-                            backgroundColor = MaterialTheme.colors.secondary,
-                            contentColor = Color.White
-                        )
-                    } else {
-                        ButtonDefaults.buttonColors()
+        Column {
+            Text(text = parameter.name, modifier = Modifier.fillMaxWidth())
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items.forEach { item ->
+                    Button(
+                        onClick = {
+                            setViewState(item)
+                            setSelectedItem(item)
+                        },
+                        modifier = Modifier.weight(1F),
+                        colors = if (selectedItem == item) {
+                            ButtonDefaults.buttonColors(
+                                backgroundColor = MaterialTheme.colors.secondary,
+                                contentColor = Color.White
+                            )
+                        } else {
+                            ButtonDefaults.buttonColors()
+                        }
+                    ) {
+                        Text(text = item.toString())
                     }
-                ) {
-                    Text(text = item.toString())
                 }
             }
         }
