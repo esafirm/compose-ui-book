@@ -3,6 +3,7 @@ package nolambda.uibook.sample.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,14 +34,22 @@ import androidx.compose.ui.unit.sp
 import nolambda.uibook.annotations.State
 import nolambda.uibook.annotations.UIBook
 import nolambda.uibook.browser.BookHost
+import nolambda.uibook.browser.form.OptionInputCreator
+
+internal class SimpleItem : OptionInputCreator<String>(listOf("A", "B", "C"))
 
 @UIBook(name = "Compose code")
 @Composable
 fun BookHost.SampleText(
     @State(defaultValue = "", inputCreator = ButtonInput::class) text: String,
-    @State(defaultValue = "true") testFlag: Boolean
+    @State(defaultValue = "true") testFlag: Boolean,
+    @State(defaultValue = "A", inputCreator = SimpleItem::class) switch: String
 ) {
-    Text(text = "Text: $text -- $testFlag")
+    Column {
+        Text("First value: $text")
+        Text("Second value: $testFlag")
+        Text("Third value: $switch")
+    }
 }
 
 @UIBook(name = "Circular Image Sample")
