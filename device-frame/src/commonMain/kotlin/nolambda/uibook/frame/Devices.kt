@@ -1,6 +1,9 @@
 package nolambda.uibook.frame
 
-import nolambda.uibook.frame.ios.iphone12
+import nolambda.uibook.frame.ios.iPad
+import nolambda.uibook.frame.ios.iPadPro
+import nolambda.uibook.frame.ios.iPhoneSE
+import nolambda.uibook.frame.ios.iPhone12
 
 object Devices {
     val responsive = Device(
@@ -13,54 +16,16 @@ object Devices {
 
     val all = listOf(
         responsive,
-        iphone12,
-
+        iPhone12,
+        iPhoneSE,
+        iPad,
+        iPadPro
     )
 
-    val iPhone8 = Device(
-        name = "iPhone 8",
-        resolution = Resolution(
-            nativeSize = DeviceSize(
-                width = 375,
-                height = 667
-            )
-        ),
-        platform = DevicePlatform.IOS
-    )
-    val iPhoneSE = Device(
-        name = "iPhone SE",
-        resolution = Resolution(
-            nativeSize = DeviceSize(
-                width = 320,
-                height = 568
-            )
-        ),
-        platform = DevicePlatform.IOS
-    )
-    val iPadPro = Device(
-        name = "iPad Pro",
-        resolution = Resolution(
-            nativeSize = DeviceSize(
-                width = 1024,
-                height = 1366
-            )
-        ),
-        platform = DevicePlatform.IOS
-    )
-    val iPad = Device(
-        name = "iPad",
-        resolution = Resolution(
-            nativeSize = DeviceSize(
-                width = 768,
-                height = 1024
-            )
-        ),
-        platform = DevicePlatform.IOS
-    )
     val nexus5 = Device(
         name = "Nexus 5",
         resolution = Resolution(
-            nativeSize = DeviceSize(
+            screenSize = DeviceSize(
                 width = 360,
                 height = 640
             )
@@ -70,7 +35,7 @@ object Devices {
     val nexus7 = Device(
         name = "Nexus 7",
         resolution = Resolution(
-            nativeSize = DeviceSize(
+            screenSize = DeviceSize(
                 width = 600,
                 height = 960
             )
@@ -80,7 +45,7 @@ object Devices {
     val nexus10 = Device(
         name = "Nexus 10",
         resolution = Resolution(
-            nativeSize = DeviceSize(
+            screenSize = DeviceSize(
                 width = 800,
                 height = 1280
             )
@@ -90,7 +55,7 @@ object Devices {
     val nexus9 = Device(
         name = "Nexus 9",
         resolution = Resolution(
-            nativeSize = DeviceSize(
+            screenSize = DeviceSize(
                 width = 768,
                 height = 1024
             )
@@ -100,7 +65,7 @@ object Devices {
     val nexus6 = Device(
         name = "Nexus 6",
         resolution = Resolution(
-            nativeSize = DeviceSize(
+            screenSize = DeviceSize(
                 width = 412,
                 height = 732
             )

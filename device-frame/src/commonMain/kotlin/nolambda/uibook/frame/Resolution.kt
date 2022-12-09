@@ -5,11 +5,12 @@ package nolambda.uibook.frame
  * It's device size with a scale factor
  */
 data class Resolution(
-    val nativeSize: DeviceSize,
+    val screenSize: DeviceSize,
+    val frameSize: DeviceSize = screenSize,
     val scaleFactor: Float = 1f
 ) {
     val logicalDevice = DeviceSize(
-        width = (nativeSize.width * scaleFactor).toInt(),
-        height = (nativeSize.height * scaleFactor).toInt()
+        width = (screenSize.width * scaleFactor).toInt(),
+        height = (screenSize.height * scaleFactor).toInt()
     )
 }

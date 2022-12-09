@@ -13,10 +13,10 @@ import nolambda.uibook.frame.Device
 import nolambda.uibook.frame.DevicePlatform
 import nolambda.uibook.frame.DeviceSize
 import nolambda.uibook.frame.Resolution
-import nolambda.uibook.frame.drawRectFromRect
+import nolambda.uibook.frame.utils.drawRectFromRect
 
-private val iPhone12Frame = @Composable {
-    Canvas(modifier = Modifier) {
+private val iPhone12Frame = @Composable { modifier: Modifier ->
+    Canvas(modifier = modifier) {
 
         drawPath(
             path = Path().apply {
@@ -305,10 +305,10 @@ private val iPhone12Screen: Path.() -> Unit = {
     fillType = PathFillType.EvenOdd
 }
 
-internal val iphone12 = Device(
+internal val iPhone12 = Device(
     name = "iPhone 12",
     resolution = Resolution(
-        nativeSize = DeviceSize(
+        screenSize = DeviceSize(
             width = 873,
             height = 1771
         )

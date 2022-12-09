@@ -1,4 +1,4 @@
-package nolambda.uibook.frame
+package nolambda.uibook.frame.utils
 
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
