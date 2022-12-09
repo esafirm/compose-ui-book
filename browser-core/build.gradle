@@ -33,6 +33,9 @@ kotlin {
                 // Needed only for preview.
                 implementation(compose.preview)
 
+                // Device preview
+                implementation(project(':device-frame'))
+
                 // UI-Book
                 api(project(':annotations'))
                 api("com.wakaztahir:codeeditor:3.0.5")
