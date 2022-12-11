@@ -13,6 +13,7 @@ import nolambda.uibook.frame.Device
 import nolambda.uibook.frame.DevicePlatform
 import nolambda.uibook.frame.DeviceSize
 import nolambda.uibook.frame.Resolution
+import nolambda.uibook.frame.utils.RectFactory
 import nolambda.uibook.frame.utils.drawRectFromRect
 
 private val iPhone12Frame = @Composable { modifier: Modifier ->
@@ -157,61 +158,61 @@ private val iPhone12Frame = @Composable { modifier: Modifier ->
         )
 
         drawRectFromRect(
-            Rect(
+            RectFactory.LTWH(
                 left = size.width * 0.7825063F,
                 top = 0F,
-                right = size.width * 0.01418442F,
-                bottom = size.height * 0.005826708F
+                width = size.width * 0.01418442F,
+                height = size.height * 0.005826708F
             ),
             color = Color(0xff36454C)
         )
 
         drawRectFromRect(
-            Rect(
+            RectFactory.LTWH(
                 left = size.width * 0.9810871F,
                 top = size.height * 0.1002196F,
-                right = size.width * 0.01182027F,
-                bottom = size.height * 0.006992095F
+                width = size.width * 0.01182027F,
+                height = size.height * 0.006992095F
             ),
             color = Color(0xff36454C)
         )
 
         drawRectFromRect(
-            Rect(
+            RectFactory.LTWH(
                 left = size.width * 0.007092108F,
                 top = size.height * 0.1002196F,
-                right = size.width * 0.01182027F,
-                bottom = size.height * 0.006992095F
+                width = size.width * 0.01182027F,
+                height = size.height * 0.006992095F
             ),
             color = Color(0xff36454C)
         )
 
         drawRectFromRect(
-            Rect(
+            RectFactory.LTWH(
                 left = size.width * 0.007092108F,
                 top = size.height * 0.8926539F,
-                right = size.width * 0.01182027F,
-                bottom = size.height * 0.006992095F
+                width = size.width * 0.01182027F,
+                height = size.height * 0.006992095F
             ),
             color = Color(0xff36454C)
         )
 
         drawRectFromRect(
-            Rect(
+            RectFactory.LTWH(
                 left = size.width * 0.9810871F,
                 top = size.height * 0.8926539F,
-                right = size.width * 0.01182027F,
-                bottom = size.height * 0.006992095F
+                width = size.width * 0.01182027F,
+                height = size.height * 0.006992095F
             ),
             color = Color(0xff36454C)
         )
 
         drawRectFromRect(
-            Rect(
+            RectFactory.LTWH(
                 left = size.width * 0.2033093F,
                 top = size.height * 0.9940429F,
-                right = size.width * 0.01418442F,
-                bottom = size.height * 0.005826708F
+                width = size.width * 0.01418442F,
+                height = size.height * 0.005826708F
             ),
             color = Color(0xff36454C)
         )
@@ -308,9 +309,10 @@ private val iPhone12Screen: Path.() -> Unit = {
 internal val iPhone12 = Device(
     name = "iPhone 12",
     resolution = Resolution(
-        screenSize = DeviceSize(
-            width = 873,
-            height = 1771
+        screenSize = DeviceSize.fromPathFunc(iPadScreen),
+        frameSize = DeviceSize(
+            width = 874,
+            height = 1770
         )
     ),
     frame = iPhone12Frame,

@@ -131,10 +131,7 @@ val iPadScreen: Path.() -> Unit = {
 val iPad = Device(
     name = "iPad",
     resolution = Resolution(
-        screenSize = DeviceSize(
-            width = 768,
-            height = 1024
-        )
+        screenSize = DeviceSize.fromPathFunc(iPadScreen),
     ),
     platform = DevicePlatform.IOS,
     frame = iPadFrame,

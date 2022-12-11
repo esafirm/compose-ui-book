@@ -101,10 +101,8 @@ private val iPadProScreen: Path.() -> Unit = {
 val iPadPro = Device(
     name = "iPad Pro",
     resolution = Resolution(
-        screenSize = DeviceSize(
-            width = 1024,
-            height = 1366
-        )
+        screenSize = DeviceSize.fromPathFunc(iPadProScreen),
+//        frameSize = DeviceSize(1741, 2412),
     ),
     platform = DevicePlatform.IOS,
     frame = iPadProFrame,

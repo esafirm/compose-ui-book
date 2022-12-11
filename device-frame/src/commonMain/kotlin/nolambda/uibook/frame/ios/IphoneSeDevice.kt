@@ -215,13 +215,13 @@ private val iPhoneSeScreen: Path.() -> Unit = {
     fillType = PathFillType.EvenOdd
 }
 
-
 val iPhoneSE = Device(
     name = "iPhone SE",
     resolution = Resolution(
-        screenSize = DeviceSize(
-            width = 320,
-            height = 568
+        screenSize = DeviceSize.fromPathFunc(iPhoneSeScreen),
+        frameSize = DeviceSize(
+            width = 891,
+            height = 1790,
         )
     ),
     platform = DevicePlatform.IOS,

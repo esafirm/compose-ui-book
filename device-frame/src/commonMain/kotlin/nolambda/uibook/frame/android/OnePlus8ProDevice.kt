@@ -189,10 +189,7 @@ private val onePlus8ProScreen: Path.() -> Unit = {
 val onePlus8Pro = Device(
     name = "OnePlus 8 Pro",
     resolution = Resolution(
-        screenSize = DeviceSize(
-            width = 360,
-            height = 800
-        ),
+        screenSize = DeviceSize.fromPathFunc(onePlus8ProScreen),
         frameSize = DeviceSize(
             width = 852,
             height = 1865
