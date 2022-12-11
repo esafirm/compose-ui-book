@@ -37,6 +37,7 @@ import nolambda.uibook.annotations.UIBook
 import nolambda.uibook.browser.BookHost
 import nolambda.uibook.browser.form.OptionInputCreator
 import nolambda.uibook.browser.form.SliderInputCreator
+import nolambda.uibook.frame.generic.factory.GenericPhoneDeviceFrameFactory
 
 internal class SimpleItem : OptionInputCreator<String>(listOf("A", "B", "C"))
 internal class SimpleIntSlider : SliderInputCreator(steps = 10, valueRange = 0f..10f)
@@ -142,4 +143,11 @@ fun BookHost.ScaffoldSample() {
             }
         }
     )
+}
+
+@UIBook(name = "Generic Phone Frame")
+@Composable
+fun BookHost.GenericPhoneFrame() {
+    val composable = GenericPhoneDeviceFrameFactory.create()
+    composable(Modifier.fillMaxSize())
 }

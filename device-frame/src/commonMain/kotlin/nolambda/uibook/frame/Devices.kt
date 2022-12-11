@@ -1,5 +1,6 @@
 package nolambda.uibook.frame
 
+import nolambda.uibook.frame.android.onePlus8Pro
 import nolambda.uibook.frame.ios.iPad
 import nolambda.uibook.frame.ios.iPadPro
 import nolambda.uibook.frame.ios.iPhoneSE
@@ -19,57 +20,7 @@ object Devices {
         iPhone12,
         iPhoneSE,
         iPad,
-        iPadPro
-    )
-
-    val nexus5 = Device(
-        name = "Nexus 5",
-        resolution = Resolution(
-            screenSize = DeviceSize(
-                width = 360,
-                height = 640
-            )
-        ),
-        platform = DevicePlatform.ANDROID
-    )
-    val nexus7 = Device(
-        name = "Nexus 7",
-        resolution = Resolution(
-            screenSize = DeviceSize(
-                width = 600,
-                height = 960
-            )
-        ),
-        platform = DevicePlatform.ANDROID
-    )
-    val nexus10 = Device(
-        name = "Nexus 10",
-        resolution = Resolution(
-            screenSize = DeviceSize(
-                width = 800,
-                height = 1280
-            )
-        ),
-        platform = DevicePlatform.ANDROID
-    )
-    val nexus9 = Device(
-        name = "Nexus 9",
-        resolution = Resolution(
-            screenSize = DeviceSize(
-                width = 768,
-                height = 1024
-            )
-        ),
-        platform = DevicePlatform.ANDROID
-    )
-    val nexus6 = Device(
-        name = "Nexus 6",
-        resolution = Resolution(
-            screenSize = DeviceSize(
-                width = 412,
-                height = 732
-            )
-        ),
-        platform = DevicePlatform.ANDROID
+        iPadPro,
+        onePlus8Pro
     )
 }

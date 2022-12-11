@@ -34,7 +34,7 @@ kotlin {
                 implementation(compose.preview)
 
                 // Device preview
-                implementation(project(':device-frame'))
+                api(project(':device-frame'))
 
                 // UI-Book
                 api(project(':annotations'))
