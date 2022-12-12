@@ -64,6 +64,7 @@ import nolambda.uibook.browser.config.AppBrowserConfig
 import nolambda.uibook.browser.form.ComposeEmitter
 import nolambda.uibook.components.UIBookColors
 import nolambda.uibook.frame.Device
+import nolambda.uibook.frame.DeviceFrame
 import nolambda.uibook.frame.Devices
 
 private const val LARGE_SCREEN_THRESHOLD = 1000
@@ -71,7 +72,7 @@ private const val LARGE_SCREEN_THRESHOLD = 1000
 @Composable
 private fun InputView(
     metaData: BookMetaData,
-    inputData: InputData
+    inputData: InputData,
 ) {
     val inputCreators = inputData.inputCreators
     val viewState = inputData.viewState
@@ -98,7 +99,7 @@ private fun InputView(
 
 @Composable
 private fun SourceCodeView(
-    rawSourceCode: String
+    rawSourceCode: String,
 ) {
     val verticalScrollState = rememberScrollState()
     val horizontalScrollState = rememberScrollState()
@@ -167,7 +168,7 @@ private fun NotificationBar(
     message: String,
     timeoutInMs: Long = 1_200,
     showState: MutableState<Boolean>,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     AnimatedVisibility(showState.value, modifier = modifier) {
 
@@ -239,30 +240,33 @@ private fun Modifier.rippleClick(onClick: () -> Unit): Modifier {
 }
 
 @Composable
-private fun BoxScope.DeviceFrame(
+private fun BoxScope.DeviceFrameWrapper(
     selectedDevice: Device,
     scale: Float,
     transformableState: TransformableState,
-    book: ComposeEmitter
+    book: ComposeEmitter,
 ) {
-    val originalModifier = Modifier.align(Alignment.Center)
-    val finalModifier = if (selectedDevice != Devices.responsive) {
-        originalModifier
-            .requiredWidth(selectedDevice.resolution.nativeSize.width.dp)
-            .requiredHeight(selectedDevice.resolution.nativeSize.height.dp)
-            .graphicsLayer(
-                scaleX = scale,
-                scaleY = scale,
-            )
-            .transformable(transformableState)
-            .background(Color.White)
-            .border(1.dp, Color.Gray, RectangleShape)
-    } else originalModifier
-
-    Box(Modifier.fillMaxSize()) {
-        Box(finalModifier) {
+    if (selectedDevice == Devices.responsive) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .align(Alignment.Center)
+        ) {
             book()
         }
+        return
+    }
+
+    val modifier = Modifier.align(Alignment.Center)
+        .graphicsLayer(
+            scaleX = scale,
+            scaleY = scale,
+        )
+        .transformable(transformableState)
+        .border(1.dp, Color.Gray, RectangleShape)
+
+    DeviceFrame(selectedDevice, modifier = modifier) {
+        book()
     }
 }
 
@@ -270,7 +274,7 @@ private fun BoxScope.DeviceFrame(
 private fun ControlPane(
     meta: BookMetaData,
     inputData: InputData,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val selectedIndex = remember { mutableStateOf(0) }
 
@@ -304,7 +308,7 @@ private fun AdaptivePane(
     modifier: Modifier = Modifier,
     columnModifier: @Composable ColumnScope.() -> Modifier,
     rowModifier: @Composable RowScope.() -> Modifier,
-    content: @Composable (Modifier) -> Unit
+    content: @Composable (Modifier) -> Unit,
 ) {
     BoxWithConstraints(modifier = modifier) {
         val isLargeScreen = maxWidth > largeScreenThreshold.dp
@@ -324,7 +328,7 @@ private fun AdaptivePane(
 fun BookForm(
     meta: BookMetaData,
     bookView: ComposeEmitter,
-    inputData: InputData
+    inputData: InputData,
 ) {
     val selectedDevice = remember { mutableStateOf(Devices.responsive) }
     val isMeasurementEnabled = GlobalState.measurementEnabled
@@ -358,7 +362,7 @@ fun BookForm(
             ) {
                 Box {
                     PixelGrid()
-                    DeviceFrame(
+                    DeviceFrameWrapper(
                         selectedDevice = selectedDevice.value,
                         scale = scale,
                         transformableState = state,

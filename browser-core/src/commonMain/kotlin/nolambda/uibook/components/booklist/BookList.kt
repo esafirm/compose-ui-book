@@ -20,9 +20,10 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun BookList(
     bookNames: List<String>,
-    navigateToBook: (index: Int) -> Unit
+    modifier: Modifier = Modifier,
+    navigateToBook: (index: Int) -> Unit,
 ) {
-    Column {
+    Column(modifier = modifier) {
         TopAppBar {
             Text(
                 text = "UIBook",
@@ -44,7 +45,7 @@ fun BookList(
 private fun ClickableText(
     text: String,
     textColor: Color = Color.Black,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Text(
         text = text, color = textColor, modifier = Modifier

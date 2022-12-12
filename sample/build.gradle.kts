@@ -3,7 +3,6 @@ plugins {
     id("org.jetbrains.kotlin.multiplatform")
     id("org.jetbrains.compose")
     id("com.google.devtools.ksp")
-
 }
 
 kotlin {
