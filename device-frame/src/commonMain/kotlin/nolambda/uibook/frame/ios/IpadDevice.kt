@@ -132,6 +132,10 @@ val iPad = Device(
     name = "iPad",
     resolution = Resolution(
         screenSize = DeviceSize.fromPathFunc(iPadScreen),
+        frameSize = DeviceSize(
+            width = 1673,
+            height = 2409
+        )
     ),
     platform = DevicePlatform.IOS,
     frame = iPadFrame,

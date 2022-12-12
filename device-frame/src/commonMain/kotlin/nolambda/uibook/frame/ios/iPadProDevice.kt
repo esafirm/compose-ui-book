@@ -102,7 +102,7 @@ val iPadPro = Device(
     name = "iPad Pro",
     resolution = Resolution(
         screenSize = DeviceSize.fromPathFunc(iPadProScreen),
-//        frameSize = DeviceSize(1741, 2412),
+        frameSize = DeviceSize(1741, 2412),
     ),
     platform = DevicePlatform.IOS,
     frame = iPadProFrame,

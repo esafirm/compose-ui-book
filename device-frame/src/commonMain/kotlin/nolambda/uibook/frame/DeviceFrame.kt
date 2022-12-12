@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -42,14 +43,13 @@ fun DeviceFrame(
         val shape = GenericShape { _, _ -> this.apply(device.screenPath) }
 
         val resolution = device.resolution
+        val sizeModifier = Modifier.requiredSize(
+            width = resolution.frameSize.width.toDp(),
+            height = resolution.frameSize.height.toDp()
+        )
 
-        Box(modifier = modifier) {
-            device.frame(
-                Modifier.size(
-                    width = resolution.frameSize.width.toDp(),
-                    height = resolution.frameSize.height.toDp()
-                )
-            )
+        Box(modifier = sizeModifier.composed { modifier }) {
+            device.frame(Modifier.fillMaxSize())
 
             // Represent the screen padding
             Box(
@@ -63,9 +63,10 @@ fun DeviceFrame(
             ) {
                 // Inside the screen
                 Box(
-                    modifier = Modifier
-                        .width(resolution.screenSize.width.toDp())
-                        .requiredHeight(resolution.screenSize.height.toDp())
+                    modifier = Modifier.requiredSize(
+                        width = resolution.screenSize.width.toDp(),
+                        height = resolution.screenSize.height.toDp()
+                    ).border(1.dp, Color.Green)
                 ) {
                     content()
                 }

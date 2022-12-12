@@ -309,10 +309,10 @@ private val iPhone12Screen: Path.() -> Unit = {
 internal val iPhone12 = Device(
     name = "iPhone 12",
     resolution = Resolution(
-        screenSize = DeviceSize.fromPathFunc(iPadScreen),
+        screenSize = DeviceSize.fromPathFunc(iPhone12Screen),
         frameSize = DeviceSize(
-            width = 874,
-            height = 1770
+            width = 873,
+            height = 1771
         )
     ),
     frame = iPhone12Frame,
