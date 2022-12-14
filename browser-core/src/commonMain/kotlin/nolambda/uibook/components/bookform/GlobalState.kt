@@ -18,4 +18,5 @@ class BooleanStateHolder(
     }
 
     val value get() = state.value
+    val invertedValue get() = !state.value
 }

@@ -381,28 +381,21 @@ fun BookForm(
         setScale(scale * zoomChange)
     }
 
-    if (GlobalState.fullScreenMode.value) {
-        BookCanvas(
-            modifier = Modifier.fillMaxSize(),
-            selectedDevice = selectedDevice.value,
-            scale = scale,
-            transformableState = state,
-            bookView = bookView
-        )
-        return
-    }
-
     Column {
-        FormToolbar(
-            name = meta.name,
-            isMeasurementEnabled = isMeasurementEnabled.value,
-            selectedDevice = selectedDevice.value,
-            scale = scale,
-            onDeviceSelected = selectedDevice::value::set,
-            onToggleClick = { isMeasurementEnabled.value = isMeasurementEnabled.value.not() },
-            onScaleChange = setScale,
+        AnimatedVisibility(
+            visible = GlobalState.fullScreenMode.invertedValue,
             modifier = Modifier.zIndex(1F)
-        )
+        ) {
+            FormToolbar(
+                name = meta.name,
+                isMeasurementEnabled = isMeasurementEnabled.value,
+                selectedDevice = selectedDevice.value,
+                scale = scale,
+                onDeviceSelected = selectedDevice::value::set,
+                onToggleClick = { isMeasurementEnabled.value = isMeasurementEnabled.value.not() },
+                onScaleChange = setScale
+            )
+        }
 
         AdaptivePane(
             largeScreenThreshold = LARGE_SCREEN_THRESHOLD,
@@ -419,14 +412,18 @@ fun BookForm(
                 bookView = bookView
             )
 
-            ControlPane(
-                meta = meta,
-                inputData = inputData,
+            AnimatedVisibility(
+                visible = GlobalState.fullScreenMode.invertedValue,
                 modifier = adaptiveModifier.composed {
                     Modifier.background(MaterialTheme.colors.background)
                         .zIndex(1F)
                 }
-            )
+            ) {
+                ControlPane(
+                    meta = meta,
+                    inputData = inputData
+                )
+            }
         }
     }
 }
