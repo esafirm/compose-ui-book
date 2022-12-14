@@ -139,20 +139,21 @@ private fun SourceCodeView(
                 .horizontalScroll(horizontalScrollState)
         )
 
-        Button(
+        OutlinedButton(
+            border = BorderStroke(1.dp, Color.Gray),
             onClick = {
                 AppBrowserConfig.clipboardManager.copyToClipboard(functionCode)
                 showClipboardState.value = true
             },
             modifier = Modifier
-                .align(Alignment.TopEnd)
+                .align(Alignment.BottomEnd)
                 .padding(16.dp)
                 .alpha(0.8f)
         ) {
             Icon(
                 imageVector = Icons.Default.ContentCopy,
                 contentDescription = "Copy to clipboard",
-                tint = Color.White
+                tint = Color.Gray
             )
         }
 
