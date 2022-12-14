@@ -1,9 +1,13 @@
 package nolambda.uibook.browser.desktop
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideIn
+import androidx.compose.animation.slideOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -11,11 +15,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.simulateHotReload
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
@@ -29,6 +32,7 @@ import nolambda.uibook.browser.config.BrowserConfig
 import nolambda.uibook.browser.config.ResourceLoader
 import nolambda.uibook.clipboard.ClipboardManager
 import nolambda.uibook.clipboard.DesktopClipboardManager
+import nolambda.uibook.components.bookform.GlobalState
 import nolambda.uibook.components.booklist.BookList
 import nolambda.uibook.factory.BookConfig
 import nolambda.uibook.factory.DesktopLibraryLoader
@@ -71,15 +75,23 @@ fun runBrowser() {
             MaterialTheme {
                 var selectedIndex by remember { mutableStateOf(-1) }
                 Row {
-                    ComponentList(
-                        names = names,
-                        modifier = Modifier.zIndex(2f)
-                    ) { index ->
-                        selectedIndex = index
+                    val isFullScreen = GlobalState.fullScreenMode.value
+                    AnimatedVisibility(
+                        modifier = Modifier.weight(1F).zIndex(2f),
+                        visible = isFullScreen.not(),
+                        exit = slideOut { fullSize -> IntOffset(-fullSize.width, 0) },
+                        enter = slideIn { fullSize -> IntOffset(-fullSize.width, 0) }
+                    ) {
+                        ComponentList(
+                            names = names,
+                        ) { index ->
+                            selectedIndex = index
+                        }
                     }
+
                     ComponentViewer(
-                        modifier = Modifier.zIndex(1f),
                         selectedIndex = selectedIndex,
+                        modifier = Modifier.weight(3F).zIndex(1f),
                         library = library
                     )
                 }
@@ -89,12 +101,12 @@ fun runBrowser() {
 }
 
 @Composable
-private fun RowScope.ComponentList(
+private fun ComponentList(
     names: List<String>,
     modifier: Modifier = Modifier,
     onSelected: (index: Int) -> Unit,
 ) {
-    Box(modifier = Modifier.weight(1F).composed { modifier }) {
+    Box(modifier = modifier) {
         BookList(
             bookNames = names,
             modifier = Modifier
@@ -106,7 +118,7 @@ private fun RowScope.ComponentList(
 }
 
 @Composable
-private fun RowScope.ComponentViewer(
+private fun ComponentViewer(
     selectedIndex: Int,
     modifier: Modifier = Modifier,
     library: UIBookLibrary,
@@ -116,7 +128,7 @@ private fun RowScope.ComponentViewer(
     }
 
     Box(
-        modifier = Modifier.weight(3F).composed { modifier }
+        modifier = modifier
     ) {
 
         val isSelected = selectedIndex >= 0
