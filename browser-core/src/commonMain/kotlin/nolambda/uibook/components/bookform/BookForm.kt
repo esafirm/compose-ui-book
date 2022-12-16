@@ -1,6 +1,7 @@
 package nolambda.uibook.components.bookform
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,17 +22,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Fullscreen
+import androidx.compose.material.icons.filled.FullscreenExit
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,6 +41,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -137,20 +140,21 @@ private fun SourceCodeView(
                 .horizontalScroll(horizontalScrollState)
         )
 
-        Button(
+        OutlinedButton(
+            border = BorderStroke(1.dp, Color.Gray),
             onClick = {
                 AppBrowserConfig.clipboardManager.copyToClipboard(functionCode)
                 showClipboardState.value = true
             },
             modifier = Modifier
-                .align(Alignment.TopEnd)
+                .align(Alignment.BottomEnd)
                 .padding(16.dp)
                 .alpha(0.8f)
         ) {
             Icon(
                 imageVector = Icons.Default.ContentCopy,
                 contentDescription = "Copy to clipboard",
-                tint = Color.White
+                tint = Color.Gray
             )
         }
 
@@ -324,6 +328,55 @@ private fun AdaptivePane(
     }
 }
 
+/**
+ * Represent the canvas to draw the book preview
+ */
+@Composable
+private fun BookCanvas(
+    modifier: Modifier = Modifier,
+    selectedDevice: Device,
+    scale: Float,
+    transformableState: TransformableState,
+    bookView: ComposeEmitter,
+) {
+    Box(modifier = modifier) {
+        PixelGrid()
+        DeviceFrameWrapper(
+            selectedDevice = selectedDevice,
+            scale = scale,
+            transformableState = transformableState,
+            bookView
+        )
+
+        OutlinedButton(
+            onClick = GlobalState.fullScreenMode::toggle,
+            border = BorderStroke(1.dp, Color.Gray),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+                .alpha(0.8f)
+        ) {
+            Icon(
+                imageVector = if (GlobalState.fullScreenMode.value) {
+                    Icons.Default.FullscreenExit
+                } else {
+                    Icons.Default.Fullscreen
+                },
+                contentDescription = if (GlobalState.fullScreenMode.value) {
+                    "Exit full screen mode"
+                } else {
+                    "Enter full screen mode"
+                },
+                tint = Color.Gray
+            )
+        }
+    }
+}
+
+/**
+ * BookForm is a combination of [BookCanvas] and [ControlPane] of UI Book
+ * As utility, it also contains a toolbar that contains needed actions for the book
+ */
 @Composable
 fun BookForm(
     meta: BookMetaData,
@@ -339,16 +392,20 @@ fun BookForm(
     }
 
     Column {
-        FormToolbar(
-            name = meta.name,
-            isMeasurementEnabled = isMeasurementEnabled.value,
-            selectedDevice = selectedDevice.value,
-            scale = scale,
-            onDeviceSelected = selectedDevice::value::set,
-            onToggleClick = { isMeasurementEnabled.value = isMeasurementEnabled.value.not() },
-            onScaleChange = setScale,
+        AnimatedVisibility(
+            visible = GlobalState.fullScreenMode.invertedValue,
             modifier = Modifier.zIndex(1F)
-        )
+        ) {
+            FormToolbar(
+                name = meta.name,
+                isMeasurementEnabled = isMeasurementEnabled.value,
+                selectedDevice = selectedDevice.value,
+                scale = scale,
+                onDeviceSelected = selectedDevice::value::set,
+                onToggleClick = { isMeasurementEnabled.value = isMeasurementEnabled.value.not() },
+                onScaleChange = setScale
+            )
+        }
 
         AdaptivePane(
             largeScreenThreshold = LARGE_SCREEN_THRESHOLD,
@@ -357,28 +414,26 @@ fun BookForm(
             rowModifier = { Modifier.weight(1F) }
         ) { adaptiveModifier ->
 
-            Row(
-                modifier = Modifier.weight(1F).zIndex(0F)
-            ) {
-                Box {
-                    PixelGrid()
-                    DeviceFrameWrapper(
-                        selectedDevice = selectedDevice.value,
-                        scale = scale,
-                        transformableState = state,
-                        bookView
-                    )
-                }
-            }
+            BookCanvas(
+                modifier = adaptiveModifier.composed { zIndex(0F) },
+                selectedDevice = selectedDevice.value,
+                scale = scale,
+                transformableState = state,
+                bookView = bookView
+            )
 
-            ControlPane(
-                meta = meta,
-                inputData = inputData,
+            AnimatedVisibility(
+                visible = GlobalState.fullScreenMode.invertedValue,
                 modifier = adaptiveModifier.composed {
                     Modifier.background(MaterialTheme.colors.background)
                         .zIndex(1F)
                 }
-            )
+            ) {
+                ControlPane(
+                    meta = meta,
+                    inputData = inputData
+                )
+            }
         }
     }
 }
