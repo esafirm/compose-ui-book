@@ -30,6 +30,11 @@ class BrowserApp : Application() {
             override val libraryLoader: LibraryLoader by lazy {
                 AndroidLibraryLoader()
             }
+            override val browserFeatures: BrowserConfig.Features by lazy {
+                BrowserConfig.Features(
+                    measurementOverlay = true
+                )
+            }
         })
     }
 }

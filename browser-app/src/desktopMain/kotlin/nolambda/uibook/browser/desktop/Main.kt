@@ -58,6 +58,11 @@ fun runBrowser() {
         override val libraryLoader: LibraryLoader by lazy {
             DesktopLibraryLoader()
         }
+        override val browserFeatures: BrowserConfig.Features by lazy {
+            BrowserConfig.Features(
+                measurementOverlay = false
+            )
+        }
     })
 
     val library = AppBrowserConfig.libraryLoader.load()

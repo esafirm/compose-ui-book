@@ -3,7 +3,7 @@ package nolambda.uibook.browser.resourceloader
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
-import nolambda.uibook.browser.R
+import nolambda.uibook.browser.app.R
 import nolambda.uibook.browser.config.ResourceId
 import nolambda.uibook.browser.config.ResourceIds
 import nolambda.uibook.browser.config.ResourceLoader
