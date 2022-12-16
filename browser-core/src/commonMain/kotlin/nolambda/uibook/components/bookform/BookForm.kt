@@ -33,6 +33,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Fullscreen
+import androidx.compose.material.icons.filled.FullscreenExit
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -356,8 +357,16 @@ private fun BookCanvas(
                 .alpha(0.8f)
         ) {
             Icon(
-                imageVector = Icons.Default.Fullscreen,
-                contentDescription = "Enter full screen mode",
+                imageVector = if (GlobalState.fullScreenMode.value) {
+                    Icons.Default.FullscreenExit
+                } else {
+                    Icons.Default.Fullscreen
+                },
+                contentDescription = if (GlobalState.fullScreenMode.value) {
+                    "Exit full screen mode"
+                } else {
+                    "Enter full screen mode"
+                },
                 tint = Color.Gray
             )
         }
