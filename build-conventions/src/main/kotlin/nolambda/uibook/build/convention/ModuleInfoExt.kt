@@ -10,8 +10,12 @@ abstract class UIBookExt(factory: ObjectFactory) {
     val artifactId = factory.property(String::class.java)
 
     companion object {
-        fun register(project: org.gradle.api.Project): UIBookExt {
-            return project.extensions.create("uiBook", UIBookExt::class.java)
+
+        private const val EXT_NAME = "uiBook"
+
+        fun getOrRegister(project: org.gradle.api.Project): UIBookExt {
+            return project.extensions.findByType(UIBookExt::class.java)
+                ?: project.extensions.create(EXT_NAME, UIBookExt::class.java)
         }
     }
 }

@@ -41,7 +41,7 @@ val signingKey: String
         return String(Base64.getDecoder().decode(base64encodedKey))
     }
 
-val uiBookExt = UIBookExt.register(project)
+val uiBookExt = UIBookExt.getOrRegister(project)
 
 publishing {
 

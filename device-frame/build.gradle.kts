@@ -3,20 +3,10 @@
 plugins {
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.multiplatform")
-    id("com.android.library")
-}
-
-android {
-    defaultConfig {
-        namespace = "nolambda.uibook.deviceframe"
-        minSdk = rootProject.ext["minSdkVersion"] as Int
-        targetSdk = rootProject.ext["targetSdkVersion"] as Int
-        compileSdk = rootProject.ext["compileSdkVersion"] as Int
-    }
+    id("nolambda.uibook.publish")
 }
 
 kotlin {
-    android()
     jvm("desktop")
 
     sourceSets {

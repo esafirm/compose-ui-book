@@ -4,4 +4,9 @@ plugins {
 
 repositories {
     gradlePluginPortal() // To use 'maven-publish' and 'signing' plugins in our own plugin
+    google()
+}
+
+dependencies {
+    api("com.android.tools.build:gradle:7.1.2")
 }
