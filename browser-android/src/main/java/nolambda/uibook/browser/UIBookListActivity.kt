@@ -7,7 +7,6 @@ import androidx.compose.ui.platform.LocalContext
 import nolambda.uibook.browser.config.AppBrowserConfig
 import nolambda.uibook.components.bookform.GlobalState
 import nolambda.uibook.components.booklist.BookList
-import nolambda.uibook.factory.LibraryLoader
 
 class UIBookListActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

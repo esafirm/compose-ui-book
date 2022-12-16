@@ -16,3 +16,6 @@ include ':annotations'
 include ':annotations-processor'
 include ':device-frame'
 include ':sample'
+
+// Gradle plugins for build conventions
+includeBuild("build-conventions")
