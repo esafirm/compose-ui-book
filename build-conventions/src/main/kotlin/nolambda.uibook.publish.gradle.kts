@@ -22,7 +22,7 @@ if (secretPropsFile.exists()) {
     }
 } else {
     extra["signing.password"] = System.getenv("SIGNING_PASSWORD")
-    extra["signing.secretKeyRingFile"] = System.getenv("SINGING_KEY")
+    extra["signing.key"] = System.getenv("SINGING_KEY")
     extra["ossrhUsername"] = System.getenv("OSSRH_USERNAME")
     extra["ossrhPassword"] = System.getenv("OSSRH_PASSWORD")
 }
