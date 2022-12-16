@@ -31,6 +31,10 @@ val sourceJar by tasks.registering(Jar::class) {
     archiveClassifier.set("source")
 }
 
+val javadocJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("javadoc")
+}
+
 val signingKey: String
     get() {
         val base64encodedKey = extra["signing.key"] as String
@@ -64,9 +68,12 @@ publishing {
     publications.withType<MavenPublication> {
 
         // Configure the publication
-        artifactId = uiBookExt.artifactId.getOrElse("uibook-${project.name}")
+        artifactId = uiBookExt.artifactId.getOrElse(project.name)
         groupId = rootProject.group.toString()
         version = rootProject.version.toString()
+
+        // Stub javadoc.jar artifact needed by sonatype closing process
+        artifact(javadocJar.get())
 
         // Stub source.jar artifact
         artifact(sourceJar.get())
