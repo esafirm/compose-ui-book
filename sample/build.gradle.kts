@@ -43,9 +43,7 @@ android {
     compileSdk = rootProject.ext["compileSdkVersion"] as Int
 
     buildFeatures {
-        viewBinding {
-            isEnabled = true
-        }
+        viewBinding = true
     }
 
     defaultConfig {
