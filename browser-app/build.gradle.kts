@@ -15,12 +15,6 @@ android {
     defaultConfig {
         namespace = "nolambda.uibook.browser.app"
     }
-    sourceSets {
-        named("main") {
-            manifest.srcFile("src/androidMain/AndroidManifest.xml")
-            res.srcDir("src/androidMain/res")
-        }
-    }
 }
 
 kotlin {

@@ -11,7 +11,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.annotation.Px
 import androidx.core.content.ContextCompat
-import nolambda.uibook.browser.R
+import nolambda.uibook.browser.app.R
 
 internal class MeasurementOverlayView(context: Context) : FrameLayout(context) {
 
