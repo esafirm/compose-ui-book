@@ -2,9 +2,9 @@ name: PR Checker
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
@@ -25,7 +25,7 @@ jobs:
         run: echo "$SECRET_PROPS" >> secret.properties
 
       - name: Build Android book
-        run: ./gradlew :sample:assembleDebug
+        run: ./gradlew :sample:assembleDebug --stacktrace
 
       - name: Build desktop book
-        run: ./gradlew :sample:desktopJar
+        run: ./gradlew :sample:desktopJar --stacktrace

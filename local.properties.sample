@@ -1,0 +1,7 @@
+## A sample of local properties needed to do the publishing
+
+signing.password=ABCD
+signing.key=ABCDASDASDASD=123ASD
+
+ossrhUsername=ABCD
+ossrhPassword=ABCD

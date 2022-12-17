@@ -35,6 +35,7 @@ jobs:
           OSSRH_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
           SIGNING_KEY: ${{ secrets.GPG_KEY }}
           SIGNING_PASSWORD: ${{ secrets.GPG_PASSWORD }}
+          ENABLE_PUBLISHING: true
         run: ./gradlew publishAllPublicationsToSonatypeRepository --stacktrace
 
       - name: Archive artifacts
