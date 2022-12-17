@@ -30,7 +30,7 @@ jobs:
         run: echo "$SECRET_PROPS" >> secret.properties
 
       - name: Publish all artifacts
-        run: ./gradlew publishAllPublicationsToSonatypeRepository
+        run: ./gradlew publishAllPublicationsToSonatypeRepository --stacktrace
 
       - name: Archive artifacts
         uses: actions/upload-artifact@v3
