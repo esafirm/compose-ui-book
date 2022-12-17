@@ -30,6 +30,11 @@ jobs:
         run: echo "$SECRET_PROPS" >> secret.properties
 
       - name: Publish all artifacts
+        env:
+          OSSRH_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.GPG_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.GPG_PASSWORD }}
         run: ./gradlew publishAllPublicationsToSonatypeRepository --stacktrace
 
       - name: Archive artifacts

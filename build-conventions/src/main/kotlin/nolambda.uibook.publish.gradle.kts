@@ -22,7 +22,7 @@ if (secretPropsFile.exists()) {
     }
 } else {
     extra["signing.password"] = System.getenv("SIGNING_PASSWORD")
-    extra["signing.key"] = System.getenv("SINGING_KEY")
+    extra["signing.key"] = System.getenv("SIGNING_KEY")
     extra["ossrhUsername"] = System.getenv("OSSRH_USERNAME")
     extra["ossrhPassword"] = System.getenv("OSSRH_PASSWORD")
 }
@@ -37,7 +37,8 @@ val javadocJar by tasks.registering(Jar::class) {
 
 val signingKey: String
     get() {
-        val base64encodedKey = extra["signing.key"] as String
+        val base64encodedKey = extra["signing.key"]?.toString()
+            ?: error("Signing key is not set. Please check your environment again")
         return String(Base64.getDecoder().decode(base64encodedKey))
     }
 
