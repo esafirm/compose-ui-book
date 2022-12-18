@@ -43,7 +43,7 @@ class UIBookGenerator(
     private val defaultInputClass = ClassName("nolambda.uibook.browser.form", "DefaultInputCreator")
 
     // Android Specific
-    private val androidContainerClass = ClassName("nolambda.uibook.components.bookform", "AndroidContainer")
+    private val androidContainerClass = ClassName("nolambda.uibook.browser.app", "AndroidContainer")
     private val androidBookHost = ClassName("nolambda.uibook.browser", "AndroidBookHost")
 
     // Functions

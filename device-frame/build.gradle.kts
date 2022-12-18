@@ -4,10 +4,18 @@ plugins {
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.multiplatform")
     id("nolambda.uibook.publish")
+    id("nolambda.uibook.android")
+}
+
+android {
+    defaultConfig {
+        namespace = "nolambda.uibook.frame"
+    }
 }
 
 kotlin {
     jvm()
+    android()
 
     sourceSets {
         named("commonMain") {

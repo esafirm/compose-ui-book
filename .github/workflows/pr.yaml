@@ -25,7 +25,7 @@ jobs:
         run: echo "$SECRET_PROPS" >> secret.properties
 
       - name: Build Android book
-        run: ./gradlew :sample:assembleDebug --stacktrace
+        run: ./gradlew :examples:demo:assembleDebug --stacktrace
 
       - name: Build desktop book
-        run: ./gradlew :sample:desktopJar --stacktrace
+        run: ./gradlew :examples:demo:desktopJar --stacktrace
