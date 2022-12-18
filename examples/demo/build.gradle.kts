@@ -64,7 +64,7 @@ android {
 
 compose.desktop {
     application {
-        mainClass = "nolambda.uibook.sample.component.LauncherKt"
+        mainClass = "nolambda.uibook.browser.app.MainKt"
 
         nativeDistributions {
             targetFormats(

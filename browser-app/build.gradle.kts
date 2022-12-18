@@ -24,10 +24,14 @@ kotlin {
     jvm("desktop")
 
     sourceSets {
-        named("androidMain") {
+        named("commonMain") {
             dependencies {
                 api(project(":annotations"))
                 api(project(":browser-core"))
+            }
+        }
+        named("androidMain") {
+            dependencies {
 
                 implementation("androidx.core:core-ktx:1.7.0")
 
