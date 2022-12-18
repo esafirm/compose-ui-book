@@ -36,7 +36,11 @@ include(":browser-core")
 include(":annotations")
 include(":annotations-processor")
 include(":device-frame")
-include(":sample")
+
+// Examples
+include(":examples:demo")
+include(":examples:minimum-kmp")
+include(":examples:minimum-android")
 
 // Gradle plugins for build conventions
 includeBuild("build-conventions")
