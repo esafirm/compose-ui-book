@@ -13,12 +13,11 @@ kotlin {
         named("commonMain") {
             dependencies {
                 implementation(project(":browser-core"))
+                implementation(project(":browser-app"))
             }
         }
         named("desktopMain") {
             dependencies {
-                implementation(project(":browser-desktop"))
-
                 implementation("com.squareup.okhttp3:okhttp:4.9.3")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
             }
@@ -35,8 +34,6 @@ kotlin {
 
                 // Compose Image Loading
                 implementation("io.coil-kt:coil-compose:1.3.1")
-
-                implementation(project(":browser-android"))
             }
         }
     }
@@ -46,9 +43,7 @@ android {
     compileSdk = rootProject.ext["compileSdkVersion"] as Int
 
     buildFeatures {
-        viewBinding {
-            isEnabled = true
-        }
+        viewBinding = true
     }
 
     defaultConfig {

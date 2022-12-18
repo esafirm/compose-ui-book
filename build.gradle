@@ -1,27 +1,18 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     apply from: "${rootDir}/gradle/global.gradle"
-
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
 }
 
 plugins {
     id "com.google.devtools.ksp" version "1.7.20-1.0.7"
     id 'org.jetbrains.kotlin.jvm' version "$kotlinVersion" apply false
     id "org.jetbrains.compose" version "$composeVersion" apply false
+    id 'nolambda.uibook.android' apply false
 }
 
-apply from: "${rootDir}/gradle/repositories.gradle"
+// Group and version that will be used in the generated POM file
+group = 'io.github.esafirm.uibook'
+version = '1.1.0-RC2'
 
 task clean(type: Delete) {
     delete rootProject.buildDir

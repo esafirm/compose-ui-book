@@ -65,7 +65,12 @@ internal fun FormToolbar(
                     onExpand = expandDeviceSelector::value::set
                 )
                 Spacer(Modifier.width(16.dp))
-                ButtonToggleMeasurement(isMeasurementEnabled, onToggleClick)
+
+                val isMeasurementFeatureEnabled = AppBrowserConfig.browserFeatures.measurementOverlay
+                if (isMeasurementFeatureEnabled) {
+                    ButtonToggleMeasurement(isMeasurementEnabled, onToggleClick)
+                }
+
             }
         }
     }
@@ -74,7 +79,7 @@ internal fun FormToolbar(
 @Composable
 private fun ButtonToggleMeasurement(
     isMeasurementEnabled: Boolean,
-    onToggleClick: () -> Unit
+    onToggleClick: () -> Unit,
 ) {
     val resourceLoader = AppBrowserConfig.resourceLoader
 
@@ -131,7 +136,7 @@ private fun DeviceFrameSelector(
 @Composable
 private fun ScaleCounter(
     currentScale: Float,
-    onScaleChange: (scale: Float) -> Unit
+    onScaleChange: (scale: Float) -> Unit,
 ) {
     Row {
         Button(onClick = {

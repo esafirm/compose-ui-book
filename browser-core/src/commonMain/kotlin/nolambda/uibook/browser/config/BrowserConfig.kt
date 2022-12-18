@@ -9,6 +9,11 @@ interface BrowserConfig {
     val resourceLoader: ResourceLoader
     val clipboardManager: ClipboardManager
     val libraryLoader: LibraryLoader
+    val browserFeatures: Features
+
+    data class Features(
+        val measurementOverlay: Boolean = false,
+    )
 }
 
 /**
@@ -35,4 +40,7 @@ object AppBrowserConfig : BrowserConfig {
 
     override val libraryLoader: LibraryLoader
         get() = internalConfig.libraryLoader
+
+    override val browserFeatures: BrowserConfig.Features
+        get() = internalConfig.browserFeatures
 }
