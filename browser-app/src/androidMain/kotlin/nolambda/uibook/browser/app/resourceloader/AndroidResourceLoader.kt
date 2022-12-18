@@ -1,4 +1,4 @@
-package nolambda.uibook.browser.resourceloader
+package nolambda.uibook.browser.app.resourceloader
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter

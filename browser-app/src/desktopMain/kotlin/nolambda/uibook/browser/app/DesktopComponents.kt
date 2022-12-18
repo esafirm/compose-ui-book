@@ -1,4 +1,4 @@
-package nolambda.uibook.browser.desktop
+package nolambda.uibook.browser.app
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

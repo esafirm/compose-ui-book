@@ -1,4 +1,4 @@
-package nolambda.uibook.browser
+package nolambda.uibook.browser.app
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

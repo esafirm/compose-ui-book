@@ -1,4 +1,4 @@
-package nolambda.uibook.browser
+package nolambda.uibook.browser.app
 
 import android.content.Context
 import android.content.Intent

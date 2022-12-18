@@ -1,4 +1,4 @@
-package nolambda.uibook.components.bookform
+package nolambda.uibook.browser.app
 
 import android.view.Gravity
 import android.view.View
@@ -14,8 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
-import nolambda.uibook.browser.form.ComponentCreator
-import nolambda.uibook.browser.measurement.MeasurementHelperImpl
+import nolambda.uibook.browser.app.form.ComponentCreator
+import nolambda.uibook.browser.app.measurement.MeasurementHelperImpl
+import nolambda.uibook.components.bookform.GlobalState
 
 /**
  * A container to bridge pure compose with Android's View

@@ -1,4 +1,4 @@
-package nolambda.uibook.browser.desktop
+package nolambda.uibook.browser.app
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing

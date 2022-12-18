@@ -1,4 +1,4 @@
-package nolambda.uibook.browser.measurement
+package nolambda.uibook.browser.app.measurement
 
 import android.content.Context
 import android.graphics.*

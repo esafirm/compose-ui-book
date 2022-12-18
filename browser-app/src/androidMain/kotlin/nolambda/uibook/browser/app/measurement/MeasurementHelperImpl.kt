@@ -1,4 +1,4 @@
-package nolambda.uibook.browser.measurement
+package nolambda.uibook.browser.app.measurement
 
 import android.graphics.Rect
 import android.util.DisplayMetrics

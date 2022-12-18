@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "nolambda.uibook.browser"
+    namespace = "nolambda.uibook"
 }
 
 kotlin {

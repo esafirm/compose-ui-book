@@ -41,8 +41,7 @@ kotlin {
         }
         named("desktopMain") {
             dependencies {
-                implementation(compose.desktop.currentOs)
-                implementation(project(":browser-core"))
+                api(compose.desktop.currentOs)
             }
         }
     }
