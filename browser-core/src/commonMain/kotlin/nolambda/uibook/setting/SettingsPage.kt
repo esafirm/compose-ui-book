@@ -1,6 +1,5 @@
 package nolambda.uibook.setting
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -8,8 +7,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,34 +20,40 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import nolambda.uibook.browser.config.AppBrowserConfig
+import nolambda.uibook.browser.config.put
 import nolambda.uibook.components.common.ClickableText
+import nolambda.uibook.utils.toColor
 
 @Suppress("PrivatePropertyName")
 private val SETTING_MENU = listOf(
-    SettingMenu("Canvas") { CanvasSetting() }
+    SettingMenu("Canvas") { scope -> CanvasSetting(scope) }
 )
 
 private class SettingMenu(
     val name: String,
-    val components: @Composable () -> Unit,
+    val components: @Composable (CoroutineScope) -> Unit,
 )
 
 /**
  * A setting page that contains a list of settings that will be consumer by
  * the browser app
  */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SettingPage(
     modifier: Modifier = Modifier,
 ) {
     val (selectedMenu, setSelectedMenu) = remember { mutableStateOf(SETTING_MENU.first()) }
+    val scope = rememberCoroutineScope()
 
     Box(modifier = Modifier
         .background(MaterialTheme.colors.background)
@@ -86,7 +91,7 @@ fun SettingPage(
 
                 // Draw setting pane
                 Box(modifier = Modifier.weight(3F)) {
-                    selectedMenu.components()
+                    selectedMenu.components(scope)
                 }
             }
         }
@@ -94,54 +99,128 @@ fun SettingPage(
 }
 
 @Composable
-private fun CanvasSetting() {
+private fun CanvasSetting(
+    scope: CoroutineScope,
+) {
     Column(modifier = Modifier.padding(16.dp)) {
         val itemModifier = Modifier.padding(bottom = 16.dp)
 
-        SettingRow("GridSize", "8", "Dp", modifier = itemModifier) {
+        val (gridSizeState, setGridSizeState) = SettingRowState(
+            name = "Grid Size",
+            value = 8,
+            errorMessage = null
+        ).asState()
+
+        SettingRow(
+            state = gridSizeState,
+            extraContent = { Text("Dp") },
+            modifier = itemModifier
+        ) {
+            val processedValue = try {
+                it.toInt()
+            } catch (e: Exception) {
+                0
+            }
+            setGridSizeState(
+                gridSizeState.copy(
+                    value = processedValue,
+                    errorMessage = if (processedValue > 0) null else "Invalid number"
+                )
+            )
         }
 
-        SettingRow("Grid Color", "#000", modifier = itemModifier) {
+        val (gridColorState, setGridColorState) = SettingRowState(
+            name = "Grid Color",
+            value = "#000000",
+            errorMessage = null
+        ).asState()
+
+        SettingRow(
+            state = gridColorState,
+            extraContent = { ColorBox(gridColorState.value.toColor()) },
+            modifier = itemModifier
+        ) {
+            val errorMessage = if (it.length <= 1) "Invalid value" else null
+            setGridColorState(gridColorState.copy(value = it, errorMessage = errorMessage))
+
+            val isSuccess = errorMessage == null
+            if (isSuccess) {
+                scope.launch {
+                    AppBrowserConfig.settingStore.put<String>("gridColor", gridColorState.value)
+                }
+            }
         }
 
-        SettingRow("Canvas Color", "#FFF", modifier = itemModifier) {
+        val (canvasColorState, setCanvasColorState) = SettingRowState(
+            name = "Canvas Color",
+            value = "#FFFFFF",
+            errorMessage = null
+        ).asState()
+
+        SettingRow(
+            state = canvasColorState,
+            extraContent = { ColorBox(canvasColorState.value.toColor()) },
+            modifier = itemModifier
+        ) {
+            val errorMessage = if (it.length <= 1) "Invalid value" else null
+            setCanvasColorState(canvasColorState.copy(value = it, errorMessage = errorMessage))
         }
     }
 }
 
 @Composable
 private fun SettingRow(
-    name: String,
-    value: String,
-    suffix: String = "",
+    state: SettingRowState<*>,
+    extraContent: (@Composable () -> Unit)? = null,
     modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit,
 ) {
-    Row(modifier, verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            name,
-            fontSize = MaterialTheme.typography.subtitle1.fontSize
-        )
+    val name = state.name
+    val value = state.value
+    val errorMessage = state.errorMessage
 
-        BasicTextField(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = Modifier.padding(horizontal = 8.dp),
-            decorationBox = { innerTextField ->
-                Row(
-                    Modifier
-                        .background(Color.LightGray, RoundedCornerShape(percent = 30))
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                ) {
-                    innerTextField()
+    Column(modifier = modifier) {
+        Row(
+            modifier = Modifier.padding(bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                name,
+                fontSize = MaterialTheme.typography.subtitle1.fontSize
+            )
+
+            BasicTextField(
+                value = value.toString(),
+                onValueChange = onValueChange,
+                modifier = Modifier.padding(horizontal = 8.dp),
+                decorationBox = { innerTextField ->
+                    Row(
+                        Modifier
+                            .background(Color.LightGray, RoundedCornerShape(percent = 30))
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        innerTextField()
+                    }
                 }
-            }
-        )
+            )
+            extraContent?.invoke()
+        }
 
-        if (suffix.isNotEmpty()) {
-            Text(suffix, modifier = Modifier)
+        if (errorMessage != null) {
+            Text(
+                text = errorMessage,
+                color = Color.Red.copy(alpha = 0.5f),
+                fontSize = MaterialTheme.typography.caption.fontSize
+            )
         }
     }
 }
 
-
+@Composable
+private fun ColorBox(color: Color) {
+    Box(
+        modifier = Modifier
+            .size(16.dp)
+            .background(color)
+    )
+}

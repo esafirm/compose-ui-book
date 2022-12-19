@@ -8,20 +8,17 @@ import java.io.File
 
 object DesktopSettingStoreFactory {
     fun createStore(
-        path: String = "${System.getProperty("user.home")}/.uibook/store",
+        path: String = "${System.getProperty("user.home")}/.uibook/store/",
     ): SettingStore {
 
         // Make sure it exists
         File(path).mkdirs()
 
-        val databaseDirectory: String = path
-        val kottageEnvironment = KottageEnvironment(KottageContext())
-
         // Initialize with Kottage database information.
         val kottage = Kottage(
             name = "uibook-ks-store", // This will be database file name
-            directoryPath = databaseDirectory,
-            environment = kottageEnvironment,
+            directoryPath = path,
+            environment = KottageEnvironment(KottageContext()),
             json = Json
         )
 
