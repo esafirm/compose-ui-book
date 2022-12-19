@@ -148,7 +148,9 @@ private fun SettingModal(
                 .onClick { setShowSetting(false) }
                 .padding(24.dp)
         ) {
-            SettingPage()
+            SettingPage {
+                setShowSetting(false)
+            }
         }
     }
 }
