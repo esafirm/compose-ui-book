@@ -1,8 +1,6 @@
 package nolambda.uibook.browser.app
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideOut
 import androidx.compose.foundation.background
@@ -30,6 +28,7 @@ import nolambda.uibook.browser.EmptyBookHost
 import nolambda.uibook.browser.config.AppBrowserConfig
 import nolambda.uibook.browser.config.BrowserConfig
 import nolambda.uibook.browser.config.ResourceLoader
+import nolambda.uibook.browser.form.ComposeEmitter
 import nolambda.uibook.clipboard.ClipboardManager
 import nolambda.uibook.clipboard.DesktopClipboardManager
 import nolambda.uibook.components.bookform.GlobalState
@@ -37,7 +36,6 @@ import nolambda.uibook.components.booklist.BookList
 import nolambda.uibook.factory.BookConfig
 import nolambda.uibook.factory.DesktopLibraryLoader
 import nolambda.uibook.factory.LibraryLoader
-import nolambda.uibook.factory.UIBookLibrary
 
 fun main() {
     runBrowser()
@@ -66,7 +64,12 @@ fun runBrowser() {
     })
 
     val library = AppBrowserConfig.libraryLoader.load()
-    val names = library.getBookFactories().map { it.getMetaData().name }
+    val factories = library.getBookFactories()
+    val names = factories.map { it.getMetaData().name }
+
+    val emptyBookConfig = object : BookConfig {
+        override val onExit: () -> Unit = {}
+    }
 
     application {
         Window(
@@ -77,8 +80,11 @@ fun runBrowser() {
                 position = WindowPosition(alignment = Alignment.Center),
             ),
         ) {
+            var selectedIndex by remember { mutableStateOf(-1) }
+            val factory = if (selectedIndex >= 0) factories[selectedIndex] else null
+            val book = factory?.getBook(emptyBookConfig)
+
             MaterialTheme {
-                var selectedIndex by remember { mutableStateOf(-1) }
                 Row {
                     val isFullScreen = GlobalState.fullScreenMode.value
                     AnimatedVisibility(
@@ -87,17 +93,16 @@ fun runBrowser() {
                         exit = slideOut { fullSize -> IntOffset(-fullSize.width, 0) },
                         enter = slideIn { fullSize -> IntOffset(-fullSize.width, 0) }
                     ) {
-                        ComponentList(
+                        BookList(
                             names = names,
                         ) { index ->
                             selectedIndex = index
                         }
                     }
 
-                    ComponentViewer(
-                        selectedIndex = selectedIndex,
+                    BookViewer(
                         modifier = Modifier.weight(3F).zIndex(1f),
-                        library = library
+                        book = book
                     )
                 }
             }
@@ -106,7 +111,7 @@ fun runBrowser() {
 }
 
 @Composable
-private fun ComponentList(
+private fun BookList(
     names: List<String>,
     modifier: Modifier = Modifier,
     onSelected: (index: Int) -> Unit,
@@ -123,25 +128,17 @@ private fun ComponentList(
 }
 
 @Composable
-private fun ComponentViewer(
-    selectedIndex: Int,
+private fun BookViewer(
     modifier: Modifier = Modifier,
-    library: UIBookLibrary,
+    book: ComposeEmitter? = null,
 ) {
-    val emptyBookConfig = object : BookConfig {
-        override val onExit: () -> Unit = {}
-    }
-
     Box(
         modifier = modifier
     ) {
-
-        val isSelected = selectedIndex >= 0
-        if (!isSelected) {
+        if (book == null) {
             EmptyContent()
         } else {
-            val factory = remember(selectedIndex) { library.getBookFactories()[selectedIndex] }
-            factory.getBook(emptyBookConfig).invoke()
+            book()
         }
     }
 }

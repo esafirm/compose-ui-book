@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
@@ -41,7 +40,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -279,18 +277,18 @@ private fun ControlPane(
     meta: BookMetaData,
     inputData: InputData,
     modifier: Modifier = Modifier,
+    selectedPaneIndex: Int,
+    onSetSelectedPane: (Int) -> Unit,
 ) {
-    val selectedIndex = remember { mutableStateOf(0) }
-
     Column(modifier = modifier) {
         TabView(
             titles = listOf("Source Code".uppercase(), "Modifier".uppercase()),
-            selectedIndex = selectedIndex.value
-        ) {
-            selectedIndex.value = it
+            selectedIndex = selectedPaneIndex
+        ) { currentIndex ->
+            onSetSelectedPane(currentIndex)
         }
 
-        if (selectedIndex.value == 0) {
+        if (selectedPaneIndex == 0) {
             key(meta.name) {
                 SourceCodeView(rawSourceCode = meta.function)
             }
@@ -391,6 +389,8 @@ fun BookForm(
         setScale(scale * zoomChange)
     }
 
+    val (selectedPaneIndex, setSelectedPaneIndex) = remember { mutableStateOf(0) }
+
     Column {
         AnimatedVisibility(
             visible = GlobalState.fullScreenMode.invertedValue,
@@ -431,7 +431,9 @@ fun BookForm(
             ) {
                 ControlPane(
                     meta = meta,
-                    inputData = inputData
+                    inputData = inputData,
+                    selectedPaneIndex = selectedPaneIndex,
+                    onSetSelectedPane = setSelectedPaneIndex
                 )
             }
         }
