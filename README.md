@@ -9,8 +9,8 @@ Simple and extensible UI component explorer for Jetpack Compose and Android View
 
 <details>
 	<summary>You can check the demo video here</summary>
-	<a href="https://www.youtube.com/watch?v=aB2cBjLuYHA">
-		<img src="https://img.youtube.com/vi/aB2cBjLuYHA/0.jpg" />
+	<a href="https://youtu.be/HlDVACRC_68">
+		<img src="https://img.youtube.com/vi/HlDVACRC_68/0.jpg" />
 	</a>
 </details>
 
@@ -54,7 +54,7 @@ kotlin {
         }
         named("desktopMain") {
             dependencies {
-                // This is mandatory as we current OS is not packaged in POM file
+                // This is mandatory as the current OS is not packaged in POM file
                 implementation(compose.desktop.currentOs)
             }
         }
@@ -145,7 +145,7 @@ fun BookHost.SimpleTextView(): TextView {
 
 ## Advanced
 
-For now, you can check the [sample module](/sample) for complete features.
+You can check the [demo module](/examples/demo) for complete features.
 
 ## Development
 
@@ -153,18 +153,18 @@ To develop the project, you need to use Android Studio Dolphin above.
 
 It have some strange issue with IntelliJ Idea 2022.3 EAP.
 
-### Running Sample
+### Running the Demo
 
 To run the Android sample run this command:
 
 ```bash
-./gradlew :sample:installDebug
+./gradlew :examples:demo:installDebug
 ```
 
 To run the Desktop sample run this command:
 
 ```bash
-./gradlew :sample:run
+./gradlew :examples:demo:run
 ```
 
 ## Support
