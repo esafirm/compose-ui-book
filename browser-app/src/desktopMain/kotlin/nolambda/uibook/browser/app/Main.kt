@@ -1,13 +1,19 @@
 package nolambda.uibook.browser.app
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.onClick
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,9 +22,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
@@ -87,12 +96,7 @@ fun runBrowser() {
             val book = factory?.getBook(emptyBookConfig)
 
             MaterialTheme {
-
                 val (showSetting, setShowSetting) = remember { mutableStateOf(false) }
-                if (showSetting) {
-                    SettingPage()
-                    return@MaterialTheme
-                }
 
                 Row {
                     val isFullScreen = GlobalState.fullScreenMode.value
@@ -114,7 +118,32 @@ fun runBrowser() {
                         book = book
                     )
                 }
+
+                SettingModal(showSetting, setShowSetting)
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun SettingModal(
+    showSetting: Boolean,
+    setShowSetting: (Boolean) -> Unit,
+) {
+    AnimatedVisibility(
+        visible = showSetting,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.2f))
+                .onClick { setShowSetting(false) }
+                .padding(24.dp)
+        ) {
+            SettingPage()
         }
     }
 }
