@@ -66,27 +66,10 @@ fun SettingPage(
     Box(modifier = Modifier
         .background(MaterialTheme.colors.background)
         .padding(16.dp)
-        .clickable(enabled = false, onClick = {})
         .composed { modifier }
     ) {
         Column {
-            Row {
-                Text(
-                    text = "Settings",
-                    style = MaterialTheme.typography.h4,
-                    modifier = Modifier.weight(1F)
-                )
-
-                if (onRequestToClose != null) {
-                    IconButton(onClick = onRequestToClose) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Close"
-                        )
-                    }
-                }
-            }
-            Divider(modifier = Modifier.padding(vertical = 8.dp))
+            SettingPageHeader(onRequestToClose)
 
             Row {
                 LazyColumn(
@@ -119,6 +102,29 @@ fun SettingPage(
             }
         }
     }
+}
+
+@Composable
+private fun SettingPageHeader(
+    onRequestToClose: (() -> Unit)?,
+) {
+    Row {
+        Text(
+            text = "Settings",
+            style = MaterialTheme.typography.h4,
+            modifier = Modifier.weight(1F)
+        )
+
+        if (onRequestToClose != null) {
+            IconButton(onClick = onRequestToClose) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Close"
+                )
+            }
+        }
+    }
+    Divider(modifier = Modifier.padding(vertical = 8.dp))
 }
 
 @Composable
