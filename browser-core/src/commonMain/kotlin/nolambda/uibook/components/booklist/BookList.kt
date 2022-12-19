@@ -7,8 +7,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.More
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -22,6 +28,7 @@ fun BookList(
     bookNames: List<String>,
     modifier: Modifier = Modifier,
     navigateToBook: (index: Int) -> Unit,
+    onSettingClick: () -> Unit,
 ) {
     Column(modifier = modifier) {
         TopAppBar {
@@ -30,6 +37,18 @@ fun BookList(
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
+            IconButton(
+                onClick = onSettingClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 16.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = "More Settings",
+                    tint = Color.White
+                )
+            }
         }
         LazyColumn {
             itemsIndexed(bookNames) { index, name ->

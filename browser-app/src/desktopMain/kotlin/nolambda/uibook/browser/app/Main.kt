@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,6 +37,7 @@ import nolambda.uibook.components.booklist.BookList
 import nolambda.uibook.factory.BookConfig
 import nolambda.uibook.factory.DesktopLibraryLoader
 import nolambda.uibook.factory.LibraryLoader
+import nolambda.uibook.setting.SettingPage
 
 fun main() {
     runBrowser()
@@ -85,6 +87,13 @@ fun runBrowser() {
             val book = factory?.getBook(emptyBookConfig)
 
             MaterialTheme {
+
+                val (showSetting, setShowSetting) = remember { mutableStateOf(false) }
+                if (showSetting) {
+                    SettingPage()
+                    return@MaterialTheme
+                }
+
                 Row {
                     val isFullScreen = GlobalState.fullScreenMode.value
                     AnimatedVisibility(
@@ -95,9 +104,9 @@ fun runBrowser() {
                     ) {
                         BookList(
                             names = names,
-                        ) { index ->
-                            selectedIndex = index
-                        }
+                            onSelected = { index -> selectedIndex = index },
+                            onSettingClick = { setShowSetting(true) }
+                        )
                     }
 
                     BookViewer(
@@ -115,6 +124,7 @@ private fun BookList(
     names: List<String>,
     modifier: Modifier = Modifier,
     onSelected: (index: Int) -> Unit,
+    onSettingClick: () -> Unit,
 ) {
     Box(modifier = modifier) {
         BookList(
@@ -122,7 +132,8 @@ private fun BookList(
             modifier = Modifier
                 .fillMaxHeight()
                 .background(MaterialTheme.colors.background),
-            navigateToBook = onSelected
+            navigateToBook = onSelected,
+            onSettingClick = onSettingClick
         )
     }
 }

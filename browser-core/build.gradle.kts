@@ -38,6 +38,7 @@ kotlin {
                 // UI-Book
                 api(project(":annotations"))
                 api("com.wakaztahir:codeeditor:3.0.5")
+                implementation("io.github.irgaly.kottage:kottage:1.4.2")
             }
         }
     }
