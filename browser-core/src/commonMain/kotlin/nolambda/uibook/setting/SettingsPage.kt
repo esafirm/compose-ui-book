@@ -1,9 +1,8 @@
 package nolambda.uibook.setting
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.onClick
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Divider
@@ -46,7 +44,6 @@ private class SettingMenu(
  * the browser app
  */
 @OptIn(ExperimentalFoundationApi::class)
-@Preview
 @Composable
 fun SettingPage(
     modifier: Modifier = Modifier,
@@ -56,7 +53,7 @@ fun SettingPage(
     Box(modifier = Modifier
         .background(MaterialTheme.colors.background)
         .padding(16.dp)
-        .onClick { }
+        .clickable(enabled = false, onClick = {})
         .composed { modifier }
     ) {
         Column {
@@ -66,7 +63,7 @@ fun SettingPage(
             Row {
                 LazyColumn(
                     modifier = Modifier
-                        .widthIn(max = 200.dp)
+                        .weight(1F)
                         .wrapContentSize()
                 ) {
                     items(SETTING_MENU) { menu ->
@@ -88,7 +85,9 @@ fun SettingPage(
                 Divider(modifier = Modifier.width(1.dp).fillMaxHeight())
 
                 // Draw setting pane
-                selectedMenu.components()
+                Box(modifier = Modifier.weight(3F)) {
+                    selectedMenu.components()
+                }
             }
         }
     }
@@ -97,10 +96,9 @@ fun SettingPage(
 @Composable
 private fun CanvasSetting() {
     Column(modifier = Modifier.padding(16.dp)) {
-        val itemModifier = Modifier.padding(bottom = 8.dp)
+        val itemModifier = Modifier.padding(bottom = 16.dp)
 
         SettingRow("GridSize", "8", "Dp", modifier = itemModifier) {
-
         }
 
         SettingRow("Grid Color", "#000", modifier = itemModifier) {

@@ -32,10 +32,7 @@ fun BookList(
                 modifier = Modifier.padding(horizontal = 16.dp)
                     .weight(1F)
             )
-            IconButton(
-                onClick = onSettingClick,
-                modifier = Modifier.padding(end = 16.dp)
-            ) {
+            IconButton(onClick = onSettingClick) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
                     contentDescription = "More Settings",

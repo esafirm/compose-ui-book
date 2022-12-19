@@ -16,6 +16,7 @@ class UIBookListActivity : ComponentActivity() {
         val names = library.getBookFactories().map { it.getMetaData().name }
 
         setContent {
+
             val context = LocalContext.current
             val navigateToBook = { index: Int ->
                 // Disable the full screen mode first
@@ -23,10 +24,12 @@ class UIBookListActivity : ComponentActivity() {
 
                 UIBookActivity.start(context, index)
             }
+            val onSettingClick = { UIBookSettingActivity.start(context) }
+
             BookList(
                 bookNames = names,
                 navigateToBook = navigateToBook,
-                onSettingClick = {}
+                onSettingClick = onSettingClick
             )
         }
     }
