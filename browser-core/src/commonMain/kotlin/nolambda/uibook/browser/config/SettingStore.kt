@@ -1,12 +1,20 @@
 package nolambda.uibook.browser.config
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.produceState
 import io.github.irgaly.kottage.KottageStorage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
 interface SettingStore {
     suspend fun <T : Any> put(setting: Setting<T>, value: T)
     suspend fun <T : Any> get(setting: Setting<T>): T
+
+    fun <T : Any> observe(scope: CoroutineScope, setting: Setting<T>): Flow<T>
 }
 
 class Setting<T : Any>(
@@ -30,7 +38,7 @@ object CanvasSetting {
     val CanvasColor = Setting.create("canvas_color", "#FFFFFF")
 }
 
-class KottageSettingStore(
+internal class KottageSettingStore(
     private val internalStore: KottageStorage,
 ) : SettingStore {
 
@@ -44,5 +52,33 @@ class KottageSettingStore(
         } catch (e: NoSuchElementException) {
             setting.defaultValue
         }
+    }
+
+    override fun <T : Any> observe(scope: CoroutineScope, setting: Setting<T>): Flow<T> {
+        val mutableState = MutableStateFlow(setting.defaultValue)
+
+        scope.launch {
+            // Initial value
+            mutableState.emit(get(setting))
+        }
+
+        scope.launch {
+            internalStore.eventFlow().collect {
+                if (it.itemKey == setting.key) {
+                    mutableState.emit(get(setting))
+                }
+            }
+        }
+        return mutableState
+    }
+}
+
+@Composable
+fun <T : Any> SettingStore.observeAsState(
+    scope: CoroutineScope,
+    setting: Setting<T>,
+) = produceState(initialValue = setting.defaultValue) {
+    observe(scope, setting).collect {
+        value = it
     }
 }

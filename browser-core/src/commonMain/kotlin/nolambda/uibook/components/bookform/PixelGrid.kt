@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun PixelGrid(
     gridSize: Dp = 8.dp,
+    gridColor: Color = Color.Gray,
     modifier: Modifier = Modifier
 ) {
     Canvas(modifier = Modifier.fillMaxSize().composed { modifier }) {
@@ -27,7 +28,7 @@ fun PixelGrid(
             drawLine(
                 start = Offset(x = currentX, y = 0F),
                 end = Offset(x = currentX, y = canvasHeight),
-                color = Color.Gray,
+                color = gridColor,
                 alpha = 0.2F
             )
         }
@@ -38,7 +39,7 @@ fun PixelGrid(
             drawLine(
                 start = Offset(x = canvasWidth, y = currentY),
                 end = Offset(x = 0F, y = currentY),
-                color = Color.Gray,
+                color = gridColor,
                 alpha = 0.2F
             )
         }

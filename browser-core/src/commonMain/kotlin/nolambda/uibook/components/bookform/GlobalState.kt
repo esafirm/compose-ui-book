@@ -1,7 +1,6 @@
 package nolambda.uibook.components.bookform
 
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 
 object GlobalState {

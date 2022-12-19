@@ -40,6 +40,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -62,11 +63,14 @@ import com.wakaztahir.codeeditor.utils.parseCodeAsAnnotatedString
 import kotlinx.coroutines.delay
 import nolambda.uibook.annotations.BookMetaData
 import nolambda.uibook.browser.config.AppBrowserConfig
+import nolambda.uibook.browser.config.CanvasSetting
+import nolambda.uibook.browser.config.observeAsState
 import nolambda.uibook.browser.form.ComposeEmitter
 import nolambda.uibook.components.UIBookColors
 import nolambda.uibook.frame.Device
 import nolambda.uibook.frame.DeviceFrame
 import nolambda.uibook.frame.Devices
+import nolambda.uibook.utils.toColor
 
 private const val LARGE_SCREEN_THRESHOLD = 1000
 
@@ -336,9 +340,11 @@ private fun BookCanvas(
     scale: Float,
     transformableState: TransformableState,
     bookView: ComposeEmitter,
+    canvasBackground: @Composable () -> Unit,
 ) {
+
     Box(modifier = modifier) {
-        PixelGrid()
+        canvasBackground()
         DeviceFrameWrapper(
             selectedDevice = selectedDevice,
             scale = scale,
@@ -391,6 +397,13 @@ fun BookForm(
 
     val (selectedPaneIndex, setSelectedPaneIndex) = remember { mutableStateOf(0) }
 
+    val coroutineScope = rememberCoroutineScope()
+    val settingStore = AppBrowserConfig.settingStore
+
+    val gridSize = settingStore.observeAsState(coroutineScope, CanvasSetting.GridSize)
+    val gridColor = settingStore.observeAsState(coroutineScope, CanvasSetting.GridColor)
+    val canvasColor = settingStore.observeAsState(coroutineScope, CanvasSetting.CanvasColor)
+
     Column {
         AnimatedVisibility(
             visible = GlobalState.fullScreenMode.invertedValue,
@@ -420,7 +433,13 @@ fun BookForm(
                 scale = scale,
                 transformableState = state,
                 bookView = bookView
-            )
+            ) {
+                PixelGrid(
+                    gridSize = gridSize.value.dp,
+                    gridColor = gridColor.value.toColor(),
+                    modifier = Modifier.background(canvasColor.value.toColor())
+                )
+            }
 
             AnimatedVisibility(
                 visible = GlobalState.fullScreenMode.invertedValue,
