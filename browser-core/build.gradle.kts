@@ -1,6 +1,8 @@
 plugins {
+    kotlin("plugin.serialization")
+    kotlin("multiplatform")
+
     id("org.jetbrains.compose")
-    id("org.jetbrains.kotlin.multiplatform")
 
     id("nolambda.uibook.android")
     id("nolambda.uibook.publish")
@@ -39,6 +41,7 @@ kotlin {
                 api(project(":annotations"))
                 api("com.wakaztahir:codeeditor:3.0.5")
                 implementation("io.github.irgaly.kottage:kottage:1.4.2")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
             }
         }
     }

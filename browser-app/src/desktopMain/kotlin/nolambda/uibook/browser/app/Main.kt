@@ -37,7 +37,9 @@ import nolambda.uibook.browser.BookHost
 import nolambda.uibook.browser.EmptyBookHost
 import nolambda.uibook.browser.config.AppBrowserConfig
 import nolambda.uibook.browser.config.BrowserConfig
+import nolambda.uibook.browser.config.DesktopSettingStoreFactory
 import nolambda.uibook.browser.config.ResourceLoader
+import nolambda.uibook.browser.config.SettingStore
 import nolambda.uibook.browser.form.ComposeEmitter
 import nolambda.uibook.clipboard.ClipboardManager
 import nolambda.uibook.clipboard.DesktopClipboardManager
@@ -71,6 +73,9 @@ fun runBrowser() {
             BrowserConfig.Features(
                 measurementOverlay = false
             )
+        }
+        override val settingStore: SettingStore by lazy {
+            DesktopSettingStoreFactory.createStore()
         }
     })
 
