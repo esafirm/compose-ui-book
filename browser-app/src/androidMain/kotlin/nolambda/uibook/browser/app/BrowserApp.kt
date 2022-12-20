@@ -7,6 +7,8 @@ import nolambda.uibook.browser.config.AppBrowserConfig
 import nolambda.uibook.browser.config.BrowserConfig
 import nolambda.uibook.browser.config.ResourceLoader
 import nolambda.uibook.browser.app.resourceloader.AndroidResourceLoader
+import nolambda.uibook.browser.config.AndroidSettingStoreFactory
+import nolambda.uibook.browser.config.SettingStore
 import nolambda.uibook.clipboard.AndroidClipboardManager
 import nolambda.uibook.clipboard.ClipboardManager
 import nolambda.uibook.factory.AndroidLibraryLoader
@@ -34,6 +36,9 @@ class BrowserApp : Application() {
                 BrowserConfig.Features(
                     measurementOverlay = true
                 )
+            }
+            override val settingStore: SettingStore by lazy {
+                AndroidSettingStoreFactory.createStore(this@BrowserApp)
             }
         })
     }

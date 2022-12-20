@@ -10,6 +10,7 @@ interface BrowserConfig {
     val clipboardManager: ClipboardManager
     val libraryLoader: LibraryLoader
     val browserFeatures: Features
+    val settingStore: SettingStore
 
     data class Features(
         val measurementOverlay: Boolean = false,
@@ -43,4 +44,7 @@ object AppBrowserConfig : BrowserConfig {
 
     override val browserFeatures: BrowserConfig.Features
         get() = internalConfig.browserFeatures
+
+    override val settingStore: SettingStore
+        get() = internalConfig.settingStore
 }

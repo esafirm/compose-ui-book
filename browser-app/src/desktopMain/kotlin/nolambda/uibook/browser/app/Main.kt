@@ -1,12 +1,20 @@
 package nolambda.uibook.browser.app
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.onClick
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -15,9 +23,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
@@ -27,7 +38,9 @@ import nolambda.uibook.browser.BookHost
 import nolambda.uibook.browser.EmptyBookHost
 import nolambda.uibook.browser.config.AppBrowserConfig
 import nolambda.uibook.browser.config.BrowserConfig
+import nolambda.uibook.browser.config.DesktopSettingStoreFactory
 import nolambda.uibook.browser.config.ResourceLoader
+import nolambda.uibook.browser.config.SettingStore
 import nolambda.uibook.browser.form.ComposeEmitter
 import nolambda.uibook.clipboard.ClipboardManager
 import nolambda.uibook.clipboard.DesktopClipboardManager
@@ -36,6 +49,7 @@ import nolambda.uibook.components.booklist.BookList
 import nolambda.uibook.factory.BookConfig
 import nolambda.uibook.factory.DesktopLibraryLoader
 import nolambda.uibook.factory.LibraryLoader
+import nolambda.uibook.setting.SettingPage
 
 fun main() {
     runBrowser()
@@ -61,6 +75,9 @@ fun runBrowser() {
                 measurementOverlay = false
             )
         }
+        override val settingStore: SettingStore by lazy {
+            DesktopSettingStoreFactory.createStore()
+        }
     })
 
     val library = AppBrowserConfig.libraryLoader.load()
@@ -85,6 +102,8 @@ fun runBrowser() {
             val book = factory?.getBook(emptyBookConfig)
 
             MaterialTheme {
+                val (showSetting, setShowSetting) = remember { mutableStateOf(false) }
+
                 Row {
                     val isFullScreen = GlobalState.fullScreenMode.value
                     AnimatedVisibility(
@@ -95,9 +114,9 @@ fun runBrowser() {
                     ) {
                         BookList(
                             names = names,
-                        ) { index ->
-                            selectedIndex = index
-                        }
+                            onSelected = { index -> selectedIndex = index },
+                            onSettingClick = { setShowSetting(true) }
+                        )
                     }
 
                     BookViewer(
@@ -105,6 +124,35 @@ fun runBrowser() {
                         book = book
                     )
                 }
+
+                SettingModal(showSetting, setShowSetting)
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun SettingModal(
+    showSetting: Boolean,
+    setShowSetting: (Boolean) -> Unit,
+) {
+    AnimatedVisibility(
+        visible = showSetting,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.2f))
+                .onClick { setShowSetting(false) }
+                .padding(24.dp)
+        ) {
+            SettingPage(
+                modifier = Modifier.clickable(false, onClick = {}),
+            ) {
+                setShowSetting(false)
             }
         }
     }
@@ -115,6 +163,7 @@ private fun BookList(
     names: List<String>,
     modifier: Modifier = Modifier,
     onSelected: (index: Int) -> Unit,
+    onSettingClick: () -> Unit,
 ) {
     Box(modifier = modifier) {
         BookList(
@@ -122,7 +171,8 @@ private fun BookList(
             modifier = Modifier
                 .fillMaxHeight()
                 .background(MaterialTheme.colors.background),
-            navigateToBook = onSelected
+            navigateToBook = onSelected,
+            onSettingClick = onSettingClick
         )
     }
 }

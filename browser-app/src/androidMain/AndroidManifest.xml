@@ -18,6 +18,11 @@
             android:exported="false"
             android:theme="@style/Theme.UIBook"
             android:windowSoftInputMode="adjustPan" />
+
+        <activity
+            android:name=".UIBookSettingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.UIBook" />
     </application>
 
 </manifest>
