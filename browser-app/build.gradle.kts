@@ -21,6 +21,9 @@ kotlin {
         publishLibraryVariants("release")
     }
     jvm("desktop")
+    js(IR) {
+        browser()
+    }
 
     sourceSets {
         named("commonMain") {
@@ -40,11 +43,6 @@ kotlin {
                 val coroutineVersion = "1.4.2"
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion")
-            }
-        }
-        named("desktopMain") {
-            dependencies {
-                api(compose.desktop.currentOs)
             }
         }
     }

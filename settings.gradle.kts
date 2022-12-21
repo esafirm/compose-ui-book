@@ -10,6 +10,10 @@ pluginManagement {
     }
 }
 
+plugins {
+    id("com.gradle.enterprise") version "3.8.1"
+}
+
 val secretProps = java.util.Properties()
 file("secret.properties").inputStream().use { secretProps.load(it) }
 
@@ -19,8 +23,11 @@ dependencyResolutionManagement {
         mavenCentral()
         mavenLocal()
         maven {
+            setUrl("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        }
+        maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/qawaz/compose-code-editor")
+            url = uri("https://maven.pkg.github.com/esafirm/compose-code-editor")
             credentials {
                 username = secretProps["github.username"] as String
                 password = secretProps["github.token"] as String
@@ -28,6 +35,10 @@ dependencyResolutionManagement {
         }
     }
 }
+
+//buildScan {
+//    publishAlways()
+//}
 
 rootProject.name = "UI Book"
 

@@ -8,6 +8,10 @@ plugins {
 kotlin {
     jvm("desktop")
     android()
+    js(IR) {
+        browser()
+        binaries.executable()
+    }
 
     sourceSets {
         named("commonMain") {
@@ -60,6 +64,10 @@ android {
             res.srcDirs("src/androidMain/res")
         }
     }
+}
+
+compose.experimental {
+    web.application {}
 }
 
 compose.desktop {

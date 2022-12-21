@@ -17,6 +17,9 @@ kotlin {
         publishLibraryVariants("release")
     }
     jvm("desktop")
+    js(IR) {
+        browser()
+    }
 
     sourceSets {
         named("commonMain") {
@@ -29,20 +32,30 @@ kotlin {
                 api(compose.runtime)
                 api(compose.foundation)
                 api(compose.material)
-                api(compose.materialIconsExtended)
-
-                // Needed only for preview.
-                implementation(compose.preview)
+//                api(compose.materialIconsExtended)
 
                 // Device preview
                 api(project(":device-frame"))
 
                 // UI-Book
                 api(project(":annotations"))
-                api("com.wakaztahir:codeeditor:3.0.5")
+                api("com.wakaztahir:codeeditor:3.1.0")
                 implementation("io.github.irgaly.kottage:kottage:1.4.2")
                 implementation("io.github.irgaly.kottage:kottage-core:1.4.2")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+            }
+        }
+        named("desktopMain") {
+            dependencies {
+                api(compose.desktop.currentOs)
+
+                // Needed only for preview.
+                api(compose.preview)
+            }
+        }
+        named("jsMain") {
+            dependencies {
+                api(compose.web.core)
             }
         }
     }
