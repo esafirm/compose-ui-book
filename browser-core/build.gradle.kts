@@ -32,7 +32,9 @@ kotlin {
                 api(compose.runtime)
                 api(compose.foundation)
                 api(compose.material)
-//                api(compose.materialIconsExtended)
+
+                // Uncomment if you want to search for icons
+                // api(compose.materialIconsExtended)
 
                 // Device preview
                 api(project(":device-frame"))
