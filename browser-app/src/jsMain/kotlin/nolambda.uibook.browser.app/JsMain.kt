@@ -1,20 +1,28 @@
 package nolambda.uibook.browser.app
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.zIndex
 import kotlinx.coroutines.CoroutineScope
@@ -28,12 +36,16 @@ import nolambda.uibook.browser.config.ResourceLoader
 import nolambda.uibook.browser.config.Setting
 import nolambda.uibook.browser.config.SettingStore
 import nolambda.uibook.browser.form.ComposeEmitter
-import nolambda.uibook.clipboard.JsClipboardManager
 import nolambda.uibook.clipboard.ClipboardManager
+import nolambda.uibook.clipboard.JsClipboardManager
+import nolambda.uibook.components.bookform.DropdownMenuShower
 import nolambda.uibook.components.bookform.GlobalState
+import nolambda.uibook.components.bookform.LocalDropdownShow
 import nolambda.uibook.factory.BookConfig
 import nolambda.uibook.factory.LibraryLoader
 import nolambda.uibook.factory.UIBookLibrary
+import nolambda.uibook.setting.SettingPage
+import nolambda.uibook.utils.simpleClick
 import org.jetbrains.skiko.wasm.onWasmReady
 
 fun runBrowser(library: UIBookLibrary) {
@@ -84,34 +96,81 @@ fun runBrowser(library: UIBookLibrary) {
             }
 
             MaterialTheme {
+                CompositionLocalProvider(LocalDropdownShow provides DropdownMenuShower()) {
 
-                var selectedIndex by remember { mutableStateOf(-1) }
-                val factory = if (selectedIndex >= 0) factories[selectedIndex] else null
-                val book = factory?.getBook(emptyBookConfig)
+                    var selectedIndex by remember { mutableStateOf(-1) }
+                    val factory = if (selectedIndex >= 0) factories[selectedIndex] else null
+                    val book = factory?.getBook(emptyBookConfig)
 
-                val (showSetting, setShowSetting) = remember { mutableStateOf(false) }
+                    val (showSetting, setShowSetting) = remember { mutableStateOf(false) }
 
-                Row {
-                    val isFullScreen = GlobalState.fullScreenMode.value
-                    AnimatedVisibility(
-                        modifier = Modifier.weight(1F).zIndex(2f),
-                        visible = isFullScreen.not(),
-                        exit = slideOut { fullSize -> IntOffset(-fullSize.width, 0) },
-                        enter = slideIn { fullSize -> IntOffset(-fullSize.width, 0) }
-                    ) {
-                        BookList(
-                            names = names,
-                            onSelected = { index -> selectedIndex = index },
-                            onSettingClick = { setShowSetting(true) }
+                    Row {
+                        val isFullScreen = GlobalState.fullScreenMode.value
+                        AnimatedVisibility(
+                            modifier = Modifier.weight(1F).zIndex(2f),
+                            visible = isFullScreen.not(),
+                            exit = slideOut { fullSize -> IntOffset(-fullSize.width, 0) },
+                            enter = slideIn { fullSize -> IntOffset(-fullSize.width, 0) }
+                        ) {
+                            BookList(
+                                names = names,
+                                onSelected = { index -> selectedIndex = index },
+                                onSettingClick = { setShowSetting(true) }
+                            )
+                        }
+
+                        BookViewer(
+                            modifier = Modifier.weight(3F).zIndex(1f),
+                            book = book
                         )
                     }
 
-                    BookViewer(
-                        modifier = Modifier.weight(3F).zIndex(1f),
-                        book = book
+                    SettingModal(
+                        showSetting = showSetting,
+                        setShowSetting = setShowSetting
                     )
+                    DropdownRenderer()
                 }
+            }
+        }
+    }
+}
 
+/**
+ * Hack to make dropdown menu rendered here
+ *
+ * @see LocalDropdownShow
+ * @see DropdownMenuShower
+ */
+@Composable
+fun DropdownRenderer() {
+    val renderState = LocalDropdownShow.current.composable
+    if (renderState.value.render) {
+        renderState.value.content()
+    }
+}
+
+@Composable
+private fun SettingModal(
+    showSetting: Boolean,
+    setShowSetting: (Boolean) -> Unit,
+) {
+    AnimatedVisibility(
+        visible = showSetting,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.2f))
+                .simpleClick { setShowSetting(false) }
+                .padding(24.dp)
+        ) {
+            SettingPage(
+                modifier = Modifier.clickable(false, onClick = {}),
+            ) {
+                setShowSetting(false)
             }
         }
     }
