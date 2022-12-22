@@ -25,15 +25,12 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.zIndex
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import nolambda.uibook.browser.BookHost
 import nolambda.uibook.browser.EmptyBookHost
 import nolambda.uibook.browser.config.AppBrowserConfig
 import nolambda.uibook.browser.config.BrowserConfig
+import nolambda.uibook.browser.config.JsSettingStoreFactory
 import nolambda.uibook.browser.config.ResourceLoader
-import nolambda.uibook.browser.config.Setting
 import nolambda.uibook.browser.config.SettingStore
 import nolambda.uibook.browser.form.ComposeEmitter
 import nolambda.uibook.clipboard.ClipboardManager
@@ -68,19 +65,7 @@ fun runBrowser(library: UIBookLibrary) {
         }
 
         override val settingStore: SettingStore by lazy {
-            object : SettingStore {
-
-                override suspend fun <T : Any> put(setting: Setting<T>, value: T) {
-                }
-
-                override suspend fun <T : Any> get(setting: Setting<T>): T {
-                    return setting.defaultValue
-                }
-
-                override fun <T : Any> observe(scope: CoroutineScope, setting: Setting<T>): Flow<T> {
-                    return flowOf(setting.defaultValue)
-                }
-            }
+            JsSettingStoreFactory.createStore()
         }
     })
 
