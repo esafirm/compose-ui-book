@@ -2,9 +2,9 @@ name: PR Checker
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
 
 jobs:
   build:
@@ -29,3 +29,6 @@ jobs:
 
       - name: Build desktop book
         run: ./gradlew :examples:demo:desktopJar --stacktrace
+
+      - name: Build web book
+        run: ./gradlew :examples:demo:jsJar --stacktrace
