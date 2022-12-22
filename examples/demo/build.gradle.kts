@@ -89,4 +89,5 @@ compose.desktop {
 dependencies {
     add("kspAndroid", project(":annotations-processor"))
     add("kspDesktop", project(":annotations-processor"))
+    add("kspJs", project(":annotations-processor"))
 }

@@ -23,6 +23,7 @@ kotlin {
     jvm("desktop")
     js(IR) {
         browser()
+        binaries.executable()
     }
 
     sourceSets {
