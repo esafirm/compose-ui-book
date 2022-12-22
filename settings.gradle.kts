@@ -40,7 +40,7 @@ dependencyResolutionManagement {
 //    publishAlways()
 //}
 
-rootProject.name = "UI Book"
+rootProject.name = "UIBook"
 
 include(":browser-app")
 include(":browser-core")
