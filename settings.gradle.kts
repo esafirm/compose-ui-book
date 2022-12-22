@@ -14,6 +14,12 @@ plugins {
     id("com.gradle.enterprise") version "3.8.1"
 }
 
+gradleEnterprise {
+    buildScan {
+        publishAlways()
+    }
+}
+
 val secretProps = java.util.Properties()
 file("secret.properties").inputStream().use { secretProps.load(it) }
 
@@ -35,10 +41,6 @@ dependencyResolutionManagement {
         }
     }
 }
-
-//buildScan {
-//    publishAlways()
-//}
 
 rootProject.name = "UIBook"
 

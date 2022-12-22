@@ -49,7 +49,7 @@ kotlin {
                 api(compose.desktop.currentOs)
 
                 // Uncomment if you want to search for icons
-                 api(compose.materialIconsExtended)
+                // api(compose.materialIconsExtended)
 
                 // Needed only for preview.
                 api(compose.preview)
