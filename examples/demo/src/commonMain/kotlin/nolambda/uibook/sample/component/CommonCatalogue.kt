@@ -64,7 +64,7 @@ fun BookHost.SampleText(
 @UIBook(name = "Circular Image Sample")
 @Composable
 fun BookHost.CircularImage(
-    @State(defaultValue = "https://silly-kowalevski-bc3c3d.netlify.app/logo.png") imageUrl: String,
+    @State(defaultValue = "https://raw.githubusercontent.com/esafirm/web-dimsum-askitea/main/logo.png") imageUrl: String,
     @State(defaultValue = "Dimsum Askitea") title: String,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
