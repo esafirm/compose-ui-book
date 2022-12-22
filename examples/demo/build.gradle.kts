@@ -40,6 +40,11 @@ kotlin {
                 implementation("io.coil-kt:coil-compose:1.3.1")
             }
         }
+        named("jsMain") {
+            // Include KSP generated code to be indexed in IDE
+            // https://github.com/google/ksp/issues/37
+            kotlin.srcDir("build/generated/ksp/js/jsMain/kotlin")
+        }
     }
 }
 

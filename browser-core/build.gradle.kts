@@ -33,9 +33,6 @@ kotlin {
                 api(compose.foundation)
                 api(compose.material)
 
-                // Uncomment if you want to search for icons
-                // api(compose.materialIconsExtended)
-
                 // Device preview
                 api(project(":device-frame"))
 
@@ -50,6 +47,9 @@ kotlin {
         named("desktopMain") {
             dependencies {
                 api(compose.desktop.currentOs)
+
+                // Uncomment if you want to search for icons
+                 api(compose.materialIconsExtended)
 
                 // Needed only for preview.
                 api(compose.preview)

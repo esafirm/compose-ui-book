@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.Button
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -17,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,6 +26,8 @@ import nolambda.uibook.browser.config.AppBrowserConfig
 import nolambda.uibook.browser.config.ResourceIds
 import nolambda.uibook.frame.Device
 import nolambda.uibook.frame.Devices
+import nolambda.uibook.icons.Devices
+import nolambda.uibook.icons.UIBookIcons
 import kotlin.math.max
 import kotlin.math.min
 
@@ -104,10 +108,10 @@ private fun DeviceFrameSelector(
         Button(
             onClick = { onExpand(true) }
         ) {
-            val resourceLoader = AppBrowserConfig.resourceLoader
-            val icon = resourceLoader.load(ResourceIds.DEVICE_FRAME)
-
-            Image(painter = icon, contentDescription = "Select Device")
+            Icon(
+                imageVector = UIBookIcons.Devices,
+                contentDescription = "Device Frame Selector"
+            )
         }
 
         DropdownMenu(

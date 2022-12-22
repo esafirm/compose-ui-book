@@ -14,17 +14,6 @@ import nolambda.uibook.icons.UIBookIcons
 class JsResourceLoader : ResourceLoader {
     @Composable
     override fun load(id: ResourceId): Painter {
-        val resource = mapIdToResource(id)
-        if (resource != null) {
-            rememberVectorPainter(image = UIBookIcons.ContentCopy)
-        }
         error("There's not registered loader for $id")
-    }
-
-    private fun mapIdToResource(id: ResourceId): String? {
-        return when (id) {
-            ResourceIds.DEVICE_FRAME -> "images/ic_device.xml"
-            else -> null
-        }
     }
 }

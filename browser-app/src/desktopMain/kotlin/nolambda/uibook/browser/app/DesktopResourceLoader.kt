@@ -21,7 +21,6 @@ class DesktopResourceLoader : ResourceLoader {
         return when (id) {
             ResourceIds.MEASUREMENT_ENABLED -> "images/ic_measurement_enabled.xml"
             ResourceIds.MEASUREMENT_DISABLED -> "images/ic_measurement_disabled.xml"
-            ResourceIds.DEVICE_FRAME -> "images/ic_device.xml"
             else -> null
         }
     }

@@ -2,13 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>compose multiplatform web demo</title>
+    <title>Compose UIBook - Demo</title>
     <script src="skiko.js"></script>
     <link type="text/css" rel="stylesheet" href="styles.css"/>
 </head>
 <body>
 <div>
-    <canvas id="ComposeTarget" width="600" height="600"></canvas>
+    <canvas id="ComposeTarget"></canvas>
+    <script>
+			(function () {
+				canvas = document.getElementById("ComposeTarget");
+                canvas.width = document.body.clientWidth; //document.width is obsolete
+                canvas.height = window.innerHeight;
+			})();
+
+    </script>
 </div>
 <script src="demo.js"></script>
 </body>

@@ -24,7 +24,6 @@ import nolambda.uibook.browser.BookHost
 import nolambda.uibook.browser.EmptyBookHost
 import nolambda.uibook.browser.config.AppBrowserConfig
 import nolambda.uibook.browser.config.BrowserConfig
-import nolambda.uibook.browser.config.JsSettingStoreFactory
 import nolambda.uibook.browser.config.ResourceLoader
 import nolambda.uibook.browser.config.Setting
 import nolambda.uibook.browser.config.SettingStore
@@ -33,29 +32,21 @@ import nolambda.uibook.clipboard.JsClipboardManager
 import nolambda.uibook.clipboard.ClipboardManager
 import nolambda.uibook.components.bookform.GlobalState
 import nolambda.uibook.factory.BookConfig
-import nolambda.uibook.factory.BookFactory
-import nolambda.uibook.factory.JsLibraryLoader
 import nolambda.uibook.factory.LibraryLoader
 import nolambda.uibook.factory.UIBookLibrary
 import org.jetbrains.skiko.wasm.onWasmReady
 
-fun main() {
-    runBrowser()
-}
-
-fun runBrowser() {
+fun runBrowser(library: UIBookLibrary) {
     // Setup the app config
     AppBrowserConfig.setConfig(object : BrowserConfig {
 
         override val bookHost: BookHost by lazy { EmptyBookHost() }
         override val resourceLoader: ResourceLoader by lazy { JsResourceLoader() }
         override val clipboardManager: ClipboardManager by lazy { JsClipboardManager() }
-        override val libraryLoader: LibraryLoader by lazy {
-            object : LibraryLoader {
-                override fun load(): UIBookLibrary {
-                    TODO()
-                }
-            }
+
+        // Because of limitation this is retrieved from the caller of [runBrowser] function
+        override val libraryLoader: LibraryLoader = object : LibraryLoader {
+            override fun load(): UIBookLibrary = library
         }
 
         override val browserFeatures: BrowserConfig.Features by lazy {
@@ -63,6 +54,7 @@ fun runBrowser() {
                 measurementOverlay = false
             )
         }
+
         override val settingStore: SettingStore by lazy {
             object : SettingStore {
 
