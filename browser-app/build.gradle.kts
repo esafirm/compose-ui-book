@@ -27,12 +27,25 @@ kotlin {
     }
 
     sourceSets {
-        named("commonMain") {
+        val commonMain by getting {
             dependencies {
                 api(project(":annotations"))
                 api(project(":browser-core"))
             }
         }
+
+        // Common code for desktop and browser
+        val commonDesktop = create("commonDesktop") {
+            dependsOn(commonMain)
+        }
+
+        val desktopMain by getting {
+            dependsOn(commonDesktop)
+        }
+        val jsMain by getting {
+            dependsOn(commonDesktop)
+        }
+
         named("androidMain") {
             dependencies {
 
