@@ -2,9 +2,9 @@ name: Trunk Pipeline
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches:
+      - main
+      - test/*
 
 jobs:
   build:
