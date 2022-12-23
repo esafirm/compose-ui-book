@@ -8,13 +8,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.FloatingActionButton
@@ -39,11 +37,8 @@ import nolambda.uibook.annotations.UIBook
 import nolambda.uibook.browser.BookHost
 import nolambda.uibook.browser.form.OptionInputCreator
 import nolambda.uibook.browser.form.SliderInputCreator
-import nolambda.uibook.frame.Device
 import nolambda.uibook.frame.DeviceFrame
 import nolambda.uibook.frame.Devices
-import nolambda.uibook.frame.generic.factory.GenericPhoneDeviceFrameFactory
-import nolambda.uibook.frame.ios.iPhoneSE
 
 internal class SimpleItem : OptionInputCreator<String>(listOf("A", "B", "C"))
 internal class SimpleIntSlider : SliderInputCreator(steps = 10, valueRange = 0f..10f)
@@ -69,7 +64,7 @@ fun BookHost.SampleText(
 @UIBook(name = "Circular Image Sample")
 @Composable
 fun BookHost.CircularImage(
-    @State(defaultValue = "https://silly-kowalevski-bc3c3d.netlify.app/logo.png") imageUrl: String,
+    @State(defaultValue = "https://raw.githubusercontent.com/esafirm/web-dimsum-askitea/main/logo.png") imageUrl: String,
     @State(defaultValue = "Dimsum Askitea") title: String,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {

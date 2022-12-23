@@ -1,7 +1,6 @@
 package nolambda.uibook.setting
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +21,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -33,10 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import nolambda.uibook.browser.config.AppBrowserConfig
-import nolambda.uibook.browser.config.CanvasSetting
 import nolambda.uibook.browser.config.SettingStore
 import nolambda.uibook.components.common.ClickableText
 import nolambda.uibook.utils.toColor
@@ -61,7 +58,7 @@ fun SettingPage(
     onRequestToClose: (() -> Unit)? = null,
 ) {
     val (selectedMenu, setSelectedMenu) = remember { mutableStateOf(SETTING_MENU.first()) }
-    val scope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope { Dispatchers.Default }
 
     Box(modifier = Modifier
         .background(MaterialTheme.colors.background)
@@ -129,20 +126,20 @@ private fun SettingPageHeader(
 
 @Composable
 private fun CanvasSetting(
-    scope: CoroutineScope,
+    saveScope: CoroutineScope,
     settingStore: SettingStore = AppBrowserConfig.settingStore,
 ) {
+    val stateManager = remember(saveScope, settingStore) {
+        CanvasSettingStateManager(saveScope, settingStore)
+    }
+
     Column(modifier = Modifier.padding(16.dp)) {
         val itemModifier = Modifier.padding(bottom = 16.dp)
 
-        val (gridSizeState, setGridSizeState) = SettingRowState(
-            name = "Grid Size",
-            value = runBlocking { settingStore.get(CanvasSetting.GridSize) },
-            errorMessage = null
-        ).asState()
+        val gridSize = stateManager.gridSize.collectAsState()
 
         SettingRow(
-            state = gridSizeState,
+            state = gridSize.value,
             extraContent = { Text("Dp") },
             modifier = itemModifier
         ) {
@@ -152,69 +149,48 @@ private fun CanvasSetting(
                 0
             }
             val isSuccess = processedValue > 0
-            setGridSizeState(
-                gridSizeState.copy(
+
+            stateManager.setGridSize(
+                gridSize.value.copy(
                     value = processedValue,
                     errorMessage = if (isSuccess) null else "Invalid number"
                 )
             )
-
-            if (isSuccess) {
-                scope.launch(Dispatchers.IO) {
-                    settingStore.put(CanvasSetting.GridSize, processedValue)
-                }
-            }
         }
 
-        val (gridColorState, setGridColorState) = SettingRowState(
-            name = "Grid Color",
-            value = runBlocking { settingStore.get(CanvasSetting.GridColor) },
-            errorMessage = null
-        ).asState()
+        val gridColorState = stateManager.gridColor.collectAsState()
 
         SettingRow(
-            state = gridColorState,
-            extraContent = { ColorBox(gridColorState.value.toColor()) },
+            state = gridColorState.value,
+            extraContent = { ColorBox(gridColorState.value.value.toColor()) },
             modifier = itemModifier
         ) { newValue ->
             val errorMessage = if (newValue.length <= 1) "Invalid value" else null
-            setGridColorState(gridColorState.copy(value = newValue, errorMessage = errorMessage))
 
-            val isSuccess = errorMessage == null
-            if (isSuccess) {
-                scope.launch(Dispatchers.IO) {
-                    settingStore.put(CanvasSetting.GridColor, newValue)
-                }
-            }
+            stateManager.setGridColor(
+                gridColorState.value.copy(value = newValue, errorMessage = errorMessage)
+            )
         }
 
-        val (canvasColorState, setCanvasColorState) = SettingRowState(
-            name = "Canvas Color",
-            value = runBlocking { settingStore.get(CanvasSetting.CanvasColor) },
-            errorMessage = null
-        ).asState()
+        val canvasColorState = stateManager.canvasColor.collectAsState()
 
         SettingRow(
-            state = canvasColorState,
-            extraContent = { ColorBox(canvasColorState.value.toColor()) },
+            state = canvasColorState.value,
+            extraContent = { ColorBox(canvasColorState.value.value.toColor()) },
             modifier = itemModifier
         ) { newValue ->
             val errorMessage = if (newValue.length <= 1) "Invalid value" else null
-            setCanvasColorState(canvasColorState.copy(value = newValue, errorMessage = errorMessage))
 
-            val isSuccess = errorMessage == null
-            if (isSuccess) {
-                scope.launch(Dispatchers.IO) {
-                    settingStore.put(CanvasSetting.CanvasColor, newValue)
-                }
-            }
+            stateManager.setCanvasColor(
+                canvasColorState.value.copy(value = newValue, errorMessage = errorMessage)
+            )
         }
     }
 }
 
 @Composable
 private fun SettingRow(
-    state: SettingRowState<*>,
+    state: SettingRowData<*>,
     extraContent: (@Composable () -> Unit)? = null,
     modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit,

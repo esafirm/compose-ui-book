@@ -8,6 +8,10 @@ plugins {
 kotlin {
     jvm("desktop")
     android()
+    js(IR) {
+        browser()
+        binaries.executable()
+    }
 
     sourceSets {
         named("commonMain") {
@@ -36,6 +40,11 @@ kotlin {
                 implementation("io.coil-kt:coil-compose:1.3.1")
             }
         }
+        named("jsMain") {
+            // Include KSP generated code to be indexed in IDE
+            // https://github.com/google/ksp/issues/37
+            kotlin.srcDir("build/generated/ksp/js/jsMain/kotlin")
+        }
     }
 }
 
@@ -62,6 +71,10 @@ android {
     }
 }
 
+compose.experimental {
+    web.application {}
+}
+
 compose.desktop {
     application {
         mainClass = "nolambda.uibook.browser.app.MainKt"
@@ -81,4 +94,5 @@ compose.desktop {
 dependencies {
     add("kspAndroid", project(":annotations-processor"))
     add("kspDesktop", project(":annotations-processor"))
+    add("kspJs", project(":annotations-processor"))
 }

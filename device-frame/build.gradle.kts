@@ -18,6 +18,9 @@ kotlin {
     android {
         publishLibraryVariants("release")
     }
+    js(IR) {
+        browser()
+    }
 
     sourceSets {
         named("commonMain") {
@@ -25,10 +28,6 @@ kotlin {
                 api(compose.runtime)
                 api(compose.foundation)
                 api(compose.material)
-                api(compose.materialIconsExtended)
-
-                // Needed only for preview.
-                implementation(compose.preview)
 
                 // UI-Book
                 api(project(":annotations"))

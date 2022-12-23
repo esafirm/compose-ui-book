@@ -29,10 +29,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Fullscreen
-import androidx.compose.material.icons.filled.FullscreenExit
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -70,6 +66,10 @@ import nolambda.uibook.components.UIBookColors
 import nolambda.uibook.frame.Device
 import nolambda.uibook.frame.DeviceFrame
 import nolambda.uibook.frame.Devices
+import nolambda.uibook.icons.ContentCopy
+import nolambda.uibook.icons.Fullscreen
+import nolambda.uibook.icons.FullscreenExit
+import nolambda.uibook.icons.UIBookIcons
 import nolambda.uibook.utils.toColor
 
 private const val LARGE_SCREEN_THRESHOLD = 1000
@@ -154,7 +154,7 @@ private fun SourceCodeView(
                 .alpha(0.8f)
         ) {
             Icon(
-                imageVector = Icons.Default.ContentCopy,
+                imageVector = UIBookIcons.ContentCopy,
                 contentDescription = "Copy to clipboard",
                 tint = Color.Gray
             )
@@ -362,9 +362,9 @@ private fun BookCanvas(
         ) {
             Icon(
                 imageVector = if (GlobalState.fullScreenMode.value) {
-                    Icons.Default.FullscreenExit
+                    UIBookIcons.FullscreenExit
                 } else {
-                    Icons.Default.Fullscreen
+                    UIBookIcons.Fullscreen
                 },
                 contentDescription = if (GlobalState.fullScreenMode.value) {
                     "Exit full screen mode"
